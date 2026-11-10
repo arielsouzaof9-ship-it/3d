@@ -6,21 +6,20 @@ import { VOZ } from './voz.ts';
 export const FPS = 30;
 export const F = 1 / FPS;
 
-// Roteiro: "O Sorveteiro da Segunda-Feira".
+// Roteiro: "E se o asteroide tivesse errado?"
 export const LINES = [
-  'Toda *segunda-feira*, às três da tarde, uma coisa estranha acontece no seu bairro.',
-  'Um caminhão de *sorvete* aparece do nada, e ninguém sabe de onde ele vem.',
-  'Todas as crianças compram o sabor *azul*. É o único que ele vende.',
-  'Mas naquela mesma noite, as crianças *desaparecem*.',
-  'No dia seguinte, elas voltam como se nada tivesse acontecido, *sem* lembrar de nada.',
-  'Você nunca tomou aquele sorvete, e decidiu descobrir a *verdade*.',
-  'Na segunda seguinte, você se *escondeu* dentro do caminhão.',
-  'Ele saiu da cidade, por uma estrada que não aparece em *nenhum* mapa.',
-  'Até chegar num portão *gigantesco*, com uma fábrica escondida no meio da floresta.',
-  'Lá dentro estavam todas as crianças, e uma máquina roubando os *sonhos* delas.',
-  'Então o sorveteiro tirou o *chapéu*.',
-  'Era o *seu* pai, que tinha sumido há *dois* anos.',
-  'E ele olhou direto pra *você*. Comenta parte dois se quer saber o resto.',
+  'E se o asteroide que acabou com os dinossauros tivesse *errado* a Terra?',
+  'Há sessenta e seis *milhões* de anos, uma rocha de *dez* quilômetros passaria *raspando*.',
+  'E os dinossauros continuariam *mandando* no planeta.',
+  'Os mamíferos, como os nossos ancestrais, continuariam *pequenos*, escondidos no escuro.',
+  'Sem espaço para crescer, talvez os macacos *nunca* surgissem, e nem *você*.',
+  'Enquanto isso, os dinossauros teriam milhões de anos para *evoluir*.',
+  'Um cientista chegou a imaginar um dinossauro *inteligente*, de cabeça grande, andando em duas pernas.',
+  'Ele chamou essa criatura de *dinossauroide*.',
+  'Talvez hoje existissem cidades construídas por *répteis*.',
+  'Mas tem um detalhe: os dinossauros nunca sumiram de *verdade*.',
+  'As *aves* são dinossauros. A galinha do seu almoço é parente do *T-rex*.',
+  'Comenta qual dinossauro você queria ver vivo *hoje*.',
 ];
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };

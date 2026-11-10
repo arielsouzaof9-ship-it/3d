@@ -1,30 +1,26 @@
-# Storyboard — "O Sorveteiro da Segunda-Feira"
+# Storyboard — "E se o asteroide tivesse errado?"
 
-Elenco: **Você** (criança de boné, protagonista), **Sorveteiro / Pai** (novo, em `src/historia.tsx`), **Lia**, **Pedrinho**, **Kaio** e **Gabi** (crianças).
-Cenários novos: Bairro (dia/noite), Caminhão Sorvetinho, Baú, Estrada na floresta, Fábrica (fora/dentro).
+(O storyboard do vídeo anterior está em `projetos/sorveteiro/STORYBOARD.md`.)
+
+Elenco: **Você** (criança de boné), **T-rex**, **Raptor**, **Pescoçudo**, **Ratinho** (mamífero ancestral), **Galinha**, **Passarinho**, **Dinossauroide** e três cidadãos dinossauroides — todos em `src/dinos.tsx`.
+Cenários novos: Espaço (estrelas, Terra, asteroide), Floresta pré-histórica (dia/noite, vulcão), Toca. Reutilizados: Palco, Museu (Room), Cidade (Street), Bairro.
 
 | # | Frase | Ação | Objeto de informação | Câmera | Expressão |
 |---|---|---|---|---|---|
-| 01 | Toda *segunda-feira*, | Você aponta para o calendário | Calendário vira até SEGUNDA | empurra | curioso → preocupado |
-| 02 | às três da tarde, | Você se assusta | Relógio gira até 3h | empurra | pensando → surpreso |
-| 03 | uma coisa estranha acontece no seu bairro. | Você olha para a rua | — | grua revelando o bairro | neutro → desconfiado |
-| 04 | Um caminhão de *sorvete* aparece do nada, | Caminhão chega e para | Placa SORVETINHO, PLIM! | câmera baixa acompanha | — |
-| 05 | e ninguém sabe de onde ele vem. | Crianças coçam a cabeça | ??? | recua | confuso |
-| 06 | Todas as crianças compram o sabor *azul*. | Lia recebe a casquinha azul | Casquinha azul + brilho | órbita | feliz → encantada |
-| 07 | É o único que ele vende. | Sorveteiro olha de lado | Cardápio SABOR: AZUL, SÓ AZUL! | empurra | debochado → olhar de lado |
-| 08 | Mas naquela mesma noite, as crianças *desaparecem*. | Luzes apagam; crianças somem | Fumaça azul | desce e aproxima | sonolento |
-| 09 | No dia seguinte, elas voltam … *sem* lembrar de nada. | Crianças andam como zumbis | ??? | recua na frente delas | inexpressivo → sonolento |
-| 10 | Você nunca tomou aquele sorvete, e decidiu descobrir a *verdade*. | Você pega a lupa | Lupa, ! | empurra | nojo → desconfiado → confiante |
-| 11 | Na segunda seguinte, você se | Você anda até a porta aberta | — | travelling lateral | nervoso |
-| 12 | *escondeu* dentro do caminhão. | Você se agacha atrás das caixas | Caixas CASQUINHAS, freezers AZUL | empurra | apavorado |
-| 13 | Ele saiu da cidade, | Caminhão na estrada | — | aéreo acompanhando | — |
-| 14 | por uma estrada que não aparece em *nenhum* mapa. | Caminhão passa pela placa | Placa FIM DO MAPA, ?! | panorâmica | — |
-| 15 | Até chegar num portão *gigantesco*, | Portão abre | Portão SORVETINHO S.A. | contra-plongée | — |
-| 16 | com uma fábrica escondida no meio da floresta. | Fábrica com fumaça azul | Chaminés | grua alta | — |
-| 17 | Lá dentro estavam todas as *crianças*, | Crianças dormindo de capacete | Tubos com bolinhas de sonho | recua | chocado → apavorado |
-| 18 | e uma máquina roubando os *sonhos* delas. | Tanque enche | Medidor SONHOS no máximo | sobe | — |
-| 19 | Então o sorveteiro tirou o *chapéu*. | De costas, tira o chapéu | Chapéu na mão | empurra | — |
-| 20 | Era o *seu* pai, | Ele se vira | — | empurra | inseguro |
-| 21 | que tinha sumido há *dois* anos. | Você chora | Cartaz DESAPARECIDO + calendário 2 ANOS! | empurra | chocado + lágrimas |
-| 22 | E ele olhou direto pra *você*. | Encara a câmera | — | empurra até close | inexpressivo → sorriso sinistro |
-| 23 | Comenta *parte* dois se quer saber o resto. | Placa cai do alto | Placa PARTE 2? | recua | curioso → sorriso |
+| 01 | E se o asteroide que acabou com os dinossauros | Asteroide em chamas vai em direção à Terra | — | persegue o asteroide | — |
+| 02 | tivesse *errado* a Terra? | Passa raspando pela Terra | ERROU! | lateral, acompanha | — |
+| 03 | Há sessenta e seis *milhões* de anos, | Terra girando no pedestal | Contador 66.000.000 | órbita | — |
+| 04 | uma rocha de *dez* quilômetros passaria *raspando*. | Asteroide de perto; sai voando | Placa 10 KM, VUUSH! | empurra | — |
+| 05 | E os dinossauros continuariam *mandando* no planeta. | T-rex ruge; pescoçudo ao fundo | ROAR! | contra-plongée | — |
+| 06 | Os mamíferos … continuariam *pequenos*, escondidos no escuro. | Ratinho tremendo na toca; T-rex passa atrás | — | baixa, empurra | assustado |
+| 07 | Sem espaço para crescer, talvez os macacos *nunca* | Placa MACACOS | Carimbo NUNCA | empurra | — |
+| 08 | surgissem, e nem *você*. | Você some numa fumaça | — | empurra | sorriso → chocado |
+| 09 | Enquanto isso, … milhões de anos para *evoluir*. | Raptor olha o tempo passar | Calendário 1 MI → 60 MI DE ANOS! | empurra | — |
+| 10 | Um cientista chegou a imaginar um dinossauro *inteligente*, | Raptor se ergue e vira dinossauroide | Fumaça + brilho | empurra | debochado → confiante |
+| 11 | de cabeça grande, andando em duas pernas. | Dinossauroide anda para a câmera | — | travelling para trás | curioso → feliz |
+| 12 | Ele chamou essa criatura de *dinossauroide*. | Dinossauroide no pedestal do museu | Placa MUSEU, plaquinha DINOSSAUROIDE | empurra | neutro → sorriso |
+| 13 | Talvez hoje existissem cidades construídas por *répteis*. | Cidadãos dinossauroides andando; um acena | Fachada REPTILÂNDIA | empurra | feliz |
+| 14 | Mas tem um detalhe: … nunca sumiram de *verdade*. | Passarinho pousa no poste | — | empurra | pensando → maravilhado |
+| 15 | As *aves* são dinossauros. | Galinha no pedestal | Brilhos | empurra | — |
+| 16 | A galinha do seu almoço é parente do *T-rex*. | Galinha e T-rex lado a lado | Etiqueta PARENTES! | recua | — |
+| 17 | Comenta qual dinossauro você queria ver vivo *hoje*. | T-rex encara a câmera e ruge | Placa QUAL VOCÊ QUERIA? | empurra | — |

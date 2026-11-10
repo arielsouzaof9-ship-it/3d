@@ -1,16 +1,14 @@
 import { JSX } from 'react';
-import { clamp01, easeOut, seg, track } from './anim';
+import { easeOut, lerp3, seg, track, V3 } from './anim';
 import { Character, faceAt, Pose, REST } from './Character';
-import {
-  Bairro, Bau, CapInHand, Caixa, Cartaz, Clock, Cone, FabricaDentro, FabricaFora, Floresta, IceTruck, KIDS, MAQ_X, PAI, RoadSign, SORVETEIRO, VOCE_K,
-} from './historia';
-import { Calendar, Comic, Gauge, Magnifier, Puff, Sign, Sparkles } from './props';
-import { Cam, Stage } from './sets';
+import { Asteroide, Ave, CIDADAOS, DINO, DinoPose, DINOSSAUROIDE, Espaco, Jurassico, Pescocudo, pop, Poste, Ratinho, Terra, Toca, TRex } from './dinos';
+import { Bairro, VOCE_K } from './historia';
+import { Calendar, Comic, LedCounter, Puff, Sign, Sparkles, StampMark, Tag } from './props';
+import { Cam, Room, Stage, Street } from './sets';
 import { F, W } from './timeline';
 
 // ============================================================================
-// "O Sorveteiro da Segunda-Feira" — tomadas (ver STORYBOARD.md).
-// Tudo ancorado em palavras com W(linha, 'palavra').
+// "E se o asteroide tivesse errado?" — tomadas (ver STORYBOARD.md).
 // ============================================================================
 
 export type ShotProps = { t: number; t0: number; t1: number };
@@ -19,420 +17,311 @@ export type Shot = { from: number; name: string; C: (p: ShotProps) => JSX.Elemen
 export const SFX: { at: number; file: string; vol: number }[] = [];
 
 const P = (o: Partial<Pose> = {}): Pose => ({ ...REST, ...o });
-const RUA_Z = -3.2; // pista do caminhão no Bairro
+const D = (o: Partial<DinoPose> = {}): DinoPose => ({ ...DINO, ...o });
+const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 
-// Caminhão que chega e para em x1 na palavra `arr`.
-const truckX = (t: number, t0: number, arr: number, x0: number, x1: number) => x0 + (x1 - x0) * easeOut(clamp01((t - t0) / (arr - t0)));
+// ---------------- Linha 0: o asteroide passa raspando ----------------
+const TERRA: V3 = [0, 0, -32];
+const astro = (t: number): V3 => {
+  const te = W(0, 'errado');
+  return lerp3([-1, 1.2, 22], [8.5, 2.5, -30], t / te); // continua depois de te (extrapola)
+};
 
-// ---------------- Linha 0 ----------------
-// "Toda *segunda-feira*,"  — calendário pousa em SEGUNDA
+// "E se o asteroide que acabou com os dinossauros" — câmera persegue o asteroide
 const S01 = ({ t, t0, t1 }: ShotProps) => {
-  const seg2 = W(0, 'segunda');
-  const pose = track(t, P({ x: -0.45, ry: 0.35, hy: 0.35 }), [{ at: seg2, v: { rsz: 1.0, rsx: 0.5, rel: -0.4, hy: 0.6, hp: 0.05 } }]);
-  const face = faceAt(t, [{ at: t0, f: 'curious' }, { at: seg2, f: 'worried' }], 1);
+  const a = astro(t);
   return (
     <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.3, 1.3, 4.2], [0.15, 1.15, 0], 32], [t1, [0.1, 1.2, 3.6], [0.15, 1.15, 0], 32]]} />
-      <Character pose={pose} face={face} look={VOCE_K} />
-      <Calendar t={t} from={t0} at={seg2} pages={['SEXTA', 'SÁBADO', 'DOMINGO', 'SEGUNDA']} position={[0.75, 1.2, 0.1]} rotation={[0, -0.25, 0]} scale={0.75} />
+      <Espaco />
+      <Terra t={t} position={TERRA} />
+      <Asteroide t={t} position={a} rotation={[0, 0.17, 0]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t, add(a, [-2.0, 1.2, 7]), add(a, [0.5, -0.6, -10]), 34]]} />
     </>
   );
 };
 
-// "às *três* da tarde," — relógio gira até as 3
+// "tivesse *errado* a Terra?" — passa ao lado da Terra
 const S02 = ({ t, t0, t1 }: ShotProps) => {
-  const tres = W(0, 'tres');
-  const pose = track(t, P({ x: -0.5, ry: 0.5, hy: 0.4, hp: -0.15 }), [{ at: tres, v: { lsz: 0.9, rsz: 0.9, lel: 0.6, rel: 0.6, squash: 0.1 } }]);
-  const face = faceAt(t, [{ at: t0, f: 'thinking' }, { at: tres, f: 'surprised' }], 2);
+  const a = astro(t);
+  const e = W(0, 'errado');
   return (
     <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.6, 1.4, 3.8], [0.2, 1.4, 0], 32], [t1, [-0.2, 1.45, 3.4], [0.25, 1.45, 0], 32]]} />
-      <Character pose={pose} face={face} look={VOCE_K} />
-      <Clock t={t} from={t0} at={tres} hour={3} position={[0.75, 1.75, 0.1]} rotation={[0, -0.3, 0]} scale={0.85} />
-    </>
-  );
-};
-
-// "uma coisa estranha acontece no seu *bairro*." — grua revelando a rua
-const S03 = ({ t, t0, t1 }: ShotProps) => {
-  const est = W(0, 'estranha');
-  const pose = track(t, P({ x: 0, ry: -0.2, hy: -0.3 }), [{ at: est, v: { hy: 0.5, hp: -0.1, lean: -0.05 } }]);
-  const face = faceAt(t, [{ at: t0, f: 'neutral' }, { at: est, f: 'suspicious' }], 3);
-  return (
-    <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [1.5, 1.4, 4.0], [0, 1.1, -1], 32], [t1, [3.5, 4.8, 8.5], [0, 1.4, -4], 32]]} />
-      <Character pose={pose} face={face} look={VOCE_K} />
+      <Espaco />
+      <Terra t={t} position={TERRA} />
+      <Asteroide t={t} position={a} rotation={[0, 0.17, 0]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-12, 4, -12], [3, 1, -30], 34], [t1, [-11, 3.5, -14], [5, 1.5, -31], 34]]} />
+      <Comic t={t} at={e} text="ERROU!" position={add(astro(e), [0, 3, 0])} size={3} hold={1.2} />
     </>
   );
 };
 
 // ---------------- Linha 1 ----------------
-// "Um caminhão de *sorvete* aparece do nada," — caminhão chega e para
-const S04 = ({ t, t0, t1 }: ShotProps) => {
-  const arr = W(1, 'aparece');
-  const x = truckX(t, t0 - 0.4, arr, -16, 0.6);
+// "Há sessenta e seis *milhões* de anos," — contador 66.000.000
+const S03 = ({ t, t0, t1 }: ShotProps) => {
+  const m = W(1, 'milhoes');
   return (
     <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-3.5, 0.9, 5.5], [-3, 1.6, RUA_Z], 32], [arr, [-1.5, 0.8, 4.8], [0, 1.9, RUA_Z], 32], [t1, [-1.0, 0.8, 4.4], [0, 2.0, RUA_Z], 32]]} />
-      <IceTruck position={[x, 0, RUA_Z]} dist={x + 16} />
-      <Comic t={t} at={W(1, 'sorvete')} text="PLIM!" position={[x - 0.5, 4.8, RUA_Z + 0.5]} size={0.6} />
+      <Stage color="#1d2350" />
+      <Terra t={t} r={0.6} position={[0, 0.95, 0]} />
+      <LedCounter t={t} from={t0} at={m} value={66000000} position={[0, 2.35, 0]} scale={0.6} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 1.9, 4.6], [0, 1.6, 0], 32], [t1, [-0.3, 1.8, 4.0], [0, 1.65, 0], 32]]} />
     </>
   );
 };
 
-// "e *ninguém* sabe de onde ele vem."
-const S05 = ({ t, t0, t1 }: ShotProps) => {
-  const n = W(1, 'ninguem');
-  const kids = [0, 1].map((i) =>
-    track(t, P({ x: -0.9 + i * 1.8, ry: Math.PI + (i ? 0.3 : -0.3), hy: 0 }), [{ at: n, v: { hr: i ? 0.25 : -0.25, lsz: 0.7, rsz: 0.7, lel: 0.9, rel: 0.9 } }]),
-  );
-  const youPose = track(t, P({ x: 0, z: 0.4, ry: Math.PI }), [{ at: n, v: { hr: 0.2, rsx: 1.6, rel: -1.4 } }]);
+// "uma rocha de *dez* quilômetros passaria *raspando*." — placa 10 KM, depois sai voando
+const S04 = ({ t, t0, t1 }: ShotProps) => {
+  const d = W(1, 'dez');
+  const r = W(1, 'raspando');
+  const x = Math.max(0, t - (r - 0.1)) * 28;
   return (
     <>
-      <Bairro />
-      <IceTruck position={[0.6, 0, RUA_Z]} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.3, 2.2, 4.4], [0.2, 1.6, -1.5], 32], [t1, [-0.4, 2.0, 3.8], [0.2, 1.6, -1.5], 32]]} />
-      {kids.map((p, i) => (
-        <Character key={i} pose={p} face={faceAt(t, [{ at: t0, f: 'confused' }], 4 + i)} look={KIDS[i]} />
-      ))}
-      <Character pose={youPose} face={faceAt(t, [{ at: t0, f: 'confused' }], 6)} look={VOCE_K} />
-      <Comic t={t} at={n} text="???" position={[0.1, 2.3, 0.4]} size={0.45} hold={2} />
+      <Espaco />
+      <Asteroide t={t} position={[x, 0.2, 0]} rotation={[0, Math.PI / 2, 0]} scale={1.15} trail={t > r - 0.1 ? 1 : 0} />
+      <group scale={pop(t, d)} position={[0.15, -1.55, 0.6]}>
+        <Sign text="10 KM" w={1.5} h={0.55} bg="#c4161c" fg="#ffffff" />
+      </group>
+      <Comic t={t} at={r} text="VUUSH!" position={[0.3, 1.7, 0.6]} size={0.7} hold={1} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.4, 0.3, 6.2], [0.1, 0, 0], 32], [t1, [-0.2, 0.2, 5.4], [0.2, 0, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 2 ----------------
-// "Todas as crianças compram o sabor *azul*." — fila no caminhão, a casquinha azul aparece
-const S06 = ({ t, t0, t1 }: ShotProps) => {
-  const azul = W(2, 'azul');
-  const comp = W(2, 'compram');
-  const sv = track(t, P({ x: -0.5, y: 0.45, z: -3.2, ry: 0 }), [{ at: comp, v: { rsx: 1.3, rel: -0.3 } }]);
+// "E os dinossauros continuariam *mandando* no planeta." — T-rex ruge
+const S05 = ({ t, t0, t1 }: ShotProps) => {
+  const m = W(2, 'mandando');
+  const rex = track(t, D({ x: 0.6, z: -1, ry: -0.35, hp: 0.1 }), [{ at: m, v: { jaw: 0.75, hp: -0.45, lean: -0.15 } }]);
   return (
     <>
-      <Bairro />
-      <IceTruck position={[0, 0, RUA_Z]} />
-      <Character pose={sv} face={faceAt(t, [{ at: t0, f: 'smug' }], 7)} look={SORVETEIRO} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [2.6, 1.6, 4.0], [-0.4, 1.5, -1.6], 32], [t1, [1.8, 1.5, 3.2], [-0.5, 1.4, -1.6], 32]]} />
-      {[0, 1, 2].map((i) => {
-        const first = i === 0;
-        const pose = track(t, P({ x: -0.5 + i * 1.0, z: -1.4 + i * 0.9, ry: Math.PI - 0.2 - i * 0.2 }), first ? [{ at: azul, v: { ry: 0.3, rsx: 1.2, rel: -0.9, hp: 0.15 } }] : []);
-        const face = faceAt(t, [{ at: t0, f: 'happy' }, ...(first ? [{ at: azul, f: 'starstruck' as const, o: ['sparkle' as const] }] : [])], 8 + i);
-        return <Character key={i} pose={pose} face={face} look={KIDS[i]} right={first && t >= azul - 4 * F ? <Cone position={[0, -0.12, 0.02]} rotation={[-1.1, 0, 0]} /> : undefined} />;
-      })}
-      <Sparkles t={t} from={azul} n={6} radius={0.35} center={[-0.3, 1.0, -0.8]} size={0.12} />
-    </>
-  );
-};
-
-// "É o *único* que ele vende." — close no cardápio
-const S07 = ({ t, t0, t1 }: ShotProps) => {
-  const u = W(2, 'unico');
-  const sv = track(t, P({ x: -0.5, y: 0.45, z: -3.2, ry: 0.2, hp: 0.1 }), [{ at: u, v: { hy: 0.4 } }]);
-  return (
-    <>
-      <Bairro />
-      <IceTruck position={[0, 0, RUA_Z]} />
-      <Character pose={sv} face={faceAt(t, [{ at: t0, f: 'smug' }, { at: u, f: 'sideEye' }], 11)} look={SORVETEIRO} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-1.4, 1.5, 3.0], [-1.1, 1.6, RUA_Z + 1], 32], [u, [-1.1, 1.6, 2.2], [-1.0, 1.65, RUA_Z + 1], 32], [t1, [-0.9, 1.65, 2.0], [-0.9, 1.7, RUA_Z + 1], 32]]} />
-      <Comic t={t} at={u} text="SÓ AZUL!" position={[-0.75, 0.75, RUA_Z + 1.6]} size={0.36} hold={1.5} />
+      <Jurassico t={t} />
+      <Pescocudo t={t} position={[-6, 0, -10]} rotation={[0, 0.6, 0]} />
+      <TRex p={{ ...rex, tail: Math.sin(t * 2) * 0.15 }} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [3.2, 1.1, 7.5], [0, 2.6, -1.5], 34], [t1, [2.2, 0.9, 6.2], [0, 2.8, -1.5], 34]]} />
+      <Comic t={t} at={m} text="ROAR!" position={[-0.6, 4.4, 0.6]} size={0.9} hold={1.2} />
     </>
   );
 };
 
 // ---------------- Linha 3 ----------------
-// "Mas naquela mesma noite, as crianças *desaparecem*." — luzes apagam, crianças somem
-const S08 = ({ t, t0, t1 }: ShotProps) => {
-  const d = W(3, 'desaparecem');
-  const a = W(3, 'naquela');
-  const lights = Array.from({ length: 7 }, (_, i) => (t < a + i * ((d - a) / 7) ? 1 : 0));
+// "Os mamíferos, … continuariam *pequenos*, escondidos no escuro." — ratinho na toca, T-rex passa atrás
+const S06 = ({ t, t0, t1 }: ShotProps) => {
+  const p = W(3, 'pequenos');
+  const wx = -7 + (t - t0) * 1.6;
   return (
     <>
-      <Bairro night lights={lights} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0, 3.2, 9.5], [0, 1.6, -3], 32], [t1, [0, 1.6, 4.4], [0, 1.0, 0], 32]]} />
-      {[0, 1, 2].map((i) =>
-        t < d ? (
-          <Character
-            key={i}
-            pose={P({ x: -1.4 + i * 1.4, ry: 0, hy: (i - 1) * 0.2 })}
-            face={faceAt(t, [{ at: t0, f: 'sleepy' }], 12 + i)}
-            look={KIDS[i]}
-            right={<Cone position={[0, -0.12, 0.02]} rotation={[-1.1, 0, 0]} />}
-          />
-        ) : null,
-      )}
-      {[0, 1, 2].map((i) => (
-        <Puff key={i} t={t} at={d} position={[-1.4 + i * 1.4, 0.8, 0]} color="#5ab4ff" size={0.7} n={8} />
-      ))}
+      <Jurassico t={t} night />
+      <Toca position={[0, 0, 0]} />
+      <Ratinho t={t} tremble={t > p - 0.1 ? 1 : 0} position={[0.05, 0, 0.95]} scale={1.5} look={t > p ? [-0.6, 0.3] : [0, 0]} />
+      <TRex p={D({ x: wx, z: -4.5, ry: Math.PI / 2, walk: (t - t0) * 1.6 / 0.9, stride: 1 })} />
+      <Puff t={t} at={p} position={[wx + 0.4, 0.1, -4.2]} color="#6a5a4a" size={0.5} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [1.4, 1.1, 5.6], [0, 0.9, -1.5], 32], [t1, [0.8, 0.9, 4.8], [0, 0.9, -1.5], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 4 ----------------
-// "No dia seguinte, elas voltam como se nada tivesse acontecido, *sem* lembrar de nada."
-const S09 = ({ t, t0, t1 }: ShotProps) => {
-  const s = W(4, 'sem');
+// "Sem espaço para crescer, talvez os macacos *nunca* surgissem," — carimbo NUNCA
+const S07 = ({ t, t0, t1 }: ShotProps) => {
+  const n = W(4, 'nunca');
   return (
     <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 1.3, 2.6], [0, 1.0, -2], 32], [t1, [0.3, 1.2, 4.6], [0, 1.0, 0], 32]]} />
-      {[0, 1, 2].map((i) => {
-        const d = (t - t0) * 0.55;
-        const z = -3 + d - i * 1.1;
-        const pose = P({ x: -0.9 + i * 0.9, z, ry: 0, walk: d / 0.24 + i * 0.5, stride: 1, lsz: 0.05, rsz: 0.05, hp: 0.12 });
-        return <Character key={i} pose={pose} face={faceAt(t, [{ at: t0, f: 'deadpan' }, { at: s, f: 'sleepy' }], 15 + i)} look={KIDS[i]} />;
-      })}
-      <Comic t={t} at={s} text="???" position={[0, 2.0, -0.5]} size={0.45} hold={1.5} />
+      <Stage color="#4a3a5a" />
+      <Sign text="MACACOS" w={1.6} h={0.6} position={[0, 1.4, 0]} bg="#6b4a2e" fg="#f3cf6b" />
+      <group position={[0.25, 1.35, 0.06]} rotation={[0, 0, -0.18]} scale={pop(t, n) * 1.2}>
+        <StampMark text="NUNCA" w={1.1} rotation={[0, 0, 0]} />
+      </group>
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.2, 1.6, 4.4], [0, 1.35, 0], 32], [t1, [0.05, 1.5, 3.8], [0, 1.35, 0], 32]]} />
+    </>
+  );
+};
+
+// "e nem *você*." — você some numa fumaça
+const S08 = ({ t, t0, t1 }: ShotProps) => {
+  const v = W(4, 'voce');
+  const pose = track(t, P({ y: 0.3 }), [{ at: v, v: { lsz: 0.9, rsz: 0.9, lel: 0.5, rel: 0.5 }, lead: 6 }]);
+  return (
+    <>
+      <Stage color="#4a3a5a" />
+      {t < v && <Character pose={pose} face={faceAt(t, [{ at: t0, f: 'smile' }, { at: v - 0.25, f: 'shocked' }], 50)} look={VOCE_K} />}
+      <Puff t={t} at={v} position={[0, 1.1, 0]} color="#e8d6f8" size={0.6} n={8} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.3, 1.4, 3.6], [0, 1.15, 0], 32], [t1, [0, 1.35, 3.2], [0, 1.15, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 5 ----------------
-// "Você nunca tomou aquele sorvete, e decidiu descobrir a *verdade*." — lupa na mão
-const S10 = ({ t, t0, t1 }: ShotProps) => {
-  const nunca = W(5, 'nunca');
-  const dec = W(5, 'decidiu');
-  const v = W(5, 'verdade');
-  const pose = track(t, P({ ry: 0.1 }), [
-    { at: nunca, v: { lsz: 0.6, lel: 0.2, hr: 0.15, hy: -0.2 } },
-    { at: dec, v: { rsx: 1.5, rel: -1.2, rsz: 0.3, hy: 0.15, hr: 0 } },
-    { at: v, v: { rsx: 1.7, rel: -0.6, lean: 0.12, hp: 0.05 } },
-  ]);
-  const face = faceAt(t, [{ at: t0, f: 'smug' }, { at: nunca, f: 'disgusted' }, { at: dec, f: 'suspicious' }, { at: v, f: 'confident' }], 18);
+// "Enquanto isso, os dinossauros teriam milhões de anos para *evoluir*." — calendário de milhões de anos
+const RAPTOR = { color: '#c98a3a', belly: '#f2dcae', s: 0.5, arms: 0.55, eyes: 0.19 };
+const S09 = ({ t, t0, t1 }: ShotProps) => {
+  const e = W(5, 'evoluir');
+  const rp = track(t, D({ x: -0.55, ry: 0.5, hy: 0.3 }), [{ at: e, v: { hy: -0.2, hp: -0.2, jaw: 0.3 } }]);
   return (
     <>
-      <Bairro />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.8, 1.3, 3.6], [0, 1.15, 0], 32], [v, [0.2, 1.2, 2.9], [0.05, 1.15, 0], 32], [t1, [0.1, 1.2, 2.7], [0.05, 1.15, 0], 32]]} />
-      <Character pose={pose} face={face} look={VOCE_K} right={t >= dec - 6 * F ? <Magnifier /> : undefined} />
-      <Comic t={t} at={v} text="!" position={[0.55, 1.95, 0.2]} size={0.35} />
+      <Jurassico t={t} />
+      <TRex p={rp} {...RAPTOR} />
+      <Calendar t={t} from={t0} at={e} pages={['1 MI', '10 MI', '30 MI', '60 MI\nDE ANOS!']} position={[0.6, 1.3, 0.3]} rotation={[0, -0.3, 0]} scale={0.7} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 1.5, 4.8], [0.2, 1.2, 0], 32], [t1, [0.1, 1.4, 4.2], [0.2, 1.2, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 6 ----------------
-// "Na segunda seguinte, você se" — anda até a porta de trás aberta
-const S11 = ({ t, t0, t1 }: ShotProps) => {
-  const d = Math.min(3.0, (t - t0) * 1.8);
-  const pose = P({ x: -6 + d, z: -0.3, ry: Math.PI / 2 + 0.3, walk: d / 0.24, stride: d < 3 ? 1 : 0, squash: 0.15, lean: 0.15 });
+// "Um cientista chegou a imaginar um dinossauro *inteligente*," — o raptor vira dinossauroide
+const S10 = ({ t, t0, t1 }: ShotProps) => {
+  const i = W(6, 'inteligente');
+  const rp = D({ x: 0, ry: 0.2, lean: -0.5 * seg(t, t0, i - 0.15), hp: 0.4 * seg(t, t0, i - 0.15) });
+  const pose = track(t, P({ ry: 0.1 }), [{ at: i + 0.3, v: { rsz: 1.1, rsx: 0.8, rel: -0.9, hr: 0.15 } }]);
   return (
     <>
-      <Bairro />
-      <IceTruck position={[0, 0, RUA_Z]} door={1} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-7.5, 1.4, 2.6], [-5.0, 1.0, -1.6], 34], [t1, [-6.0, 1.5, 2.4], [-3.4, 1.3, -2.0], 34]]} />
-      <Character pose={pose} face={faceAt(t, [{ at: t0, f: 'nervous', o: ['sweat'] }], 20)} look={VOCE_K} />
+      <Jurassico t={t} />
+      {t < i ? <TRex p={rp} {...RAPTOR} /> : <Character pose={pose} face={faceAt(t, [{ at: i, f: 'smug' }, { at: i + 0.6, f: 'confident' }], 51)} look={DINOSSAUROIDE} />}
+      <Puff t={t} at={i} position={[0, 1.1, 0.3]} color="#fff2c8" size={0.9} n={9} />
+      <Sparkles t={t} from={i} n={7} radius={0.9} center={[0, 1.4, 0.2]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.8, 1.5, 4.8], [0, 1.2, 0], 32], [t1, [0.2, 1.6, 3.9], [0, 1.4, 0], 32]]} />
     </>
   );
 };
 
-// "*escondeu* dentro do caminhão." — dentro do baú, atrás da caixa
-const S12 = ({ t, t0, t1 }: ShotProps) => {
-  const e = W(6, 'escondeu');
-  const pose = track(t, P({ x: 0.2, z: 0.2, ry: 0.2, squash: 0.2 }), [{ at: e, v: { squash: 0.55, lsx: 1.4, rsx: 1.4, lel: -1.6, rel: -1.6, hp: 0.15 }, lead: 2 }]);
+// "de cabeça grande, andando em duas pernas." — anda para a câmera
+const S11 = ({ t, t0 }: ShotProps) => {
+  const d = (t - t0) * 0.9;
+  const z = -2 + d;
+  const face = faceAt(t, [{ at: t0, f: 'curious' }, { at: W(6, 'andando'), f: 'happy' }], 52);
   return (
     <>
-      <Bau />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.9, 1.4, 3.6], [0.1, 0.8, 0], 32], [t1, [0.6, 1.2, 3.0], [0.1, 0.75, 0], 32]]} />
-      <Character pose={pose} face={faceAt(t, [{ at: t0, f: 'nervous' }, { at: e, f: 'scared', o: ['sweat3'] }], 21)} look={VOCE_K} />
-      <Caixa position={[-0.3, 0, 1.0]} size={0.7} />
-      <Caixa position={[0.75, 0, 0.9]} size={0.55} rotation={[0, -0.3, 0]} />
+      <Jurassico t={t} />
+      <Character pose={P({ z, walk: d / 0.24, stride: 1, ry: 0 })} face={face} look={DINOSSAUROIDE} />
+      <Cam t={t} t0={t0} t1={t0 + 99} keys={[[t, [0.9, 1.6, z + 3.6], [0, 1.25, z], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 7 ----------------
-// "Ele saiu da cidade," — estrada na floresta, vista do alto
-const S13 = ({ t, t0, t1 }: ShotProps) => {
-  const x = (t - t0) * 7;
+// "Ele chamou essa criatura de *dinossauroide*." — museu com a plaquinha
+const S12 = ({ t, t0, t1 }: ShotProps) => {
+  const d = W(7, 'dinossauroide');
+  const pose = track(t, P({ y: 0.6, ry: 0.15, lsz: 0.2, rsz: 0.2 }), [{ at: d, v: { rsz: 1.2, rsx: 0.5, rel: -0.6, hy: 0.2 } }]);
   return (
     <>
-      <Floresta />
-      <IceTruck position={[x, 0, -0.9]} dist={x} menu={false} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t, [x - 6, 7.5, 9], [x + 1, 1, 0], 34]]} />
-    </>
-  );
-};
-
-// "por uma estrada que não aparece em *nenhum* mapa." — passa pela placa FIM DO MAPA
-const S14 = ({ t, t0, t1 }: ShotProps) => {
-  const n = W(7, 'nenhum');
-  const x = 30 + (t - n) * 7;
-  return (
-    <>
-      <Floresta />
-      <IceTruck position={[x, 0, -0.9]} dist={x} menu={false} />
-      <RoadSign text={'FIM DO\nMAPA'} bg="#c4161c" fg="#ffffff" position={[31.5, 0, 2.6]} rotation={[0, -0.35, 0]} w={1.6} h={1.1} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [33.8, 1.6, 7.6], [31.0, 1.9, 1.5], 32], [t1, [33.2, 1.7, 6.4], [31.0, 2.0, 1.5], 32]]} />
-      <Comic t={t} at={n} text="?!" position={[31.5, 3.6, 2.6]} size={0.35} hold={1.5} />
+      <Room placa="MUSEU" parede="#2f4a5a" balcao={false} />
+      <mesh position={[0, 0.3, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.6, 0.6, 1.2]} />
+        <meshStandardMaterial color="#e9e2d0" />
+      </mesh>
+      <Character pose={pose} face={faceAt(t, [{ at: t0, f: 'neutral' }, { at: d, f: 'bigSmile' }], 53)} look={DINOSSAUROIDE} />
+      <group position={[0, 0.32, 0.64]} scale={pop(t, d)}>
+        <Sign text="DINOSSAUROIDE" w={1.5} h={0.3} bg="#c9a14a" fg="#2a1a0a" />
+      </group>
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 1.3, 3.9], [0, 1.1, 0], 32], [t1, [0.2, 1.25, 3.4], [0, 1.1, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 8 ----------------
-// "Até chegar num portão *gigantesco*," — portão abre
-const S15 = ({ t, t0, t1 }: ShotProps) => {
-  const g = W(8, 'gigantesco');
-  const z = 10 - 6 * easeOut(clamp01((t - t0) / (g - t0)));
-  const open = seg(t, g - 0.2, g + 1.2);
+// "Talvez hoje existissem cidades construídas por *répteis*." — cidade de dinossauroides
+const S13 = ({ t, t0, t1 }: ShotProps) => {
+  const r = W(8, 'repteis');
+  const walkers = [
+    { x0: -2.0, z: 0.4, dir: 1, sp: 0.5 },
+    { x0: 2.0, z: 1.3, dir: -1, sp: 0.5 },
+  ];
+  const waver = track(t, P({ x: 0.2, z: -0.6, ry: 0 }), [{ at: r, v: { rsz: 2.4, rel: 0.3, hr: 0.15 } }]);
   return (
     <>
-      <FabricaFora t={t} open={open} />
-      <group rotation={[0, -Math.PI / 2, 0]} position={[0, 0, z]}>
-        <IceTruck dist={-z} menu={false} />
-      </group>
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [3.5, 0.8, 16], [0, 4, 0], 34], [t1, [2.5, 0.6, 14], [0, 5.5, -4], 34]]} />
-    </>
-  );
-};
-
-// "com uma *fábrica* escondida no meio da floresta." — grua sobre o portão
-const S16 = ({ t, t0, t1 }: ShotProps) => {
-  const z = 4 - (t - t0) * 2.6;
-  return (
-    <>
-      <FabricaFora t={t} open={1} />
-      <group rotation={[0, -Math.PI / 2, 0]} position={[0, 0, z]}>
-        <IceTruck dist={-z} menu={false} />
-      </group>
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [6, 4, 14], [0, 5, -12], 34], [t1, [3, 12, 10], [0, 7, -20], 34]]} />
+      <Street placa="REPTILÂNDIA" parede="#cfe3c2" porta="#3a5a32" />
+      {walkers.map((w, i) => {
+        const d = (t - t0) * w.sp;
+        return <Character key={i} pose={P({ x: w.x0 + w.dir * d, z: w.z, ry: (w.dir * Math.PI) / 2, walk: d / 0.24, stride: 1 })} face={faceAt(t, [{ at: t0, f: 'smile' }], 60 + i)} look={CIDADAOS[i]} />;
+      })}
+      <Character pose={waver} face={faceAt(t, [{ at: t0, f: 'happy' }, { at: r, f: 'bigSmile' }], 62)} look={CIDADAOS[2]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.4, 2.4, 8.0], [0, 2.0, -1], 32], [t1, [0.1, 1.8, 6.2], [0, 1.5, -0.5], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 9 ----------------
-// "Lá dentro estavam todas as *crianças*," — crianças dormindo nas plataformas
-const S17 = ({ t, t0, t1 }: ShotProps) => {
-  const you = track(t, P({ x: 4.2, z: 1.6, ry: -0.9, lean: 0.1 }), [{ at: W(9, 'criancas'), v: { lsx: 1.4, rsx: 1.4, lel: -1.8, rel: -1.8, squash: 0.2 } }]);
+// "Mas tem um detalhe: os dinossauros nunca sumiram de *verdade*." — passarinho pousa
+const S14 = ({ t, t0, t1 }: ShotProps) => {
+  const v = W(9, 'verdade');
+  const by = 1.6 + 2.6 * (1 - seg(t, v - 0.6, v - 2 * F, easeOut));
+  const bx = 0.75 + 1.4 * (1 - seg(t, v - 0.6, v - 2 * F, easeOut));
+  const you = track(t, P({ x: -0.2, z: 0.3, ry: 0.35, hy: 0.2 }), [{ at: W(9, 'detalhe'), v: { rsx: 1.4, rel: -1.4, hr: 0.15 } }, { at: v, v: { hy: 0.65, hp: -0.25, rsx: 0.2, rel: 0.15 } }]);
   return (
     <>
-      <FabricaDentro t={t} level={0.3 + 0.1 * clamp01((t - t0) / 3)} />
-      {MAQ_X.map((x, i) => (
-        <Character key={x} pose={P({ x, y: 0.55, hp: 0.15, lsz: 0.02, rsz: 0.02 })} face={faceAt(t, [{ at: t0, f: 'sleepy' }], 30 + i)} look={KIDS[i]} />
-      ))}
-      <Character pose={you} face={faceAt(t, [{ at: t0, f: 'shocked' }, { at: W(9, 'criancas'), f: 'terrified', o: ['sweat'] }], 22)} look={VOCE_K} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [6.0, 2.0, 6.5], [0.5, 1.6, -0.8], 34], [t1, [5.0, 1.8, 5.2], [0.8, 1.6, -0.5], 34]]} />
-    </>
-  );
-};
-
-// "e uma máquina roubando os *sonhos* delas." — tanque enchendo + medidor SONHOS
-const S18 = ({ t, t0, t1 }: ShotProps) => {
-  const s = W(9, 'sonhos');
-  return (
-    <>
-      <FabricaDentro t={t} level={0.4 + 0.45 * seg(t, t0, s)} />
-      {MAQ_X.map((x, i) => (
-        <Character key={x} pose={P({ x, y: 0.55, hp: 0.15 })} face={faceAt(t, [{ at: t0, f: 'sleepy' }], 34 + i)} look={KIDS[i]} />
-      ))}
-      <Gauge t={t} from={t0} at={s} value={0.95} label="SONHOS" position={[1.9, 3.2, -2.2]} scale={0.9} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 4.6, 4.6], [0.8, 3.6, -2.5], 32], [t1, [1.3, 4.5, 3.6], [1.3, 3.7, -2.5], 32]]} />
+      <Bairro />
+      <Poste position={[0.75, 0, 0]} />
+      <Ave body="#4a90d9" comb={false} position={[bx, by, 0]} rotation={[0, -0.6, 0]} scale={0.5} />
+      <Character pose={you} face={faceAt(t, [{ at: t0, f: 'thinking' }, { at: v, f: 'amazed' }], 63)} look={VOCE_K} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.5, 1.3, 4.0], [0.25, 1.15, 0], 32], [t1, [0.2, 1.3, 3.5], [0.25, 1.2, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 10 ----------------
-// "Então o sorveteiro tirou o *chapéu*." — de costas, tira o chapéu
-const S19 = ({ t, t0, t1 }: ShotProps) => {
-  const c = W(10, 'chapeu');
-  const tirou = t >= c - 2 * F;
-  const sv = track(t, P({ x: 0, z: 2.4, ry: Math.PI }), [
-    { at: W(10, 'tirou'), v: { rsx: 2.4, rel: -1.2, rsz: 0.3 }, dur: 6 },
-    { at: c, v: { rsx: 1.0, rel: -0.3, rsz: 0.6 }, lead: 0, dur: 6 },
-  ]);
-  const you = P({ x: 1.0, z: 4.3, ry: Math.PI - 0.3, hy: 0.2 });
+// "As *aves* são dinossauros." — galinha no pedestal
+const S15 = ({ t, t0, t1 }: ShotProps) => {
+  const a = W(10, 'aves');
   return (
     <>
-      <FabricaDentro t={t} level={0.85} />
-      <Character pose={sv} face={faceAt(t, [{ at: t0, f: 'neutral' }], 40)} look={tirou ? PAI : SORVETEIRO} right={tirou ? <CapInHand /> : undefined} />
-      <Character pose={you} face={faceAt(t, [{ at: t0, f: 'scared' }], 41)} look={VOCE_K} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.6, 1.9, 8.4], [0.3, 1.5, 3.0], 32], [t1, [-0.4, 1.9, 7.6], [0.3, 1.6, 3.0], 32]]} />
+      <Stage color="#3a6a4a" />
+      <Ave position={[0, 0.3, 0]} rotation={[0, 0.35, 0]} scale={1.5} peck={Math.max(0, Math.sin((t - t0) * 6)) * 0.3 * (t > a ? 1 : 0)} />
+      <Sparkles t={t} from={a} n={8} radius={1.0} center={[0, 1.4, 0]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.6, 1.5, 4.2], [0, 1.15, 0], 32], [t1, [0.1, 1.4, 3.6], [0, 1.15, 0], 32]]} />
+    </>
+  );
+};
+
+// "A galinha do seu almoço é parente do *T-rex*." — galinha + T-rex, etiqueta PARENTES
+const S16 = ({ t, t0, t1 }: ShotProps) => {
+  const r = W(10, 'trex');
+  const rex = track(t, D({ x: 1.1, z: -1.0, ry: -0.5, hy: 0 }), [{ at: r, v: { hy: -0.4, hp: 0.25, jaw: 0.3 } }]);
+  return (
+    <>
+      <Stage color="#3a6a4a" pedestal={false} />
+      <Ave position={[-1.25, 0, 0.8]} rotation={[0, 0.5, 0]} scale={1.3} />
+      <TRex p={rex} s={0.75} />
+      <group position={[-0.2, 2.7, 0.6]} scale={pop(t, r) * 1.4}>
+        <Tag text="PARENTES!" />
+      </group>
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.2, 2.0, 8.6], [0, 1.5, 0], 32], [t1, [-0.2, 1.9, 7.6], [0, 1.6, 0], 32]]} />
     </>
   );
 };
 
 // ---------------- Linha 11 ----------------
-// "Era o *seu* pai," — ele se vira: é o pai
-const S20 = ({ t, t0, t1 }: ShotProps) => {
-  const s = W(11, 'seu');
-  const pai = track(t, P({ x: 0, z: 2.4, ry: Math.PI, rsx: 1.0, rel: -0.3, rsz: 0.6 }), [{ at: s, v: { ry: 0.15, hp: 0.05 }, dur: 8 }]);
+// "Comenta qual dinossauro você queria ver vivo *hoje*." — T-rex encara, placa cai
+const S17 = ({ t, t0, t1 }: ShotProps) => {
+  const h = W(11, 'hoje');
+  const rex = track(t, D({ x: 0, z: 0, ry: 0.5, hy: 0.4 }), [{ at: W(11, 'dinossauro'), v: { ry: 0, hy: 0, hp: 0.1 } }, { at: h, v: { jaw: 0.6, hp: -0.25 } }]);
+  const y = 4.7 + 4 * (1 - seg(t, h - 6 * F, h, (x) => x * x * x));
   return (
     <>
-      <FabricaDentro t={t} level={0.85} />
-      <Character pose={pai} face={faceAt(t, [{ at: t0, f: 'neutral' }, { at: s, f: 'unsure', o: ['shading'] }], 42)} look={PAI} right={<CapInHand />} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.3, 1.8, 6.0], [0, 1.65, 2.4], 32], [t1, [0.2, 1.75, 5.2], [0, 1.65, 2.4], 32]]} />
-    </>
-  );
-};
-
-// "que tinha sumido há *dois* anos." — você chorando + cartaz + calendário 2 ANOS
-const S21 = ({ t, t0, t1 }: ShotProps) => {
-  const d = W(11, 'dois');
-  const you = track(t, P({ x: -0.45, ry: 0.25 }), [{ at: d, v: { lsx: 1.5, rsx: 1.5, lel: -1.9, rel: -1.9, hp: 0.1 } }]);
-  return (
-    <>
-      <FabricaDentro t={t} level={0.85} />
-      <Character pose={you} face={faceAt(t, [{ at: t0, f: 'shocked' }, { at: d, f: 'shocked', o: ['tears'] }], 43)} look={VOCE_K} />
-      <Cartaz position={[0.95, 1.6, -0.6]} rotation={[0, -0.2, 0]} scale={0.7} />
-      <Calendar t={t} from={t0} at={d} pages={['1 MÊS', '6 MESES', '1 ANO', '2 ANOS!']} position={[0.85, 0.7, -0.1]} rotation={[0, -0.25, 0]} scale={0.55} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.2, 1.3, 3.8], [0.2, 1.15, 0], 32], [t1, [0.1, 1.25, 3.3], [0.2, 1.15, 0], 32]]} />
-    </>
-  );
-};
-
-// ---------------- Linha 12 ----------------
-// "E ele olhou direto pra *você*." — encara a câmera
-const S22 = ({ t, t0, t1 }: ShotProps) => {
-  const v = W(12, 'voce');
-  const pai = track(t, P({ x: 0, z: 0, ry: 0.5, hy: 0.4 }), [{ at: W(12, 'olhou'), v: { ry: 0, hy: 0, hp: 0.08 } }]);
-  return (
-    <>
-      <FabricaDentro t={t} level={0.9} />
-      <Character pose={pai} face={faceAt(t, [{ at: t0, f: 'neutral' }, { at: W(12, 'olhou'), f: 'deadpan', o: ['shading'] }, { at: v, f: 'smug', o: ['shading'] }], 44)} look={PAI} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.2, 1.65, 4.0], [0, 1.6, 0], 32], [v, [0.05, 1.62, 2.9], [0, 1.6, 0], 30], [t1, [0, 1.62, 2.6], [0, 1.6, 0], 30]]} />
-    </>
-  );
-};
-
-// "Comenta *parte* dois se quer saber o resto." — placa PARTE 2?
-const S23 = ({ t, t0, t1 }: ShotProps) => {
-  const p = W(12, 'parte');
-  const y = 2.4 + 3 * (1 - seg(t, p - 6 * F, p, (x) => x * x * x));
-  const you = track(t, P({ x: -0.55, ry: 0.35, hy: 0.3 }), [{ at: p, v: { rsz: 1.2, rsx: 0.6, rel: -0.3, hy: 0.55 } }]);
-  return (
-    <>
-      <Stage color="#5a2440" />
-      <Character pose={you} face={faceAt(t, [{ at: t0, f: 'curious' }, { at: p, f: 'bigSmile' }], 45)} look={VOCE_K} />
-      <Sign text="PARTE 2?" w={1.6} h={0.65} position={[0.15, y, -0.2]} bg="#ffd23a" fg="#3a1424" />
-      <Sparkles t={t} from={p} n={8} radius={1.0} center={[0.35, 2.4, -0.2]} />
-      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.3, 1.6, 4.4], [0.0, 1.5, 0], 32], [t1, [0.1, 1.55, 3.9], [0.0, 1.5, 0], 32]]} />
+      <Jurassico t={t} />
+      <TRex p={{ ...rex, tail: Math.sin(t * 2) * 0.12 }} />
+      <Sign text={'QUAL VOCÊ\nQUERIA?'} w={2.4} h={1.1} position={[0, y, 1.2]} bg="#ffd23a" fg="#3a1424" />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.8, 3.0, 9.5], [0, 3.1, 0.8], 32], [t1, [0.3, 3.0, 8.4], [0, 3.2, 0.8], 32]]} />
     </>
   );
 };
 
 export const SHOTS: Shot[] = [
-  { from: 0, name: '01 segunda', C: S01 },
-  { from: W(0, 'as'), name: '02 tres', C: S02 },
-  { from: W(0, 'uma'), name: '03 bairro', C: S03 },
-  { from: W(1, 0), name: '04 caminhao', C: S04 },
-  { from: W(1, 'ninguem'), name: '05 ninguem', C: S05 },
-  { from: W(2, 0), name: '06 azul', C: S06 },
-  { from: W(2, 'e'), name: '07 unico', C: S07 },
-  { from: W(3, 0), name: '08 noite', C: S08 },
-  { from: W(4, 0), name: '09 voltam', C: S09 },
-  { from: W(5, 0), name: '10 verdade', C: S10 },
-  { from: W(6, 0), name: '11 porta', C: S11 },
-  { from: W(6, 'escondeu'), name: '12 bau', C: S12 },
-  { from: W(7, 0), name: '13 estrada', C: S13 },
-  { from: W(7, 'por'), name: '14 mapa', C: S14 },
-  { from: W(8, 0), name: '15 portao', C: S15 },
-  { from: W(8, 'com'), name: '16 fabrica', C: S16 },
-  { from: W(9, 0), name: '17 criancas', C: S17 },
-  { from: W(9, 'uma'), name: '18 sonhos', C: S18 },
-  { from: W(10, 0), name: '19 chapeu', C: S19 },
-  { from: W(11, 0), name: '20 pai', C: S20 },
-  { from: W(11, 'que'), name: '21 dois anos', C: S21 },
-  { from: W(12, 0), name: '22 olhou', C: S22 },
-  { from: W(12, 'comenta'), name: '23 parte 2', C: S23 },
+  { from: 0, name: '01 asteroide', C: S01 },
+  { from: W(0, 'tivesse'), name: '02 errou', C: S02 },
+  { from: W(1, 0), name: '03 milhoes', C: S03 },
+  { from: W(1, 'uma'), name: '04 dez km', C: S04 },
+  { from: W(2, 0), name: '05 trex', C: S05 },
+  { from: W(3, 0), name: '06 ratinho', C: S06 },
+  { from: W(4, 0), name: '07 macacos', C: S07 },
+  { from: W(4, 'surgissem'), name: '08 voce', C: S08 },
+  { from: W(5, 0), name: '09 evoluir', C: S09 },
+  { from: W(6, 0), name: '10 inteligente', C: S10 },
+  { from: W(6, 'de'), name: '11 andando', C: S11 },
+  { from: W(7, 0), name: '12 museu', C: S12 },
+  { from: W(8, 0), name: '13 cidade', C: S13 },
+  { from: W(9, 0), name: '14 passarinho', C: S14 },
+  { from: W(10, 0), name: '15 aves', C: S15 },
+  { from: W(10, 4), name: '16 parentes', C: S16 },
+  { from: W(11, 0), name: '17 hoje', C: S17 },
 ];
+
