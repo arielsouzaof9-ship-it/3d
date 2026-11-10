@@ -3,3 +3,4 @@ out/
 .env
 
 .estudio-iniciado
+node_modules
