@@ -1,0 +1,650 @@
+<title>E se o Sol explodisse?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: full-bleed 3D stage, thin broadcast HUD on top, captions + transport bar at the bottom. Single dark look (deep space). */
+:root {
+  --void: #05060a;
+  --ink: #f2ede4;
+  --dim: #9c968b;
+  --flare: #ffb347;
+  --plasma: #ff5a1f;
+  --line: rgba(242, 237, 228, .2);
+  --display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--void); color: var(--ink); font-family: var(--body); overflow: hidden; }
+[hidden] { display: none !important; }
+#stage { position: fixed; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+
+.overlay { position: fixed; inset: 0; pointer-events: none; }
+#flash { background: #fff8ec; opacity: 0; }
+#black { background: #000; opacity: 0; }
+#rewind { opacity: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 5px); }
+#rewind span { position: absolute; top: max(80px, calc(env(safe-area-inset-top, 0px) + 64px)); right: max(24px, env(safe-area-inset-right, 0px)); font: 600 clamp(18px, 3vw, 28px)/1 var(--mono); letter-spacing: .08em; color: var(--ink); }
+
+.hud { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 18px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); pointer-events: none; }
+.chapter { display: flex; gap: 10px; align-items: baseline; font: 500 12px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.chapter b { color: var(--flare); font-weight: 600; }
+.counter, .era { text-align: right; transition: opacity .4s; }
+.counter .k, .era .k { display: block; font: 500 11px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.counter .v { display: block; font: 600 clamp(34px, 6vw, 58px)/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); }
+.counter.zero .v { color: var(--plasma); }
+.era .v { display: block; font: 700 clamp(22px, 3.6vw, 36px)/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.era .p { display: inline-block; margin-top: 8px; padding: 3px 8px; border: 1px solid var(--line); font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--flare); }
+
+.label { position: fixed; left: 0; top: 0; transform: translate(-50%, -100%); font: 500 11px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; pointer-events: none; opacity: 0; padding-bottom: 10px; }
+.label::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 1px; height: 8px; background: var(--ink); opacity: .6; }
+.label.flat::after { display: none; }
+
+.card { position: fixed; left: 0; right: 0; display: grid; justify-items: center; text-align: center; gap: 14px; pointer-events: none;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+#titlecard { top: 50%; transform: translateY(-60%); }
+#titlecard .eyebrow { margin: 0; font: 500 12px/1.3 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--flare); }
+#titlecard h1 { margin: 0; font: 900 clamp(34px, 8vw, 92px)/.98 var(--display); letter-spacing: -.02em; text-wrap: balance; max-width: 14ch; text-shadow: 0 2px 40px rgba(0,0,0,.6); }
+#endcard { top: 11%; opacity: 0; }
+#endcard .big { font: 900 clamp(30px, 7vw, 78px)/1 var(--display); letter-spacing: -.02em; text-wrap: balance; text-shadow: 0 2px 30px rgba(0,0,0,.7); }
+#endcard .small { font: 500 12px/1.3 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--flare); }
+
+#caption { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+  width: min(760px, calc(100% - 32px)); margin: 0; text-align: center; font: 500 clamp(16px, 2.2vw, 22px)/1.4 var(--body);
+  text-wrap: balance; text-shadow: 0 1px 2px #000, 0 0 24px rgba(0,0,0,.9); pointer-events: none; transition: opacity .25s; }
+
+.bar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  padding-top: 14px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(to top, rgba(5,6,10,.92), rgba(5,6,10,0)); }
+.bar button { appearance: none; border: 1px solid var(--line); background: rgba(5,6,10,.5); color: var(--ink); font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 9px 11px; cursor: pointer; border-radius: 2px; }
+.bar button:hover { border-color: var(--ink); }
+.bar button:focus-visible, #startBtn:focus-visible, .track input:focus-visible { outline: 2px solid var(--flare); outline-offset: 2px; }
+.bar button[aria-pressed="false"] { color: var(--dim); text-decoration: line-through; }
+#play { width: 44px; height: 38px; padding: 0; display: grid; place-items: center; border-color: var(--flare); color: var(--flare); }
+#play svg { width: 14px; height: 14px; fill: currentColor; }
+.time { font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--dim); min-width: 92px; }
+.track { position: relative; flex: 1 1 240px; min-width: 0; height: 28px; display: flex; align-items: center; }
+.track input { width: 100%; margin: 0; accent-color: var(--flare); position: relative; z-index: 1; background: transparent; }
+.marks { position: absolute; left: 0; right: 0; top: 50%; height: 0; pointer-events: none; }
+.marks i { position: absolute; top: -9px; width: 1px; height: 18px; background: var(--line); }
+.opts { display: flex; gap: 8px; }
+
+#start { position: fixed; inset: 0; display: grid; align-items: end; justify-items: center; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 26vh); background: radial-gradient(ellipse at center, rgba(5,6,10,0) 30%, rgba(5,6,10,.55) 100%); }
+#startBtn { appearance: none; cursor: pointer; border: 1px solid var(--flare); background: var(--flare); color: #1a0d00; font: 700 15px/1 var(--display); letter-spacing: .04em; padding: 16px 26px; border-radius: 2px; }
+#startBtn small { font: 500 12px/1 var(--mono); margin-left: 10px; opacity: .7; }
+
+@media (max-width: 560px) {
+  .time { min-width: 0; }
+  .track { order: -1; flex-basis: 100%; }
+  #caption { bottom: calc(env(safe-area-inset-bottom, 0px) + 116px); }
+  .chapter span:last-child { display: none; }
+}
+</style>
+
+<div id="stage"></div>
+<div class="overlay" id="flash"></div>
+<div class="overlay" id="rewind"><span>◀◀ Rebobinando</span></div>
+
+<div class="label" id="lblSun">Sol</div>
+<div class="label" id="lblEarth">Terra</div>
+<div class="label flat" id="lblDist">150 milhões de km</div>
+
+<div class="hud">
+  <div class="chapter"><b id="chapNum">01</b><span id="chapName">O instante</span></div>
+  <div class="counter" id="counter" style="opacity:0"><span class="k">Luz da explosão a caminho</span><span class="v" id="counterV">8:20</span></div>
+  <div class="era" id="era" style="opacity:0;display:none"><span class="k">Daqui a</span><span class="v" id="eraV">0 anos</span><span class="p" id="eraP">Sol de hoje</span></div>
+</div>
+
+<div class="card" id="titlecard"><p class="eyebrow">Animação · 1min30s</p><h1>E se o Sol explodisse?</h1></div>
+<div class="card" id="endcard"><span class="small">A luz que você vê agora saiu do Sol há</span><span class="big">8 minutos e 20 segundos</span></div>
+
+<p id="caption"></p>
+<div class="overlay" id="black"></div>
+
+<div class="bar">
+  <button id="play" aria-label="Reproduzir"><svg viewBox="0 0 14 14"><path id="playIcon" d="M2 1l11 6-11 6z"/></svg></button>
+  <span class="time" id="time">0:00 / 1:30</span>
+  <div class="track"><div class="marks" id="marks"></div><input type="range" id="scrub" min="0" max="90" step="0.01" value="0" aria-label="Linha do tempo"></div>
+  <div class="opts">
+    <button id="voice" aria-pressed="true" title="Narração por voz sintetizada">Voz</button>
+    <button id="sound" aria-pressed="true" title="Trilha e efeitos">Som</button>
+    <button id="fs" title="Tela cheia">Tela cheia</button>
+  </div>
+</div>
+
+<div id="start"><button id="startBtn">▶ Assistir<small>1:30</small></button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+const DUR = 90;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const sstep = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const fmt = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ---------- Roteiro ---------- */
+const LINES = [
+  [0,    "E se, agora mesmo, o Sol explodisse?"],
+  [8.5,  "A resposta mais assustadora é: você não perceberia. Pelo menos não de imediato."],
+  [18.5, "A luz do Sol leva cerca de 8 minutos e 20 segundos para chegar até nós. Então, durante esse tempo, o céu continuaria azul e tudo pareceria normal."],
+  [30.5, "E não é só a luz. A gravidade também viaja na velocidade da luz. A Terra seguiria girando em volta de um Sol… que já não existe mais."],
+  [38.5, "Até que o clarão chega. Uma explosão dessas liberaria mais energia em segundos do que o Sol produz em bilhões de anos. O lado da Terra virado para ele seria vaporizado quase instantaneamente."],
+  [52.5, "Logo depois, viria a onda de matéria, destruindo os planetas um a um. Do sistema solar, sobraria apenas poeira e escuridão."],
+  [62.5, "Mas calma. Isso não vai acontecer."],
+  [68.3, "O Sol não tem massa suficiente para explodir como uma supernova. Daqui a uns 5 bilhões de anos, ele vai inchar e virar uma gigante vermelha, e depois encolher até se tornar uma anã branca, fraquinha e silenciosa."],
+  [82.5, "Então, da próxima vez que você olhar o Sol, lembre: você está vendo ele como era há 8 minutos."],
+];
+const CHAPTERS = [
+  [0, "O instante"], [8.5, "Nada muda"], [18.5, "8 min 20 s de luz"], [30.5, "Gravidade"],
+  [38, "O clarão"], [52.2, "A onda"], [62, "Calma"], [68, "O destino real"], [82.5, "Agora"],
+];
+// legendas: cada frase recebe tempo proporcional ao tamanho
+const CUES = [];
+LINES.forEach(([start, text], i) => {
+  const end = (i + 1 < LINES.length ? LINES[i + 1][0] : DUR) - 0.3;
+  const parts = text.match(/[^.?!…]+[.?!…]+/g) || [text];
+  const total = parts.reduce((s, p) => s + p.length, 0);
+  let t0 = start;
+  parts.forEach(p => { const d = (end - start) * p.length / total; CUES.push([t0, t0 + d, p.trim()]); t0 += d; });
+});
+
+/* ---------- Three.js ---------- */
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 3000);
+
+const NOISE = `
+float hash(vec3 p){p=fract(p*0.3183099+.1);p*=17.0;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+float noise(vec3 x){vec3 i=floor(x);vec3 f=fract(x);f=f*f*(3.-2.*f);
+ return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),
+            mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
+float fbm(vec3 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=2.03;a*=.5;}return v;}
+`;
+const VERT_W = `
+varying vec3 vPos; varying vec3 vNW; varying vec3 vW;
+void main(){ vPos=position; vNW=normalize(mat3(modelMatrix)*normal);
+  vec4 w=modelMatrix*vec4(position,1.); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }`;
+
+// estrelas
+{
+  const n = 4000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, r = 900;
+    const s = Math.sqrt(1 - u * u);
+    pos.set([r * s * Math.cos(a), r * u, r * s * Math.sin(a)], i * 3);
+    const w = 0.5 + Math.random() * 0.5, tint = Math.random();
+    col.set([w, w * (0.9 + 0.1 * tint), w * (0.8 + 0.2 * tint)], i * 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true })));
+}
+
+// textura de brilho
+const glowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'), g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.18, 'rgba(255,255,255,.55)');
+  g.addColorStop(.45, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+  return new THREE.CanvasTexture(c);
+})();
+const glowSprite = color => new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+
+// Sol
+const sunU = { uTime: { value: 0 }, uA: { value: new THREE.Color() }, uB: { value: new THREE.Color() }, uHeat: { value: 0 } };
+const sun = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.ShaderMaterial({
+  uniforms: sunU,
+  vertexShader: `varying vec3 vPos; varying vec3 vN; varying vec3 vV;
+    void main(){ vPos=position; vN=normalize(normalMatrix*normal); vec4 mv=modelViewMatrix*vec4(position,1.); vV=normalize(-mv.xyz); gl_Position=projectionMatrix*mv; }`,
+  fragmentShader: NOISE + `uniform float uTime; uniform vec3 uA; uniform vec3 uB; uniform float uHeat;
+    varying vec3 vPos; varying vec3 vN; varying vec3 vV;
+    void main(){
+      float n=fbm(vPos*3.5+vec3(0.,uTime*.12,uTime*.05));
+      float g=fbm(vPos*16.+vec3(uTime*.3));
+      float limb=clamp(dot(normalize(vN),normalize(vV)),0.,1.);
+      vec3 c=mix(uB,uA,smoothstep(.25,.75,n*.75+g*.4));
+      c*=.45+.75*pow(limb,.45);
+      c=mix(c,vec3(1.,.97,.9)*1.4,uHeat);
+      gl_FragColor=vec4(c,1.);
+    }`
+}));
+scene.add(sun);
+const sunGlow = glowSprite(0xffb060); scene.add(sunGlow);
+const sunGlow2 = glowSprite(0xff7a30); scene.add(sunGlow2);
+
+// Terra
+const earthU = { uSunPos: { value: new THREE.Vector3() }, uBurn: { value: 0 }, uTime: { value: 0 } };
+const earth = new THREE.Mesh(new THREE.SphereGeometry(0.9, 96, 64), new THREE.ShaderMaterial({
+  uniforms: earthU, vertexShader: VERT_W,
+  fragmentShader: NOISE + `uniform vec3 uSunPos; uniform float uBurn; uniform float uTime;
+    varying vec3 vPos; varying vec3 vNW; varying vec3 vW;
+    void main(){
+      vec3 p=normalize(vPos);
+      float n=fbm(p*2.3+3.1);
+      float land=smoothstep(.5,.53,n);
+      vec3 ocean=mix(vec3(.01,.05,.16),vec3(.03,.16,.34),fbm(p*6.));
+      vec3 ground=mix(vec3(.10,.28,.09),vec3(.44,.37,.21),smoothstep(.55,.7,n));
+      float ice=smoothstep(.78,.9,abs(p.y)+.08*fbm(p*9.));
+      vec3 base=mix(mix(ocean,ground,land),vec3(.92),ice);
+      float cl=smoothstep(.52,.75,fbm(p*3.4+vec3(uTime*.015,0.,0.)));
+      base=mix(base,vec3(1.),cl*.65*(1.-uBurn));
+      float d=dot(normalize(vNW),normalize(uSunPos-vW));
+      float day=smoothstep(-.12,.25,d);
+      vec3 col=base*(.025+day*1.15);
+      float city=land*(1.-day)*smoothstep(.62,.7,fbm(p*22.))*(1.-ice)*(1.-cl);
+      col+=vec3(1.,.72,.35)*city*1.2*(1.-uBurn);
+      float lava=fbm(p*5.+vec3(uTime*.25));
+      vec3 hot=mix(vec3(.12,.015,0.),vec3(1.,.42,.05),smoothstep(.38,.72,lava));
+      hot+=vec3(1.,.85,.5)*pow(max(d,0.),3.)*1.2;
+      col=mix(col,hot*(.35+day*1.1),uBurn);
+      gl_FragColor=vec4(col,1.);
+    }`
+}));
+scene.add(earth);
+const atmoU = { uSunPos: earthU.uSunPos, uOp: { value: 1 } };
+const atmo = new THREE.Mesh(new THREE.SphereGeometry(0.97, 64, 48), new THREE.ShaderMaterial({
+  uniforms: atmoU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: VERT_W,
+  fragmentShader: `uniform vec3 uSunPos; uniform float uOp; varying vec3 vPos; varying vec3 vNW; varying vec3 vW;
+    void main(){
+      vec3 v=normalize(cameraPosition-vW); vec3 n=normalize(vNW);
+      float rim=pow(1.-abs(dot(n,v)),2.6);
+      float s=dot(n,normalize(uSunPos-vW));
+      float lit=smoothstep(-.45,.35,s);
+      vec3 c=mix(vec3(1.,.45,.15),vec3(.35,.62,1.),smoothstep(-.05,.45,s));
+      gl_FragColor=vec4(c*rim*(.15+lit*1.3)*uOp,1.);
+    }`
+}));
+scene.add(atmo);
+
+// outros planetas
+const planetMat = (c1, c2, sc) => new THREE.ShaderMaterial({
+  uniforms: { uSunPos: earthU.uSunPos, uC1: { value: new THREE.Color(c1) }, uC2: { value: new THREE.Color(c2) }, uSc: { value: sc } },
+  vertexShader: VERT_W,
+  fragmentShader: NOISE + `uniform vec3 uSunPos; uniform vec3 uC1; uniform vec3 uC2; uniform float uSc;
+    varying vec3 vPos; varying vec3 vNW; varying vec3 vW;
+    void main(){ float n=fbm(normalize(vPos)*uSc); vec3 b=mix(uC1,uC2,smoothstep(.3,.7,n));
+      float d=dot(normalize(vNW),normalize(uSunPos-vW)); gl_FragColor=vec4(b*(.03+smoothstep(-.1,.3,d)*1.1),1.); }`
+});
+const PLANETS = [
+  { name: 'Mercúrio', r: 6,  size: .32, a0: 2.3, w: .022, mat: planetMat(0x6d6863, 0xb3aca2, 7) },
+  { name: 'Vênus',    r: 9,  size: .78, a0: 4.1, w: .013, mat: planetMat(0xc9a66b, 0xf1dcae, 3) },
+  { name: 'Terra',    r: 13, size: .9,  a0: .45, w: .004, mesh: earth },
+  { name: 'Marte',    r: 17, size: .5,  a0: 1.1, w: .0035, mat: planetMat(0x7a2e14, 0xc8693a, 5) },
+];
+PLANETS.forEach(p => {
+  if (!p.mesh) { p.mesh = new THREE.Mesh(new THREE.SphereGeometry(p.size, 48, 32), p.mat); scene.add(p.mesh); }
+  const n = 700, dirs = new Float32Array(n * 3), sp = new Float32Array(n), out = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+    dirs.set([s * Math.cos(a), u * .6, s * Math.sin(a)], i * 3);
+    sp[i] = .2 + Math.random() * 1.4; out[i] = 1.2 + Math.random() * 3;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  const col = p.name === 'Terra' ? 0xff8a3a : p.name === 'Marte' ? 0xff6a3a : 0xffc070;
+  p.debris = new THREE.Points(g, new THREE.PointsMaterial({ size: .16, map: glowTex, color: col, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  p.debris.frustumCulled = false; p.dirs = dirs; p.sp = sp; p.out = out; p.n = n;
+  scene.add(p.debris);
+});
+const planetPos = (p, st) => { const a = p.a0 + p.w * st; return new THREE.Vector3(p.r * Math.cos(a), 0, p.r * Math.sin(a)); };
+const EARTH = PLANETS[2];
+
+// onda de choque / nebulosa
+const waveU = { uOp: { value: 0 }, uColor: { value: new THREE.Color(0xff7a2a) }, uTime: { value: 0 } };
+const wave = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64), new THREE.ShaderMaterial({
+  uniforms: waveU, transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+  vertexShader: VERT_W,
+  fragmentShader: NOISE + `uniform float uOp; uniform vec3 uColor; uniform float uTime; varying vec3 vPos; varying vec3 vNW; varying vec3 vW;
+    void main(){ vec3 v=normalize(cameraPosition-vW); float f=1.-abs(dot(normalize(vNW),v));
+      float n=fbm(vPos*3.+vec3(uTime*.4)); float a=(pow(f,2.2)*.9+.08)*(.3+n*1.2)*uOp;
+      gl_FragColor=vec4(uColor*(.5+n)*a,1.); }`
+}));
+scene.add(wave);
+
+// raio de luz
+const ray = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 12, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0xffe2a8, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(ray);
+const rayHead = glowSprite(0xfff1d0); scene.add(rayHead);
+
+// órbita tracejada
+const orbit = (() => {
+  const pts = []; for (let i = 0; i <= 256; i++) { const a = i / 256 * Math.PI * 2; pts.push(new THREE.Vector3(13 * Math.cos(a), 0, 13 * Math.sin(a))); }
+  const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineDashedMaterial({ color: 0xf2ede4, dashSize: .6, gapSize: .45, transparent: true, opacity: 0 }));
+  l.computeLineDistances(); scene.add(l); return l;
+})();
+
+/* ---------- Câmera ---------- */
+// [tempo da cena, referência, deslocamento da câmera (u: Sol→Terra, y: cima, w: lateral), alvo]
+const K = [
+  [0,    'sun',   [3.7, .35, 1.4],  [0, 0, 0]],
+  [8.5,  'sun',   [11, 2.4, 4.5],   [0, 0, 0]],
+  [8.5,  'earth', [-1.3, .6, 2.8],  [0, 0, 0]],
+  [18.5, 'earth', [-.6, .85, 2.2],  [0, 0, 0]],
+  [18.5, 'mid',   [0, 9.5, 13.5],   [0, -1, 0]],
+  [30.5, 'mid',   [0, 8, 11.5],     [0, -1, 0]],
+  [30.5, 'sun',   [4, 25, 11],      [3, 0, 0]],
+  [38,   'sun',   [7, 21, 13],      [4, 0, 0]],
+  [38,   'earth', [.6, .5, 3.2],    [-2.5, 0, 0]],
+  [52.2, 'earth', [.4, .35, 2.6],   [-2.5, 0, 0]],
+  [52.2, 'sun',   [18, 26, 24],     [5, 0, 0]],
+  [62,   'sun',   [27, 35, 33],     [6, 0, 0]],
+  [68,   'sun',   [27, 35, 33],     [6, 0, 0]],
+  [68,   'sun',   [22, 9, 25],      [5, 0, 0]],
+  [82.5, 'sun',   [19, 7, 21],      [5, 0, 0]],
+  [82.5, 'earth', [2.6, .9, 0],     [-13, .9, 0]],
+  [90,   'earth', [2.6, 1.55, 0],   [-13, .9, 0]],
+];
+const Y = new THREE.Vector3(0, 1, 0);
+function frame(st) {
+  const E = planetPos(EARTH, st), u = E.clone().normalize(), w = new THREE.Vector3(-u.z, 0, u.x);
+  return { E, u, w, base: { sun: new THREE.Vector3(), earth: E, mid: E.clone().multiplyScalar(.5) } };
+}
+function resolve(k, F) {
+  const b = F.base[k[1]];
+  const f = o => b.clone().addScaledVector(F.u, o[0]).addScaledVector(Y, o[1]).addScaledVector(F.w, o[2]);
+  return [f(k[2]), f(k[3])];
+}
+function cameraAt(st, F) {
+  let i = 0; while (i < K.length - 2 && !(st >= K[i][0] && st < K[i + 1][0])) i++;
+  if (st >= K[K.length - 1][0]) i = K.length - 2;
+  const a = K[i], b = K[i + 1], k = sstep(0, 1, (st - a[0]) / Math.max(1e-6, b[0] - a[0]));
+  const [pa, ta] = resolve(a, F), [pb, tb] = resolve(b, F);
+  return [pa.lerp(pb, k), ta.lerp(tb, k)];
+}
+
+/* ---------- Estado da cena em função do tempo ---------- */
+function sceneTime(t) {
+  if (t < 62) return t;
+  if (t < 62.6) return 62;
+  if (t < 66.5) return 62 - sstep(0, 1, (t - 62.6) / 3.9) * 59;
+  if (t < 68) return 3 + (t - 66.5);
+  return t;
+}
+const C = (r, g, b) => new THREE.Color(r, g, b);
+const SUN_A = C(1, .86, .5), SUN_B = C(1, .42, .06), RED_A = C(1, .42, .2), RED_B = C(.55, .06, .02), WD = C(.85, .92, 1);
+const tmpA = new THREE.Color(), tmpB = new THREE.Color();
+const lblSun = $('lblSun'), lblEarth = $('lblEarth'), lblDist = $('lblDist');
+
+function render(t) {
+  const st = sceneTime(t), boom = t < 68, F = frame(st);
+  const time = st;
+  sunU.uTime.value = time; earthU.uTime.value = time; waveU.uTime.value = time;
+
+  // --- Sol
+  let R = 2.5, heat = 0, gScale = 6, gOp = 1, gColor = 0xffb060;
+  tmpA.copy(SUN_A); tmpB.copy(SUN_B);
+  if (boom && st >= 38) {
+    const flare = sstep(38, 38.4, st) * (1 - sstep(38.6, 41, st));
+    heat = Math.max(flare, .55 * (1 - sstep(44, 52, st)));
+    R = 2.5 + 2.2 * sstep(38, 47, st);
+    gScale = 6 + 40 * flare + 3 * sstep(40, 52, st);
+    if (st >= 52) { R = lerp(R, .5, sstep(52, 56, st)); gOp = 1 - .75 * sstep(52, 58, st); }
+  } else if (!boom) {
+    const g = sstep(70, 77, t), dwarf = sstep(79, 81.5, t), now = sstep(82.3, 82.6, t);
+    tmpA.copy(SUN_A).lerp(RED_A, g).lerp(WD, dwarf); tmpB.copy(SUN_B).lerp(RED_B, g).lerp(WD, dwarf * .8);
+    R = lerp(lerp(2.5, 10.5 + .25 * Math.sin(t * 2.2), g), .3, dwarf);
+    gScale = lerp(lerp(6, 3.2, g), 9, dwarf); heat = dwarf * .6;
+    gColor = g > .5 && dwarf < .5 ? 0xff5a2a : (dwarf > .5 ? 0xbfd8ff : 0xffb060);
+    if (now > 0) { R = lerp(R, 2.5, now); tmpA.lerp(SUN_A, now); tmpB.lerp(SUN_B, now); gScale = lerp(gScale, 6, now); heat *= 1 - now; gColor = now > .5 ? 0xffb060 : gColor; }
+  }
+  sun.scale.setScalar(R); sunU.uA.value.copy(tmpA); sunU.uB.value.copy(tmpB); sunU.uHeat.value = heat;
+  sunGlow.scale.setScalar(R * gScale); sunGlow.material.opacity = .85 * gOp; sunGlow.material.color.set(gColor);
+  sunGlow2.scale.setScalar(R * gScale * 2.4); sunGlow2.material.opacity = .35 * gOp; sunGlow2.material.color.set(gColor).multiplyScalar(.8);
+
+  // --- planetas + destroços
+  const waveR = 2.5 + (st - 52) * 3;
+  PLANETS.forEach(p => {
+    const P = planetPos(p, st);
+    p.mesh.position.copy(P);
+    let visible = true;
+    const ti = 52 + (p.r - 2.5) / 3;
+    let age = -1;
+    if (boom && st >= ti) { visible = false; age = st - ti; }
+    if (!boom && t < 82.3 && R > p.r - p.size) visible = false;
+    p.mesh.visible = visible;
+    if (age >= 0) {
+      const O = planetPos(p, ti), o = O.clone().normalize(), arr = p.debris.geometry.attributes.position.array;
+      for (let i = 0; i < p.n; i++) {
+        const k = age * p.sp[i], ko = age * p.out[i];
+        arr[i * 3]     = O.x + p.dirs[i * 3] * k + o.x * ko;
+        arr[i * 3 + 1] = O.y + p.dirs[i * 3 + 1] * k;
+        arr[i * 3 + 2] = O.z + p.dirs[i * 3 + 2] * k + o.z * ko;
+      }
+      p.debris.geometry.attributes.position.needsUpdate = true;
+      p.debris.visible = true; p.debris.material.opacity = clamp(1 - age / 7) * clamp(age * 4);
+      p.debris.material.size = .1 + .1 * p.size;
+    } else p.debris.visible = false;
+  });
+  earth.rotation.y = st * .12;
+  earthU.uSunPos.value.set(0, 0, 0);
+
+  // queima da Terra e atmosfera arrancada
+  let burn = 0, atmoOp = 1, strip = 0;
+  if (boom) { burn = sstep(39, 47, st); strip = sstep(40, 49, st); atmoOp = 1 - strip; }
+  else { burn = .35 * sstep(73, 77, t) * (1 - sstep(80, 82, t)); }
+  earthU.uBurn.value = burn; atmoU.uOp.value = atmoOp;
+  atmo.visible = earth.visible && atmoOp > .01;
+  atmo.position.copy(EARTH.mesh.position).addScaledVector(F.u, strip * 1.6);
+  atmo.scale.setScalar(1 + strip * 1.2);
+
+  // onda de choque / nebulosa planetária
+  if (boom && st >= 52) {
+    wave.visible = true; wave.scale.setScalar(Math.max(.1, waveR));
+    waveU.uOp.value = sstep(52, 52.6, st) * (1 - .7 * sstep(59, 62, st)); waveU.uColor.value.set(0xff7a2a);
+  } else if (!boom && t > 79 && t < 82.4) {
+    wave.visible = true; wave.scale.setScalar(lerp(4, 15, sstep(79, 82.4, t)));
+    waveU.uOp.value = .55 * sstep(79, 80, t) * (1 - sstep(81.6, 82.4, t)); waveU.uColor.value.set(0x5fd0c8);
+  } else wave.visible = false;
+
+  // raio de luz
+  const rayK = boom ? sstep(19, 29.5, st) : 0, rayOn = boom && st > 18.5 && st < 30.5;
+  ray.visible = rayHead.visible = rayOn;
+  if (rayOn) {
+    const start = 2.6, end = 13 - .95, len = Math.max(.01, (end - start) * rayK);
+    const mid = F.u.clone().multiplyScalar(start + len / 2);
+    ray.position.copy(mid); ray.scale.set(.05, len, .05);
+    ray.quaternion.setFromUnitVectors(Y, F.u);
+    ray.material.opacity = .55 * sstep(18.5, 19.3, st);
+    rayHead.position.copy(F.u).multiplyScalar(start + len); rayHead.scale.setScalar(1.6);
+    rayHead.material.opacity = sstep(18.5, 19.3, st);
+  }
+  orbit.material.opacity = boom ? .35 * sstep(30.5, 31.5, st) * (1 - sstep(37, 38, st)) : 0;
+
+  // câmera
+  const [cp, ct] = cameraAt(st, F);
+  camera.position.copy(cp); camera.lookAt(ct);
+  renderer.render(scene, camera);
+
+  // rótulos 3D → tela
+  const showLbl = boom && st > 19 && st < 38;
+  placeLabel(lblSun, new THREE.Vector3(0, 2.8, 0), showLbl ? 1 : 0);
+  placeLabel(lblEarth, EARTH.mesh.position.clone().add(new THREE.Vector3(0, 1.1, 0)), showLbl ? 1 : 0);
+  placeLabel(lblDist, F.u.clone().multiplyScalar(6.5).add(new THREE.Vector3(0, -1.1, 0)), boom && st > 19.5 && st < 30.3 ? sstep(19.5, 21, st) : 0);
+
+  hud(t, st, boom);
+}
+function placeLabel(el, v, op) {
+  if (op <= 0) { el.style.opacity = 0; return; }
+  const p = v.project(camera);
+  if (p.z > 1) { el.style.opacity = 0; return; }
+  const W = stage.clientWidth, H = stage.clientHeight;
+  el.style.left = ((p.x + 1) / 2 * W) + 'px'; el.style.top = ((1 - p.y) / 2 * H) + 'px';
+  el.style.opacity = op;
+}
+
+/* ---------- HUD ---------- */
+const els = { flash: $('flash'), black: $('black'), rewind: $('rewind'), counter: $('counter'), counterV: $('counterV'), era: $('era'), eraV: $('eraV'), eraP: $('eraP'),
+  title: $('titlecard'), end: $('endcard'), cap: $('caption'), chapNum: $('chapNum'), chapName: $('chapName'), time: $('time'), scrub: $('scrub') };
+let lastCue = null;
+function hud(t, st, boom) {
+  els.flash.style.opacity = boom && st >= 38 ? sstep(38, 38.25, st) * (1 - sstep(38.4, 41, st)) : 0;
+  els.black.style.opacity = t >= 62 && t < 62.6 ? 1 : (t >= 62.6 && t < 62.9 ? 1 - (t - 62.6) / .3 : 0);
+  const rw = t >= 62.6 && t < 66.5;
+  els.rewind.style.opacity = rw ? 1 : 0;
+  renderer.domElement.style.filter = rw ? 'saturate(.35) contrast(1.15) brightness(.9)' : '';
+
+  const showCounter = boom && t < 62 && st >= 8.5 && st < 41;
+  els.counter.style.opacity = showCounter ? 1 : 0;
+  const rem = 500 * (1 - clamp((st - 9) / 29));
+  els.counterV.textContent = fmt(rem);
+  els.counter.classList.toggle('zero', rem <= 0);
+
+  const eraOn = t >= 68.3 && t < 82.3;
+  els.era.style.display = eraOn ? '' : 'none'; els.era.style.opacity = eraOn ? 1 : 0;
+  if (eraOn) {
+    const y = t < 70 ? 0 : t < 76 ? lerp(0, 5, (t - 70) / 6) : t < 79 ? lerp(5, 7.6, (t - 76) / 3) : lerp(7.6, 8, clamp((t - 79) / 3));
+    els.eraV.textContent = y < .05 ? 'hoje' : '+' + y.toFixed(1).replace('.', ',') + ' bilhões de anos';
+    els.eraP.textContent = t < 71.5 ? 'Sol de hoje' : t < 79.5 ? 'Gigante vermelha' : 'Anã branca';
+  }
+  els.title.style.opacity = 1 - sstep(6.5, 8.2, t);
+  els.end.style.opacity = sstep(83.5, 85, t);
+
+  const cue = CUES.find(c => t >= c[0] && t < c[1]);
+  const txt = cue ? cue[2] : '';
+  if (txt !== lastCue) { els.cap.textContent = txt; lastCue = txt; }
+  let ci = 0; CHAPTERS.forEach((c, i) => { if (t >= c[0]) ci = i; });
+  els.chapNum.textContent = String(ci + 1).padStart(2, '0'); els.chapName.textContent = CHAPTERS[ci][1];
+  els.time.textContent = fmt(t) + ' / ' + fmt(DUR);
+  if (!scrubbing) els.scrub.value = t;
+}
+
+/* ---------- Áudio ---------- */
+let ac = null, A = {};
+let soundOn = true, voiceOn = !!window.speechSynthesis;
+function initAudio() {
+  if (ac) { ac.resume?.(); return; }
+  try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  A.master = ac.createGain(); A.master.gain.value = .9; A.master.connect(ac.destination);
+  A.filt = ac.createBiquadFilter(); A.filt.type = 'lowpass'; A.filt.frequency.value = 260;
+  A.drone = ac.createGain(); A.drone.gain.value = 0; A.filt.connect(A.drone); A.drone.connect(A.master);
+  [55, 55.35, 82.4, 41.2].forEach(f => { const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(A.filt); o.start(); });
+  A.pad = ac.createGain(); A.pad.gain.value = 0; A.pad.connect(A.master);
+  [220, 277.2, 329.6, 440].forEach(f => { const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = f; const g = ac.createGain(); g.gain.value = .18; o.connect(g); g.connect(A.pad); o.start(); });
+  const len = ac.sampleRate * 3, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  A.noise = buf;
+}
+function boomSfx(power) {
+  if (!ac || !soundOn) return;
+  const now = ac.currentTime;
+  const src = ac.createBufferSource(); src.buffer = A.noise;
+  const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(2400, now); f.frequency.exponentialRampToValueAtTime(70, now + 3.5);
+  const g = ac.createGain(); g.gain.setValueAtTime(.0001, now); g.gain.exponentialRampToValueAtTime(power, now + .05); g.gain.exponentialRampToValueAtTime(.0001, now + 4.5);
+  src.connect(f); f.connect(g); g.connect(A.master); src.start(now); src.stop(now + 4.6);
+  const o = ac.createOscillator(); o.frequency.setValueAtTime(70, now); o.frequency.exponentialRampToValueAtTime(24, now + 3);
+  const og = ac.createGain(); og.gain.setValueAtTime(power * .9, now); og.gain.exponentialRampToValueAtTime(.0001, now + 3.5);
+  o.connect(og); og.connect(A.master); o.start(now); o.stop(now + 3.6);
+}
+function audioUpdate(t, st) {
+  if (!ac) return;
+  const on = soundOn && playing;
+  let drone = 0, pad = 0, cut = 260;
+  if (t < 62) { drone = st < 38 ? .02 + .05 * (st / 38) : .1; cut = st < 38 ? 180 + 220 * (st / 38) : 700 - 300 * sstep(52, 62, st); }
+  if (t >= 68) pad = .05 * sstep(68, 70, t) * (1 - .4 * sstep(76, 80, t));
+  const now = ac.currentTime;
+  A.drone.gain.setTargetAtTime(on ? drone : 0, now, .25);
+  A.pad.gain.setTargetAtTime(on ? pad : 0, now, .5);
+  A.filt.frequency.setTargetAtTime(cut, now, .3);
+}
+
+/* ---------- Narração (voz sintetizada) ---------- */
+let voices = [];
+const loadVoices = () => { try { voices = speechSynthesis.getVoices(); } catch (e) {} };
+if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function speak(text) {
+  if (!voiceOn || !window.speechSynthesis) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'pt-BR'; u.rate = 1.08; u.pitch = .92;
+    const v = voices.find(v => /pt[-_]BR/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const hush = () => { try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {} };
+
+/* ---------- Reprodução ---------- */
+let t = 0, playing = false, scrubbing = false, last = performance.now(), prevT = 0;
+const playIcon = $('playIcon');
+function setPlaying(p) {
+  playing = p;
+  playIcon.setAttribute('d', p ? 'M2 1h3.5v12H2zM8.5 1H12v12H8.5z' : 'M2 1l11 6-11 6z');
+  $('play').setAttribute('aria-label', p ? 'Pausar' : 'Reproduzir');
+  if (!p) hush();
+}
+function begin() {
+  $('start').hidden = true;
+  initAudio();
+  if (t >= DUR - .05) { t = 0; prevT = 0; }
+  setPlaying(true);
+  const line = LINES.find(l => Math.abs(l[0] - t) < .05);
+  if (line) speak(line[1]);
+}
+function events(a, b) {
+  if (!playing || b < a || b - a > .5) return;
+  LINES.forEach(([s, text]) => { if (s > a && s <= b) speak(text); });
+  if (a < 38.1 && b >= 38.1) boomSfx(.9);
+  if (a < 52.3 && b >= 52.3) boomSfx(.6);
+}
+function seek(v) { t = clamp(v, 0, DUR); prevT = t; hush(); $('start').hidden = true; }
+
+$('startBtn').addEventListener('click', begin);
+$('play').addEventListener('click', () => playing ? setPlaying(false) : begin());
+const scrub = $('scrub');
+scrub.addEventListener('input', () => { scrubbing = true; seek(+scrub.value); });
+scrub.addEventListener('change', () => { scrubbing = false; });
+$('voice').disabled = !window.speechSynthesis;
+$('voice').setAttribute('aria-pressed', String(voiceOn));
+$('voice').addEventListener('click', e => { voiceOn = !voiceOn; e.currentTarget.setAttribute('aria-pressed', String(voiceOn)); if (!voiceOn) hush(); });
+$('sound').addEventListener('click', e => { soundOn = !soundOn; e.currentTarget.setAttribute('aria-pressed', String(soundOn)); });
+$('fs').addEventListener('click', () => {
+  try { const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); p && p.catch && p.catch(() => {}); } catch (e) {}
+});
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' && e.key !== ' ') return;
+  if (e.key === ' ') { e.preventDefault(); playing ? setPlaying(false) : begin(); }
+  if (e.key === 'ArrowRight') seek(t + 5);
+  if (e.key === 'ArrowLeft') seek(t - 5);
+});
+// marcas de capítulo
+const marks = $('marks');
+CHAPTERS.slice(1).forEach(([s]) => { const i = document.createElement('i'); i.style.left = (s / DUR * 100) + '%'; marks.appendChild(i); });
+
+function resize() {
+  const W = stage.clientWidth, H = stage.clientHeight;
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  camera.fov = camera.aspect < 1 ? THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(25)) / camera.aspect * .85)) : 50;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+function loop(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (playing) { t += dt; if (t >= DUR) { t = DUR; setPlaying(false); } }
+  render(t);
+  events(prevT, t); prevT = t;
+  audioUpdate(t, sceneTime(t));
+  requestAnimationFrame(loop);
+}
+render(0);
+requestAnimationFrame(loop);
+window.__seek = v => { seek(v); render(t); };
+})();
+</script>
