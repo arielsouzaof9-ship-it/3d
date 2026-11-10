@@ -8,9 +8,15 @@ export const F = 1 / FPS;
 
 // Roteiro de exemplo (curto). Troque pelo roteiro do seu vídeo.
 export const LINES = [
-  'Você sabe quantas vezes *pisca* por dia?',
-  'São mais de *quinze* mil piscadas!',
-  'E cada uma *limpa* e protege seus olhos.',
+  'Você sabia que seu corpo é quase *setenta* por cento água?',
+  'Até o seu *cérebro* é feito de muita água.',
+  'Quando falta água, ele fica *lento* e a cabeça começa a doer.',
+  'Sem beber nada, você aguenta só uns *três* dias.',
+  'Todo dia, você perde mais de *dois* litros suando e respirando.',
+  'Por isso, muitas vezes o *cansaço* chega antes da sede.',
+  'E aquela fome no meio da tarde pode ser só *sede* disfarçada.',
+  'Então pegue um *copo* e beba agora mesmo.',
+  'Seu corpo e sua cabeça vão *agradecer*!',
 ];
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };
