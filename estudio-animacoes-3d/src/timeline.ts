@@ -8,15 +8,23 @@ export const F = 1 / FPS;
 
 // Roteiro de exemplo (curto). Troque pelo roteiro do seu vídeo.
 export const LINES = [
-  'Você sabia que seu corpo é quase *setenta* por cento água?',
-  'Até o seu *cérebro* é feito de muita água.',
-  'Quando falta água, ele fica *lento* e a cabeça começa a doer.',
-  'Sem beber nada, você aguenta só uns *três* dias.',
-  'Todo dia, você perde mais de *dois* litros suando e respirando.',
-  'Por isso, muitas vezes o *cansaço* chega antes da sede.',
-  'E aquela fome no meio da tarde pode ser só *sede* disfarçada.',
-  'Então pegue um *copo* e beba agora mesmo.',
-  'Seu corpo e sua cabeça vão *agradecer*!',
+  'No caminho para o topo do *Everest*, você passa por um par de botas verdes.',
+  'Elas ficam numa pequena *caverna* de pedra, a quase oito mil e quinhentos metros.',
+  'E quem está calçando essas botas é um *alpinista* que nunca voltou.',
+  'Os escaladores o chamam de *Green* Boots.',
+  'Acredita-se que seja *Tsewang* Paljor, um policial indiano de vinte e oito anos.',
+  'Em maio de mil novecentos e noventa e *seis*, ele subiu a montanha com sua equipe.',
+  'Perto do cume, uma *tempestade* fechou o céu.',
+  'O vento e o frio ficaram *mortais*.',
+  'Ele procurou abrigo na *caverna* e nunca mais acordou.',
+  'Seus dois companheiros também *ficaram* na montanha.',
+  'Acima de oito mil metros fica a *zona* da morte.',
+  'Lá, o ar tem só um *terço* do oxigênio.',
+  'Por isso, resgatar um corpo é *perigoso* e custa uma fortuna.',
+  'Hoje, mais de *duzentas* pessoas continuam no Everest.',
+  'Por quase vinte anos, as botas verdes viraram um *marco* da subida.',
+  'Quem passava por elas sabia que faltava *pouco* para o cume.',
+  'Então, quando você olhar para o topo do mundo, *lembre*: a montanha sempre cobra o seu preço.',
 ];
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };
