@@ -8,9 +8,9 @@ export const F = 1 / FPS;
 
 // Roteiro de exemplo (curto). Troque pelo roteiro do seu vídeo.
 export const LINES = [
-  'Imagine que você *abre* uma padaria.',
-  'Todo dia, você vende *quinhentos* pães.',
-  'Em um *ano*, isso dá mais de *cento* e oitenta mil!',
+  'Você sabe quantas vezes *pisca* por dia?',
+  'São mais de *quinze* mil piscadas!',
+  'E cada uma *limpa* e protege seus olhos.',
 ];
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };
