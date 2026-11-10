@@ -84,8 +84,50 @@ const heart = (c: CanvasRenderingContext2D, x: number, y: number, s: number) => 
   c.fill();
 };
 
+// Estilo "fofo" (opcional, por personagem): íris colorida com brilhos e bochechas rosadas.
+export type FaceStyle = { iris?: string; blush?: boolean };
+let ESTILO: FaceStyle = {};
+const OLHO = () => (ESTILO.iris ? 1.9 : 1); // olhos maiores no estilo fofo
+
 const drawEye = (c: CanvasRenderingContext2D, kind: Eyes, x: number, y: number, side: number, skin: string) => {
   const open = (rx: number, ry: number, pr: number, dx = 0, dy = 0) => {
+    if (ESTILO.iris) {
+      // olho grande: branco maior, íris colorida com aro escuro, pupila e dois brilhos
+      const RX = rx * OLHO();
+      const RY = ry * OLHO() * 0.94;
+      c.beginPath();
+      c.ellipse(x, y, RX, RY, 0, 0, Math.PI * 2);
+      c.fillStyle = '#fff';
+      c.fill();
+      c.save();
+      c.clip();
+      const ir = Math.min(RX * 0.8, pr * 3.2);
+      const ix = x + dx * 1.1;
+      const iy = y + dy * 1.1 + 2;
+      c.beginPath();
+      c.arc(ix, iy, ir, 0, Math.PI * 2);
+      c.fillStyle = ESTILO.iris;
+      c.fill();
+      c.lineWidth = ir * 0.18;
+      c.strokeStyle = 'rgba(20,20,40,0.45)';
+      c.stroke();
+      c.beginPath();
+      c.arc(ix, iy, ir * 0.48, 0, Math.PI * 2);
+      c.fillStyle = INK;
+      c.fill();
+      c.beginPath();
+      c.arc(ix - ir * 0.38, iy - ir * 0.4, ir * 0.3, 0, Math.PI * 2);
+      c.fillStyle = '#fff';
+      c.fill();
+      c.beginPath();
+      c.arc(ix + ir * 0.36, iy + ir * 0.34, ir * 0.14, 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+      c.beginPath();
+      c.ellipse(x, y, RX, RY, 0, 0, Math.PI * 2);
+      line(c, 9);
+      return c.stroke();
+    }
     c.beginPath();
     c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
     c.fillStyle = '#fff';
@@ -116,36 +158,37 @@ const drawEye = (c: CanvasRenderingContext2D, kind: Eyes, x: number, y: number, 
     case 'happy':
       line(c);
       c.beginPath();
-      c.arc(x, y + 14, 26, Math.PI * 1.12, Math.PI * 1.88);
+      c.arc(x, y + 14 * OLHO(), 26 * OLHO(), Math.PI * 1.12, Math.PI * 1.88);
       return c.stroke();
     case 'closed':
       line(c);
       c.beginPath();
-      c.arc(x, y - 12, 26, Math.PI * 0.15, Math.PI * 0.85);
+      c.arc(x, y - 12 * OLHO(), 26 * OLHO(), Math.PI * 0.15, Math.PI * 0.85);
       return c.stroke();
     case 'wink':
       return side < 0 ? open(26, 32, 12) : drawEye(c, 'happy', x, y, side, skin);
     case 'half':
     case 'angry': {
+      const g = OLHO();
       open(26, 32, 12, 0, 6);
       c.fillStyle = skin;
       c.beginPath();
-      if (kind === 'half') c.rect(x - 32, y - 40, 64, 38);
+      if (kind === 'half') c.rect(x - 34 * g, y - 44 * g, 68 * g, 42 * g);
       else {
-        c.moveTo(x - 34, y - 40 + (side < 0 ? 0 : 22));
-        c.lineTo(x + 34, y - 40 + (side < 0 ? 22 : 0));
-        c.lineTo(x + 34, y - 44);
-        c.lineTo(x - 34, y - 44);
+        c.moveTo(x - 36 * g, y - 40 * g + (side < 0 ? 0 : 22 * g));
+        c.lineTo(x + 36 * g, y - 40 * g + (side < 0 ? 22 * g : 0));
+        c.lineTo(x + 36 * g, y - 50 * g);
+        c.lineTo(x - 36 * g, y - 50 * g);
       }
       c.fill();
       line(c, 9);
       c.beginPath();
       if (kind === 'half') {
-        c.moveTo(x - 27, y - 2);
-        c.lineTo(x + 27, y - 2);
+        c.moveTo(x - 27 * g, y - 2 * g);
+        c.lineTo(x + 27 * g, y - 2 * g);
       } else {
-        c.moveTo(x - 26, y - 34 + (side < 0 ? 4 : 22));
-        c.lineTo(x + 26, y - 34 + (side < 0 ? 22 : 4));
+        c.moveTo(x - 26 * g, y - 34 * g + (side < 0 ? 4 : 22) * g);
+        c.lineTo(x + 26 * g, y - 34 * g + (side < 0 ? 22 : 4) * g);
       }
       return c.stroke();
     }
@@ -171,7 +214,7 @@ const drawBrow = (c: CanvasRenderingContext2D, kind: Brows, x: number, y: number
   if (kind === 'none') return;
   line(c, 12);
   c.beginPath();
-  const by = y - 62;
+  const by = y - 62 - (OLHO() - 1) * 50;
   if (kind === 'neutral') c.arc(x, by + 26, 30, Math.PI * 1.25, Math.PI * 1.75);
   else if (kind === 'raised' || (kind === 'oneUp' && side > 0)) c.arc(x, by + 6, 30, Math.PI * 1.22, Math.PI * 1.78);
   else if (kind === 'oneUp' || kind === 'flat') {
@@ -387,8 +430,17 @@ export const useFacesReady = () => {
 };
 
 // Desenha o rosto no canvas. blink: 0 aberto, 0.5 meio fechado, 1 fechado.
-export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: number, overlays: OverlayName[], skin: string) {
+export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: number, overlays: OverlayName[], skin: string, estilo: FaceStyle = {}) {
+  ESTILO = estilo;
   c.clearRect(0, 0, 512, 512);
+  if (estilo.blush) {
+    for (const bx of [128, 384]) {
+      c.beginPath();
+      c.ellipse(bx, 312, 40, 24, 0, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(255,110,120,0.5)';
+      c.fill();
+    }
+  }
   if (overlays.includes('shading')) {
     const s = imgs[OVERLAYS.shading];
     if (s) c.drawImage(s, 0, 0);
@@ -408,8 +460,9 @@ export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: num
     for (const [x, y] of EYES) {
       c.fillStyle = skin;
       c.beginPath();
-      if (blink >= 1) c.ellipse(x, y, 42, 46, 0, 0, Math.PI * 2);
-      else c.rect(x - 44, y - 50, 88, 52);
+      const g = OLHO();
+      if (blink >= 1) c.ellipse(x, y, 42 * g, 46 * g, 0, 0, Math.PI * 2);
+      else c.rect(x - 44 * g, y - 50 * g, 88 * g, 52 * g);
       c.fill();
       line(c);
       c.beginPath();

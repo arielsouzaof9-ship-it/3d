@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
 import * as THREE from 'three';
 import { F } from './timeline';
-import { drawFace, FaceName, OverlayName, patternTex } from './textures';
+import { drawFace, FaceName, FaceStyle, OverlayName, patternTex } from './textures';
 
 // ---------- Pose ----------
 // Ângulos em radianos. Braço: sz = abre para o lado, sx = levanta para frente, el = dobra o cotovelo.
@@ -80,6 +80,11 @@ export type Look = {
   beard?: 'bigode' | 'barba';
   metal?: boolean; // armadura
   backpack?: string; // mochila / tanque
+  // Estilo "fofo" (inspirado em desenho 2D infantil): todos opcionais.
+  iris?: string; // cor da íris (olhos grandes com brilho)
+  blush?: boolean; // bochechas rosadas
+  topete?: boolean; // tufo de cabelo espetado no alto da cabeça
+  fofo?: boolean; // braços e pernas gordinhos (tipo pílula)
 };
 
 export const VOCE: Look = {
@@ -107,7 +112,7 @@ const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THR
   <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />
 );
 
-const FaceDecal = ({ face, skin }: { face: FaceState; skin: string }) => {
+const FaceDecal = ({ face, skin, estilo = {} }: { face: FaceState; skin: string; estilo?: FaceStyle }) => {
   const canvas = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = c.height = 512;
@@ -119,9 +124,9 @@ const FaceDecal = ({ face, skin }: { face: FaceState; skin: string }) => {
     t.anisotropy = 8;
     return t;
   }, [canvas]);
-  const key = `${face.f}|${face.blink}|${face.o.join(',')}|${skin}`;
+  const key = `${face.f}|${face.blink}|${face.o.join(',')}|${skin}|${estilo.iris}|${estilo.blush}`;
   useMemo(() => {
-    drawFace(canvas.getContext('2d')!, face.f, face.blink, face.o, skin);
+    drawFace(canvas.getContext('2d')!, face.f, face.blink, face.o, skin, estilo);
     tex.needsUpdate = true;
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   const L = 1.95;
@@ -142,12 +147,12 @@ const Limb = ({ len, r, color, metal }: { len: number; r: number; color: string;
 
 const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; sx: number; el: number; look: Look; sh: number; hand?: ReactNode }) => (
   <group position={[side * sh, 1.0, 0]} rotation={new THREE.Euler(-sx, 0, side * sz, 'ZXY')}>
-    <Limb len={0.3} r={0.032} color={look.jacket} metal={look.metal} />
+    <Limb len={0.3} r={look.fofo ? 0.075 : 0.032} color={look.jacket} metal={look.metal} />
     <group position={[0, -0.3, 0]} rotation={[-el, 0, 0]}>
-      <Limb len={0.27} r={0.028} color={look.coat ?? look.jacket} metal={look.metal} />
+      <Limb len={0.27} r={look.fofo ? 0.068 : 0.028} color={look.coat ?? look.jacket} metal={look.metal} />
       <group position={[0, -0.3, 0]}>
         <mesh castShadow scale={[1, 1.1, 0.9]}>
-          <sphereGeometry args={[0.07, 16, 12]} />
+          <sphereGeometry args={[look.fofo ? 0.095 : 0.07, 16, 12]} />
           <Mat color={look.gloves} roughness={0.5} />
         </mesh>
         {hand}
@@ -160,9 +165,9 @@ const Leg = ({ side, swing, tap, look }: { side: 1 | -1; swing: number; tap: num
   const knee = Math.max(0, -swing) * 0.9 + tap * 0.5;
   return (
     <group position={[side * 0.13, 0.55, 0]} rotation={[-swing - tap * 0.3, 0, 0]}>
-      <Limb len={0.24} r={0.035} color={look.pants} metal={look.metal} />
+      <Limb len={0.24} r={look.fofo ? 0.075 : 0.035} color={look.pants} metal={look.metal} />
       <group position={[0, -0.26, 0]} rotation={[knee, 0, 0]}>
-        <Limb len={0.22} r={0.032} color={look.shorts ? look.skin : look.pants} metal={look.metal} />
+        <Limb len={0.22} r={look.fofo ? 0.07 : 0.032} color={look.shorts ? look.skin : look.pants} metal={look.metal} />
         <mesh position={[0, -0.27, 0.07]} scale={[1, 0.7, 1.6]} castShadow>
           <sphereGeometry args={[0.08, 16, 12]} />
           <Mat color={look.shoes} roughness={0.6} />
@@ -180,7 +185,24 @@ const OpenShell = ({ color, scale, gap = 0.55, y = 0.84 }: { color: string; scal
   </mesh>
 );
 
-const Hair = ({ look }: { look: Look }) => {
+const Hair = ({ look }: { look: Look }) => (
+  <>
+    <HairBase look={look} />
+    {look.topete &&
+      [
+        [0, 0.6, 0.1, 0.0, 0.0, 0.17],
+        [-0.09, 0.56, 0.12, 0.25, -0.35, 0.14],
+        [0.1, 0.57, 0.06, -0.15, 0.4, 0.13],
+      ].map(([x, y, z, rx, rz, h], i) => (
+        <mesh key={i} position={[x, y, z]} rotation={[rx - 0.25, 0, rz]} castShadow>
+          <coneGeometry args={[0.07, h * 1.6, 10]} />
+          <Mat color={look.hair} roughness={0.7} />
+        </mesh>
+      ))}
+  </>
+);
+
+const HairBase = ({ look }: { look: Look }) => {
   const st = look.hairStyle ?? 'curto';
   const c = look.hair;
   if (st === 'nenhum') return null;
@@ -593,7 +615,7 @@ export const Character = ({
                 <sphereGeometry args={[HEAD_R, 48, 32]} />
                 <Mat color={look.skin} roughness={0.55} />
               </mesh>
-              <FaceDecal face={face} skin={look.skin} />
+              <FaceDecal face={face} skin={look.skin} estilo={{ iris: look.iris, blush: look.blush }} />
               <Hair look={look} />
               <Beard look={look} />
               <Eyewear look={look} />

@@ -139,3 +139,44 @@ export const ROUPAS = {
     look: { skin: PELE.escura, jacket: '#f4f4f2', pattern: 'listras', pattern2: '#1f3b7a', patternH: true, pants: '#1f3b7a', shoes: '#111', gloves: MAO, hair: '#1a120c', hat: 'marinheiro', hatColor: '#fbfbf8' },
   },
 } satisfies Record<string, Membro>;
+
+// ============================================================================
+// A TURMA FOFA: personagens originais no estilo "desenho infantil 2D" (olhos grandes com íris
+// colorida, bochechas rosadas, tufo de cabelo, braços e pernas gordinhos, mãos da cor da pele).
+// ============================================================================
+const FOFO = { blush: true, fofo: true } as const;
+
+export const TURMA = {
+  tito: {
+    nome: 'Tito', papel: 'o menino curioso', rosto: 'bigSmile',
+    look: { ...FOFO, skin: '#f2d2b8', gloves: '#f2d2b8', iris: '#4a8fd9', jacket: '#f2b632', pants: '#3b5f9a', shoes: '#f4f4f4', hair: '#8a5a32', topete: true, body: 'crianca' },
+  },
+  nina: {
+    nome: 'Nina', papel: 'a irmã esperta', rosto: 'happy',
+    look: { ...FOFO, skin: '#ecc3a3', gloves: '#ecc3a3', iris: '#3fa86b', jacket: '#ef6f6c', pants: '#ecc3a3', shoes: '#f2c62e', hair: '#c8572b', hairStyle: 'rabo', body: 'crianca', skirt: { color: '#ef6f6c' } },
+  },
+  bia: {
+    nome: 'Bia', papel: 'a melhor amiga', rosto: 'laugh',
+    look: { ...FOFO, skin: '#7a4a2c', gloves: '#7a4a2c', iris: '#9a6a3a', jacket: '#e2557d', pants: '#2c3346', shoes: '#f4f4f4', hair: '#1a120c', hairStyle: 'coque', body: 'crianca' },
+  },
+  lurdes: {
+    nome: 'Dona Lurdes', papel: 'a mãe', rosto: 'smile',
+    look: { ...FOFO, skin: '#c98d64', gloves: '#c98d64', iris: '#7a4a2a', jacket: '#9b7fd1', pants: '#3b4250', shoes: '#5a3a22', hair: '#2a1a12', hairStyle: 'longo' },
+  },
+  dito: {
+    nome: 'Seu Dito', papel: 'o pai', rosto: 'grin',
+    look: { ...FOFO, skin: '#b97a52', gloves: '#b97a52', iris: '#5a3a22', jacket: '#3c7fc4', pattern: 'xadrez', pattern2: '#2a5a94', pants: '#4a4f3e', shoes: '#3a2a1e', hair: '#1a120c', beard: 'bigode', body: 'forte' },
+  },
+  zeca: {
+    nome: 'Vô Zeca', papel: 'o avô inventor', rosto: 'content',
+    look: { ...FOFO, skin: '#f0d5c0', gloves: '#f0d5c0', iris: '#4a8fd9', jacket: '#b5793e', vest: '#6b4a2e', pants: '#5a5f6e', shoes: '#3a2a1e', hair: '#e6e6e6', hairStyle: 'careca', eyewear: 'grau', hat: 'boina', hatColor: '#3a5a3a', body: 'idoso' },
+  },
+  rex: {
+    nome: 'Rex', papel: 'o primo bagunceiro', rosto: 'smug',
+    look: { ...FOFO, skin: '#d9a57c', gloves: '#d9a57c', iris: '#d98c2a', jacket: '#4fa444', pants: '#d9a57c', shorts: true, shoes: '#d23a3a', hair: '#3a2416', hairStyle: 'crespo', topete: true, body: 'crianca', scarf: '#d23a3a' },
+  },
+  lua: {
+    nome: 'Lua', papel: 'a bebê da família', rosto: 'closedSmile',
+    look: { ...FOFO, skin: '#f2d2b8', gloves: '#f2d2b8', iris: '#7a6ad9', jacket: '#f4e3a0', pants: '#f4e3a0', shoes: '#f4f4f4', hair: '#c89a5a', topete: true, hairStyle: 'nenhum', body: 'crianca' },
+  },
+} satisfies Record<string, Membro>;

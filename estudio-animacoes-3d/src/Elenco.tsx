@@ -4,7 +4,7 @@ import { useLayoutEffect } from 'react';
 import { AbsoluteFill } from 'remotion';
 import * as THREE from 'three';
 import { Character, REST } from './Character';
-import { ELENCO, Membro, ROUPAS } from './personagens';
+import { ELENCO, Membro, ROUPAS, TURMA } from './personagens';
 import { tileTex } from './textures';
 
 // Folha do elenco (1920x1760): mostra todos os personagens e roupas prontos para usar.
@@ -100,6 +100,34 @@ export const Elenco = () => {
       <Cartoes membros={todos.slice(0, 10)} w={W} h={430} />
       <Cartoes membros={todos.slice(10)} w={W} h={430} />
       <Cartoes membros={roupas} w={W} h={370} />
+    </AbsoluteFill>
+  );
+};
+
+// Folha da Turma Fofa (1920x1400): os personagens e algumas expressões do Tito.
+export const Turma = () => {
+  const turma = Object.values(TURMA) as Membro[];
+  const tito = TURMA.tito.look;
+  const caras: Membro[] = (
+    [['feliz', 'bigSmile'], ['rindo', 'laugh'], ['surpreso', 'surprised'], ['pensando', 'thinking'], ['bravo', 'anger'], ['com medo', 'scared'], ['apaixonado', 'inLove'], ['piscando', 'wink']] as const
+  ).map(([papel, rosto]) => ({ nome: 'Tito', papel, rosto, look: tito }));
+  const W = 1840;
+  return (
+    <AbsoluteFill style={{ background: PAGE, padding: '44px 40px', display: 'flex', flexDirection: 'column', gap: 26 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 22, letterSpacing: 4, color: '#6b6b6b', fontWeight: 700 }}>ESTÚDIO DE PRODUÇÃO DE ANIMAÇÕES</div>
+          <div style={{ fontFamily: 'Arial Black, sans-serif', fontWeight: 900, fontSize: 86, color: '#141414', lineHeight: 1 }}>
+            A <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400 }}>turma fofa.</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <Selo n={turma.length} txt="personagens novos" />
+          <Selo n={43} txt="expressões" />
+        </div>
+      </div>
+      <Cartoes membros={turma} w={W} h={660} />
+      <Cartoes membros={caras} w={W} h={380} />
     </AbsoluteFill>
   );
 };
