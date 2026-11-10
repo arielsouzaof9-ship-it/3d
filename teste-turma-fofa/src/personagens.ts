@@ -1,0 +1,182 @@
+import { FUNC, Look, VOCE } from './Character';
+import { FaceName } from './textures';
+
+// ============================================================================
+// ELENCO DO ESTÚDIO — 20 personagens originais (6 tipos de corpo) + 12 roupas especiais.
+// Use direto nas cenas: <Character look={ELENCO.teo.look} ... />
+// Para um personagem novo, copie um Look parecido e troque cores, cabelo, chapéu e roupa.
+// ============================================================================
+
+export type Membro = { nome: string; papel: string; look: Look; rosto: FaceName };
+
+const PELE = { clara: '#f0dccb', media: '#d9a57c', morena: '#a36a45', escura: '#6e4329', muitoEscura: '#4e2f1e' };
+const MAO = '#1e1f24';
+
+export const ELENCO = {
+  voce: { nome: 'Você', papel: 'o protagonista', look: VOCE, rosto: 'bigSmile' },
+  teo: {
+    nome: 'Doutor Teo', papel: 'o cientista', rosto: 'happy',
+    look: { skin: PELE.clara, jacket: '#8fb7d9', pants: '#3b4250', shoes: '#2a2a2a', gloves: MAO, hair: '#d9b56a', hairStyle: 'liso', body: 'magro', coat: '#f4f4f2', shirt: '#ffffff', tie: '#2f5fa8', eyewear: 'grau' },
+  },
+  lia: {
+    nome: 'Lia', papel: 'a criança', rosto: 'smile',
+    look: { skin: PELE.morena, jacket: '#d8352f', pants: PELE.morena, shoes: '#e8c240', gloves: MAO, hair: '#2a1a12', hairStyle: 'coque', body: 'crianca', skirt: { color: '#d8352f' } },
+  },
+  tonhao: {
+    nome: 'Tonhão', papel: 'o grandão', rosto: 'grin',
+    look: { skin: PELE.media, jacket: '#b3332e', pattern: 'xadrez', pattern2: '#3a1a18', pants: '#34405a', shoes: '#3a2a1e', gloves: MAO, hair: '#3a2416', beard: 'barba', body: 'forte' },
+  },
+  zuza: {
+    nome: 'Vó Zuza', papel: 'a avó', rosto: 'content',
+    look: { skin: PELE.clara, jacket: '#7b5aa6', pants: '#4a3a66', shoes: '#2a2a2a', gloves: MAO, hair: '#d6d6d6', hairStyle: 'coque', body: 'idoso', skirt: { color: '#5b467e', long: true }, eyewear: 'grau' },
+  },
+  bento: {
+    nome: 'Seu Bento', papel: 'o vovô', rosto: 'smile',
+    look: { skin: PELE.clara, jacket: '#f2efe6', pants: '#4a4f3e', shoes: '#3a2a1e', gloves: MAO, hair: '#e6e6e6', hairStyle: 'careca', beard: 'bigode', vest: '#5d7a45', body: 'idoso', eyewear: 'grau' },
+  },
+  kaio: {
+    nome: 'Kaio', papel: 'o estudante', rosto: 'happy',
+    look: { skin: PELE.escura, jacket: '#3d5fcf', pants: '#2c3346', shoes: '#f2f2f2', gloves: MAO, hair: '#1a120c', hairStyle: 'crespo' },
+  },
+  paula: {
+    nome: 'Paula', papel: 'a vizinha', rosto: 'smile',
+    look: { skin: PELE.morena, jacket: '#2fa36b', pants: '#2c3346', shoes: '#2a2a2a', gloves: MAO, hair: '#1f140e', hairStyle: 'longo' },
+  },
+  ramos: {
+    nome: 'Sargento Ramos', papel: 'o guarda', rosto: 'confident',
+    look: { skin: PELE.muitoEscura, jacket: '#1f2f5c', pants: '#1a2547', shoes: '#111', gloves: MAO, hair: '#120c08', hat: 'policia', hatColor: '#1a2547', tie: '#111a33', shirt: '#dfe6f5' },
+  },
+  nena: {
+    nome: 'Dona Nena', papel: 'a comerciante', rosto: 'bigSmile',
+    look: { skin: PELE.escura, jacket: '#f2ece0', pants: '#e08a2e', shoes: '#5a3a22', gloves: MAO, hair: '#1a120c', hairStyle: 'coque', body: 'baixo', apron: '#e08a2e' },
+  },
+  henrique: {
+    nome: 'Dr. Henrique', papel: 'o executivo', rosto: 'smug',
+    look: { skin: PELE.clara, jacket: '#1f2228', pants: '#1f2228', shoes: '#111', gloves: MAO, hair: '#161210', hairStyle: 'liso', body: 'magro', shirt: '#ffffff', tie: '#c22a2a' },
+  },
+  caio: {
+    nome: 'Caio', papel: 'o friorento', rosto: 'nervous',
+    look: { skin: PELE.media, jacket: '#d6402f', pattern: 'acolchoado', pants: '#2c3346', shoes: '#3a2a1e', gloves: MAO, hair: '#3a2416', hat: 'gorro', hatColor: '#2f4f8f', scarf: '#2f4f8f' },
+  },
+  bruna: {
+    nome: 'Bruna', papel: 'a enfermeira', rosto: 'content',
+    look: { skin: PELE.clara, jacket: '#4fb3b6', pants: '#4fb3b6', shoes: '#f2f2f2', gloves: MAO, hair: '#1a1410', hairStyle: 'chanel' },
+  },
+  rafa: {
+    nome: 'Rafa', papel: 'o atleta', rosto: 'confident',
+    look: { skin: PELE.morena, jacket: '#f6f6f6', pants: '#d23a3a', shoes: '#f2f2f2', gloves: MAO, hair: '#1a120c', hairStyle: 'crespo', shorts: true },
+  },
+  tiao: {
+    nome: 'Tião', papel: 'o trabalhador', rosto: 'neutral',
+    look: { skin: PELE.media, jacket: '#6b4a2e', pants: '#3b3a36', shoes: '#2a2a2a', gloves: MAO, hair: '#2a1a12', hat: 'touca', hatColor: '#2f6fb3', body: 'baixo' },
+  },
+  nico: {
+    nome: 'Chef Nico', papel: 'o cozinheiro', rosto: 'laugh',
+    look: { skin: PELE.clara, jacket: '#fbfbf8', pants: '#2a2a2a', shoes: '#111', gloves: MAO, hair: '#3a2416', beard: 'bigode', hat: 'chef', scarf: '#d23a3a', body: 'forte' },
+  },
+  gabi: {
+    nome: 'Gabi', papel: 'a artista', rosto: 'wink',
+    look: { skin: PELE.clara, jacket: '#2f4f8f', pattern: 'listras', pattern2: '#f4f0e8', patternH: true, pants: '#1f2228', shoes: '#2a2a2a', gloves: MAO, hair: '#c8572b', hairStyle: 'chanel' },
+  },
+  pedrinho: {
+    nome: 'Pedrinho', papel: 'o menino', rosto: 'bigSmile',
+    look: { skin: PELE.media, jacket: '#3aa14a', pants: '#2f5fa8', shoes: '#e8c240', gloves: MAO, hair: '#3a2416', hat: 'touca', hatColor: '#2f6fb3', body: 'crianca', shorts: true },
+  },
+  funcionario: { nome: 'Funcionário', papel: 'o bancário', look: FUNC, rosto: 'smile' },
+  sombra: {
+    nome: 'Sombra', papel: 'o suspeito', rosto: 'suspicious',
+    look: { skin: PELE.clara, jacket: '#16171b', pants: '#16171b', shoes: '#0c0c0e', gloves: MAO, hair: '#0c0c0e', hairStyle: 'liso', body: 'magro', eyewear: 'escuro' },
+  },
+} satisfies Record<string, Membro>;
+
+export const ROUPAS = {
+  astronauta: {
+    nome: 'astronauta', papel: '', rosto: 'amazed',
+    look: { skin: PELE.clara, jacket: '#f4f4f6', pants: '#f4f4f6', shoes: '#9aa0a8', gloves: '#e8e8ec', hair: '#3a2416', hat: 'astronauta', backpack: '#d8d8de' },
+  },
+  mergulhador: {
+    nome: 'mergulhador', papel: '', rosto: 'smile',
+    look: { skin: PELE.media, jacket: '#1a1b20', pants: '#1a1b20', shoes: '#1a1b20', gloves: '#1a1b20', hair: '#1a120c', hairStyle: 'liso', eyewear: 'mergulho' },
+  },
+  protecao: {
+    nome: 'proteção química', papel: '', rosto: 'worried',
+    look: { skin: PELE.morena, jacket: '#f2c62e', pants: '#f2c62e', shoes: '#2a2a2a', gloves: '#2a2a2a', hair: '#1a120c', hat: 'capuz', hatColor: '#f2c62e', backpack: '#d9ae1e' },
+  },
+  explorador: {
+    nome: 'explorador', papel: '', rosto: 'curious',
+    look: { skin: PELE.morena, jacket: '#a8915e', pants: '#8a744a', shoes: '#5a3a22', gloves: MAO, hair: '#1a120c', hairStyle: 'longo', hat: 'explorador', hatColor: '#d8c49a', backpack: '#6b4a2e' },
+  },
+  inverno: {
+    nome: 'inverno', papel: '', rosto: 'nervous',
+    look: { skin: PELE.clara, jacket: '#3256b8', pattern: 'acolchoado', pants: '#232a3a', shoes: '#3a2a1e', gloves: MAO, hair: '#3a2416', hat: 'gorro', hatColor: '#c8322c', scarf: '#c8322c' },
+  },
+  praia: {
+    nome: 'praia', papel: '', rosto: 'bigSmile',
+    look: { skin: PELE.clara, jacket: '#e9792f', pattern: 'florido', pattern2: '#fff3d6', pants: '#3b7fc4', shoes: '#e8c240', gloves: MAO, hair: '#c8572b', hairStyle: 'chanel', shorts: true },
+  },
+  operario: {
+    nome: 'operário', papel: '', rosto: 'confident',
+    look: { skin: PELE.escura, jacket: '#3d4048', pants: '#2c3346', shoes: '#3a2a1e', gloves: MAO, hair: '#1a120c', vest: '#c6f03a', hat: 'capacete', hatColor: '#f2c62e' },
+  },
+  medieval: {
+    nome: 'medieval', papel: '', rosto: 'neutral',
+    look: { skin: PELE.media, jacket: '#7a5634', pants: '#5a3e26', shoes: '#3a2a1e', gloves: MAO, hair: '#3a2416', hat: 'boina', hatColor: '#3a5fa8', skirt: { color: '#7a5634', long: true } },
+  },
+  cavaleiro: {
+    nome: 'cavaleiro', papel: '', rosto: 'confident',
+    look: { skin: PELE.morena, jacket: '#b9c0c8', pants: '#b9c0c8', shoes: '#8a9098', gloves: '#9aa2ab', hair: '#1a120c', hat: 'cavaleiro', metal: true },
+  },
+  farao: {
+    nome: 'faraó', papel: '', rosto: 'smug',
+    look: { skin: PELE.morena, jacket: '#f4efe2', pants: '#f4efe2', shoes: '#c9a14a', gloves: MAO, hair: '#1a120c', hairStyle: 'nenhum', hat: 'farao', scarf: '#e8b931', skirt: { color: '#f4efe2', long: true } },
+  },
+  piloto: {
+    nome: 'piloto', papel: '', rosto: 'happy',
+    look: { skin: PELE.clara, jacket: '#5f6b3e', pants: '#4a5230', shoes: '#3a2a1e', gloves: MAO, hair: '#3a2416', hat: 'piloto', hatColor: '#6b4a2e', eyewear: 'aviador', scarf: '#f4f0e8' },
+  },
+  marinheiro: {
+    nome: 'marinheiro', papel: '', rosto: 'smile',
+    look: { skin: PELE.escura, jacket: '#f4f4f2', pattern: 'listras', pattern2: '#1f3b7a', patternH: true, pants: '#1f3b7a', shoes: '#111', gloves: MAO, hair: '#1a120c', hat: 'marinheiro', hatColor: '#fbfbf8' },
+  },
+} satisfies Record<string, Membro>;
+
+// ============================================================================
+// A TURMA FOFA: personagens originais no estilo "desenho infantil 2D" (olhos grandes com íris
+// colorida, bochechas rosadas, tufo de cabelo, braços e pernas gordinhos, mãos da cor da pele).
+// ============================================================================
+const FOFO = { blush: true, fofo: true } as const;
+
+export const TURMA = {
+  tito: {
+    nome: 'Tito', papel: 'o menino curioso', rosto: 'bigSmile',
+    look: { ...FOFO, skin: '#f2d2b8', gloves: '#f2d2b8', iris: '#4a8fd9', jacket: '#f2b632', pants: '#3b5f9a', shoes: '#f4f4f4', hair: '#8a5a32', topete: true, body: 'crianca' },
+  },
+  nina: {
+    nome: 'Nina', papel: 'a irmã esperta', rosto: 'happy',
+    look: { ...FOFO, skin: '#ecc3a3', gloves: '#ecc3a3', iris: '#3fa86b', jacket: '#ef6f6c', pants: '#ecc3a3', shoes: '#f2c62e', hair: '#c8572b', hairStyle: 'rabo', body: 'crianca', skirt: { color: '#ef6f6c' } },
+  },
+  bia: {
+    nome: 'Bia', papel: 'a melhor amiga', rosto: 'laugh',
+    look: { ...FOFO, skin: '#7a4a2c', gloves: '#7a4a2c', iris: '#9a6a3a', jacket: '#e2557d', pants: '#2c3346', shoes: '#f4f4f4', hair: '#1a120c', hairStyle: 'coque', body: 'crianca' },
+  },
+  lurdes: {
+    nome: 'Dona Lurdes', papel: 'a mãe', rosto: 'smile',
+    look: { ...FOFO, skin: '#c98d64', gloves: '#c98d64', iris: '#7a4a2a', jacket: '#9b7fd1', pants: '#3b4250', shoes: '#5a3a22', hair: '#2a1a12', hairStyle: 'longo' },
+  },
+  dito: {
+    nome: 'Seu Dito', papel: 'o pai', rosto: 'grin',
+    look: { ...FOFO, skin: '#b97a52', gloves: '#b97a52', iris: '#5a3a22', jacket: '#3c7fc4', pattern: 'xadrez', pattern2: '#2a5a94', pants: '#4a4f3e', shoes: '#3a2a1e', hair: '#1a120c', beard: 'bigode', body: 'forte' },
+  },
+  zeca: {
+    nome: 'Vô Zeca', papel: 'o avô inventor', rosto: 'content',
+    look: { ...FOFO, skin: '#f0d5c0', gloves: '#f0d5c0', iris: '#4a8fd9', jacket: '#b5793e', vest: '#6b4a2e', pants: '#5a5f6e', shoes: '#3a2a1e', hair: '#e6e6e6', hairStyle: 'careca', eyewear: 'grau', hat: 'boina', hatColor: '#3a5a3a', body: 'idoso' },
+  },
+  rex: {
+    nome: 'Rex', papel: 'o primo bagunceiro', rosto: 'smug',
+    look: { ...FOFO, skin: '#d9a57c', gloves: '#d9a57c', iris: '#d98c2a', jacket: '#4fa444', pants: '#d9a57c', shorts: true, shoes: '#d23a3a', hair: '#3a2416', hairStyle: 'crespo', topete: true, body: 'crianca', scarf: '#d23a3a' },
+  },
+  lua: {
+    nome: 'Lua', papel: 'a bebê da família', rosto: 'closedSmile',
+    look: { ...FOFO, skin: '#f2d2b8', gloves: '#f2d2b8', iris: '#7a6ad9', jacket: '#f4e3a0', pants: '#f4e3a0', shoes: '#f4f4f4', hair: '#c89a5a', topete: true, hairStyle: 'nenhum', body: 'crianca' },
+  },
+} satisfies Record<string, Membro>;
