@@ -281,7 +281,7 @@ const S16 = ({ t, t0, t1 }: ShotProps) => {
       <Stage color="#3a6a4a" pedestal={false} />
       <Ave position={[-1.25, 0, 0.8]} rotation={[0, 0.5, 0]} scale={1.3} />
       <TRex p={rex} s={0.75} />
-      <group position={[-0.2, 2.7, 0.6]} scale={pop(t, r) * 1.4}>
+      <group position={[-0.2, 2.6, 0.6]} scale={pop(t, r) * 2.6}>
         <Tag text="PARENTES!" />
       </group>
       <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.2, 2.0, 8.6], [0, 1.5, 0], 32], [t1, [-0.2, 1.9, 7.6], [0, 1.6, 0], 32]]} />
