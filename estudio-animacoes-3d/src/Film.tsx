@@ -35,9 +35,9 @@ const Captions = () => {
   const chunk = WORDS.filter((w) => w.line === cur.line).slice(start, start + 4);
   return (
     <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 520 }}>
-      <div style={{ textAlign: 'center', maxWidth: 900, fontFamily: '"Arial Black", Arial, sans-serif', fontSize: 74, lineHeight: 1.1 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: 44, rowGap: 4, maxWidth: 900, fontFamily: '"Arial Black", Arial, sans-serif', fontSize: 74, lineHeight: 1.1 }}>
         {chunk.map((w) => (
-          <span key={w.i} style={{ color: w.stressed ? '#ffd23a' : '#fff', WebkitTextStroke: '14px #1a1208', paintOrder: 'stroke fill', marginRight: 18, display: 'inline-block', transform: w === cur ? 'scale(1.08)' : 'none' }}>
+          <span key={w.i} style={{ color: w.stressed ? '#ffd23a' : '#fff', WebkitTextStroke: '14px #1a1208', paintOrder: 'stroke fill', display: 'inline-block', transform: w === cur ? 'scale(1.08)' : 'none' }}>
             {w.text.toUpperCase()}
           </span>
         ))}
