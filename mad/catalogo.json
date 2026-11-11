@@ -1,0 +1,442 @@
+[
+  {
+    "id": "nina-bebe",
+    "nome": "Nina (bebê)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "nina-crianca",
+    "nome": "Nina (criança)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "nina-bombeira",
+    "nome": "Nina (bombeira)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "rafael-bebe",
+    "nome": "Rafael (bebê)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "rafael-crianca",
+    "nome": "Rafael (criança)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "rafael-empresario",
+    "nome": "Rafael (empresário)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "mae-nina",
+    "nome": "Mãe da Nina",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "pai-rafael",
+    "nome": "Pai do Rafael",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "mae-rafael",
+    "nome": "Mãe do Rafael",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "fotografo",
+    "nome": "Fotógrafo",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "vo-zuza",
+    "nome": "Vó (visita)",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "mae-bebe",
+    "nome": "Mãe do bebê",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "colega-1",
+    "nome": "Colega da escola",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "colega-2",
+    "nome": "Colega da escola",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "colega-3",
+    "nome": "Colega da escola",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "vizinho",
+    "nome": "Comprador",
+    "grupo": "O Número da Palma"
+  },
+  {
+    "id": "medica",
+    "nome": "Médica",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "policial",
+    "nome": "Policial",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "chef",
+    "nome": "Chef de cozinha",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "professor",
+    "nome": "Professor",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "estudante",
+    "nome": "Estudante",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "roqueiro",
+    "nome": "Roqueiro",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "rapper",
+    "nome": "Rapper",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "atleta",
+    "nome": "Jogador de futebol",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "rei",
+    "nome": "Rei",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "princesa",
+    "nome": "Princesa",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "heroi",
+    "nome": "Super-herói",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "magico",
+    "nome": "Mágico",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "cientista",
+    "nome": "Cientista maluco",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "fazendeiro",
+    "nome": "Fazendeiro",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "influencer",
+    "nome": "Influencer",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "gamer",
+    "nome": "Gamer",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "turista",
+    "nome": "Turista na praia",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "ladrao",
+    "nome": "Ladrão",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "pintora",
+    "nome": "Pintora",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "menina-trancas",
+    "nome": "Menina de tranças",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "menino-bone",
+    "nome": "Menino de boné",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "vovo-bengala",
+    "nome": "Vovô de bengala",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "executiva",
+    "nome": "Executiva",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "cavaleiro",
+    "nome": "Cavaleiro",
+    "grupo": "Estilos variados"
+  },
+  {
+    "id": "astronauta",
+    "nome": "Astronauta",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "pirata",
+    "nome": "Pirata",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "palhaco",
+    "nome": "Palhaço",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "enfermeiro",
+    "nome": "Enfermeiro",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "pedreiro",
+    "nome": "Pedreiro",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "carteiro",
+    "nome": "Carteiro",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "entregador",
+    "nome": "Entregador",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "garcom",
+    "nome": "Garçom",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "juiza",
+    "nome": "Juíza",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "detetive",
+    "nome": "Detetive",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "cowboy",
+    "nome": "Caubói",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "ninja",
+    "nome": "Ninja",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "bruxa",
+    "nome": "Bruxa",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "vampiro",
+    "nome": "Vampiro",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "zumbi",
+    "nome": "Zumbi",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "noiva",
+    "nome": "Noiva",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "noivo",
+    "nome": "Noivo",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "bailarina",
+    "nome": "Bailarina",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "skatista",
+    "nome": "Skatista",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "surfista",
+    "nome": "Surfista",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "dj",
+    "nome": "DJ",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "menino-balao",
+    "nome": "Menino com balão",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "vovo-trico",
+    "nome": "Vovó",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "aluna",
+    "nome": "Aluna",
+    "grupo": "Mais personagens"
+  },
+  {
+    "id": "papai-noel",
+    "nome": "Papai Noel",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "fada",
+    "nome": "Fada",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "anjo",
+    "nome": "Anjo",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "diabinho",
+    "nome": "Diabinho",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "robo",
+    "nome": "Robô",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "alien",
+    "nome": "Alienígena",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "mumia",
+    "nome": "Múmia",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "mergulhador",
+    "nome": "Mergulhador",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "piloto",
+    "nome": "Piloto de avião",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "aeromoca",
+    "nome": "Comissária de bordo",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "marinheiro",
+    "nome": "Marinheiro",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "mecanico",
+    "nome": "Mecânico",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "padeiro",
+    "nome": "Padeiro",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "sorveteira",
+    "nome": "Sorveteira",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "jardineira",
+    "nome": "Jardineira",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "pescador",
+    "nome": "Pescador",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "dentista",
+    "nome": "Dentista",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "cabeleireira",
+    "nome": "Cabeleireira",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "boxeador",
+    "nome": "Boxeador",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "tenista",
+    "nome": "Tenista",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "corredora",
+    "nome": "Corredora campeã",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "cadeirante",
+    "nome": "Cadeirante",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "cantora",
+    "nome": "Cantora",
+    "grupo": "Ainda mais personagens"
+  },
+  {
+    "id": "bebe-chorando",
+    "nome": "Bebê chorão",
+    "grupo": "Ainda mais personagens"
+  }
+]

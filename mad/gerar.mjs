@@ -1,6 +1,6 @@
-// Gera os personagens "stick" de "O Número da Palma" em SVG + uma folha de elenco (HTML/PNG).
-//   node personagens-stick/gerar.mjs
-// Saída: personagens-stick/svg/*.svg, personagens-stick/elenco.html, personagens-stick/elenco.png
+// PERSONAGENS MAD: gera todos os personagens stick em SVG + folhas de elenco (HTML/PNG).
+//   node mad/gerar.mjs
+// Saída: mad/svg/*.svg, mad/catalogo.json e as folhas mad/*.html
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -475,3 +475,9 @@ fs.writeFileSync(path.join(DIR, 'extra.html'), html
 <div class="grid">${EXTRA3.map((c) => card(stick(c.k), c.nome)).join('')}</div>
 </body>`));
 console.log(`ok: ${EXTRA3.length} personagens extras (3)`);
+
+// ---------- Catálogo (usado pelo README e pela exportação PNG) ----------
+const grupos = [['O Número da Palma', ELENCO], ['Estilos variados', ESTILOS], ['Mais personagens', MAIS], ['Ainda mais personagens', EXTRA3]];
+const catalogo = grupos.flatMap(([g, l]) => l.map((c) => ({ id: c.id, nome: c.nome, grupo: g })));
+fs.writeFileSync(path.join(DIR, 'catalogo.json'), JSON.stringify(catalogo, null, 2));
+console.log(`ok: catalogo.json com ${catalogo.length} personagens`);
