@@ -85,12 +85,12 @@ export const stick = (k, w = 300, h = 520) => {
   const chao = h - 30;
   const perna = (baby ? 0 : kid ? 110 : 150) * (old ? 0.95 : 1);
   const troncoH = (baby ? 0 : kid ? 95 : 125) * 1;
-  const troncoW = (kid ? 62 : 76) * (old ? 1.05 : 1);
+  const troncoW = (kid ? 84 : 102) * (old ? 1.08 : 1);
   const r = (baby ? 64 : kid ? 64 : 66);
   const quadril = chao - perna;
   const ombro = quadril - troncoH;
   const cy = baby ? chao - 120 : ombro - r * 0.82;
-  const lw = 7 * (kid ? 0.9 : 1);
+  const lw = 9.5 * (kid ? 0.9 : 1);
   const st = `stroke="${LINHA}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
   let out = '';
   // sombra
@@ -101,11 +101,12 @@ export const stick = (k, w = 300, h = 520) => {
     out += `<path d="M${cx - 55} ${chao - 70} q55 30 110 0" stroke="${LINHA}" stroke-width="4" fill="none" opacity="0.35"/>`;
   } else {
     // pernas
-    const pe = (x) => `<ellipse cx="${x}" cy="${chao}" rx="${13 * S}" ry="${7 * S}" fill="${k.sapato ?? LINHA}" stroke="${LINHA}" stroke-width="3"/>`;
-    const lx = troncoW * 0.28;
+    const pe = (x) => `<ellipse cx="${x}" cy="${chao}" rx="${17 * S}" ry="${9 * S}" fill="${k.sapato ?? LINHA}" stroke="${LINHA}" stroke-width="3"/>`;
+    const lx = troncoW * 0.22;
     if (k.calca && !k.saia) {
-      out += `<path d="M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 4}" stroke="${k.calca}" stroke-width="${lw * 2.4}" stroke-linecap="round"/>`;
-      out += `<path d="M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 4}" stroke="${k.calca}" stroke-width="${lw * 2.4}" stroke-linecap="round"/>`;
+      const pl = `M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 8} M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 8}`;
+      out += `<path d="${pl}" stroke="${LINHA}" stroke-width="${lw * 2.3 + 8}" stroke-linecap="round"/>`;
+      out += `<path d="${pl}" stroke="${k.calca}" stroke-width="${lw * 2.3}" stroke-linecap="round"/>`;
     } else {
       out += `<path d="M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 4} M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 4}" ${st}/>`;
     }
@@ -120,13 +121,14 @@ export const stick = (k, w = 300, h = 520) => {
       continencia: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 18} ${ombro + 70} L${cx - troncoW / 2 - 22} ${ombro + 112}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 52} ${ombro - 4} L${cx + r * 0.62} ${cy - r * 0.45}`],
       colo: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 6} ${ombro + 66} L${cx + 20} ${ombro + 72}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 6} ${ombro + 66} L${cx - 20} ${ombro + 72}`],
     }[k.braco ?? 'baixo'];
-    const mao = (d) => { const p = d.trim().split(/[ ML]+/).filter(Boolean); const x = p[p.length - 2], y = p[p.length - 1]; return `<circle cx="${x}" cy="${y}" r="${9 * S}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`; };
+    const mao = (d) => { const p = d.trim().split(/[ ML]+/).filter(Boolean); const x = p[p.length - 2], y = p[p.length - 1]; return `<circle cx="${x}" cy="${y}" r="${12 * S}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`; };
     const frenteBracos = ['colo', 'cintura'].includes(k.braco);
     const desenhaBracos = bracos.map((d) => `<path d="${d}" ${st}/>`).join('') + bracos.map(mao).join('');
     if (!frenteBracos) out += desenhaBracos;
     // tronco (camiseta)
-    out += `<path d="M${cx - troncoW / 2} ${ombro + 18} q0 -18 18 -18 h${troncoW - 36} q18 0 18 18 L${cx + troncoW / 2 + 4} ${quadril} q0 6 -6 6 h${-troncoW + 4} q-6 0 -6 -6 z" fill="${k.roupa}" stroke="${LINHA}" stroke-width="5"/>`;
-    if (k.colete) out += `<path d="M${cx - troncoW / 2 + 2} ${ombro + 30} h${troncoW - 4} M${cx - troncoW / 2 + 3} ${ombro + 70} h${troncoW - 6}" stroke="${k.colete}" stroke-width="10"/>`;
+    { const a = troncoW, hh = troncoH, b = quadril + 8;
+      out += `<path d="M${cx - 0.36 * a} ${ombro} Q${cx - 0.5 * a} ${ombro} ${cx - 0.5 * a} ${ombro + 0.25 * hh} C${cx - 0.57 * a} ${ombro + 0.7 * hh} ${cx - 0.52 * a} ${b} ${cx - 0.28 * a} ${b} H${cx + 0.28 * a} C${cx + 0.52 * a} ${b} ${cx + 0.57 * a} ${ombro + 0.7 * hh} ${cx + 0.5 * a} ${ombro + 0.25 * hh} Q${cx + 0.5 * a} ${ombro} ${cx + 0.36 * a} ${ombro} z" fill="${k.roupa}" stroke="${LINHA}" stroke-width="5"/>`; }
+    if (k.colete) out += `<path d="M${cx - troncoW * 0.47} ${ombro + 30} h${troncoW * 0.94} M${cx - troncoW * 0.5} ${ombro + 70} h${troncoW}" stroke="${k.colete}" stroke-width="10"/>`;
     if (k.gravata) out += `<path d="M${cx} ${ombro + 2} l-9 12 l9 50 l9 -50 z" fill="${k.gravata}" stroke="${LINHA}" stroke-width="3"/><path d="M${cx - 16} ${ombro} l16 14 l16 -14" fill="#fff" stroke="${LINHA}" stroke-width="3"/>`;
     if (k.avental) out += `<rect x="${cx - troncoW * 0.32}" y="${ombro + 30}" width="${troncoW * 0.64}" height="${troncoH - 24}" rx="6" fill="${k.avental}" stroke="${LINHA}" stroke-width="3"/>`;
     if (k.etiqueta) out += `<rect x="${cx + 4}" y="${ombro + 26}" width="24" height="14" rx="3" fill="#fff" stroke="${LINHA}" stroke-width="2"/>`;
