@@ -2,6 +2,7 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
 import { MOVIMENTOS, pose } from './movimentos';
 import { Rig } from './Rig';
+import { Granulado } from './Granulado';
 
 export const TITO = { tipo: 'crianca', pele: '#e2b48c', roupa: '#3dc4d8', calca: '#c9a86a', sapato: '#e5484d', cabelo: 'espetado', corCabelo: '#6b3e1f' };
 const ELENCO = [
@@ -41,6 +42,7 @@ export const Movimentos = () => {
           })
         )}
       </svg>
+      <Granulado />
     </AbsoluteFill>
   );
 };

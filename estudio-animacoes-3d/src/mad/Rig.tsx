@@ -65,19 +65,22 @@ const membro = (pts: V[], cor: string, w: number) => {
 };
 
 // ---------- Rosto de olhos grandes ----------
-const Rosto = ({ p, r, pele }: { p: Pose; r: number; pele: string }) => {
-  const ex = r * 0.36, ey = -r * 0.05, rx = r * 0.2, ry = r * 0.25 * Math.max(0.05, p.olho);
+const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L }: { p: Pose; r: number; pele: string; iris?: string; corSobr?: string }) => {
+  const ex = r * 0.37, ey = r * 0.0, rx = r * 0.27, ry = r * 0.31 * Math.max(0.05, p.olho);
   const px = p.pupila[0] * rx * 0.45, py = p.pupila[1] * ry * 0.4;
   const sb = p.sobr;
   const olhos = p.olhoFeliz
     ? [-1, 1].map((s) => <path key={s} d={`M${s * ex - rx} ${ey + 4} q${rx} ${-ry * 1.4} ${rx * 2} 0`} stroke={L} strokeWidth={r * 0.07} fill="none" strokeLinecap="round" />)
     : [-1, 1].map((s) => (
         <g key={s}>
-          <ellipse cx={s * ex} cy={ey} rx={rx} ry={ry} fill="#fff" stroke={L} strokeWidth={r * 0.05} />
+          <ellipse cx={s * ex} cy={ey} rx={rx} ry={ry} fill="#fff" stroke={L} strokeWidth={r * 0.04} />
+          <path d={`M${s * ex - rx} ${ey} a${rx} ${ry} 0 0 1 ${rx * 2} 0`} stroke={L} strokeWidth={r * 0.07} fill="none" />
           {p.olho > 0.25 && (
             <>
-              <circle cx={s * ex + px} cy={ey + py} r={Math.min(rx, ry) * 0.62} fill={L} />
-              <circle cx={s * ex + px + rx * 0.22} cy={ey + py - ry * 0.25} r={rx * 0.18} fill="#fff" />
+              <circle cx={s * ex + px} cy={ey + py} r={Math.min(rx, ry) * 0.66} fill={iris} stroke={L} strokeWidth={r * 0.025} />
+              <circle cx={s * ex + px} cy={ey + py} r={Math.min(rx, ry) * 0.36} fill={L} />
+              <circle cx={s * ex + px + rx * 0.24} cy={ey + py - ry * 0.26} r={rx * 0.2} fill="#fff" />
+              <circle cx={s * ex + px - rx * 0.2} cy={ey + py + ry * 0.22} r={rx * 0.09} fill="#fff" />
             </>
           )}
         </g>
@@ -85,7 +88,7 @@ const Rosto = ({ p, r, pele }: { p: Pose; r: number; pele: string }) => {
   const sobr = [-1, 1].map((s) => {
     const y = ey - r * 0.32 - (p.olho > 1 ? r * 0.06 : 0) - sb * r * 0.06;
     const inc = p.sobrTriste ? -s * r * 0.08 : sb < 0 ? s * r * 0.1 : 0;
-    return <path key={s} d={`M${s * ex - rx * 0.9} ${y + (s < 0 ? inc : -inc) * 0.5} L${s * ex + rx * 0.9} ${y - (s < 0 ? inc : -inc) * 0.5}`} stroke={L} strokeWidth={r * 0.07} strokeLinecap="round" />;
+    return <path key={s} stroke={corSobr} d={`M${s * ex - rx * 0.9} ${y + (s < 0 ? inc : -inc) * 0.5} L${s * ex + rx * 0.9} ${y - (s < 0 ? inc : -inc) * 0.5}`} strokeWidth={r * 0.1} strokeLinecap="round" />;
   });
   const my = r * 0.42, mw = r * 0.24, ab = p.fala;
   const bocas: Record<Pose['boca'], JSX.Element> = {
@@ -101,7 +104,7 @@ const Rosto = ({ p, r, pele }: { p: Pose; r: number; pele: string }) => {
   const boca = ab > 0.05 && (p.boca === 'sorriso' || p.boca === 'neutra') ? <ellipse cx={0} cy={my + 2} rx={mw * 0.6} ry={mw * 0.15 + ab * mw * 0.45} fill={L} /> : bocas[p.boca];
   return (
     <g>
-      {[-1, 1].map((s) => <ellipse key={s} cx={s * r * 0.6} cy={r * 0.25} rx={r * 0.14} ry={r * 0.08} fill="#f2a0a8" opacity={0.55 + p.vermelho * 0.45} />)}
+      {[-1, 1].map((s) => <circle key={s} cx={s * r * 0.62} cy={r * 0.3} r={r * 0.17} fill="#f29aa3" opacity={0.42 + p.vermelho * 0.4} />)}
       {olhos}
       {sobr}
       {boca}
@@ -117,17 +120,25 @@ const Rosto = ({ p, r, pele }: { p: Pose; r: number; pele: string }) => {
 export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any>; p: Pose; x: number; y: number; s?: number; flip?: boolean }) => {
   const kid = k.tipo === 'crianca';
   const G = kid ? 0.8 : 1; // proporção do corpo
-  const perna = 150 * G, troncoH = 125 * G, troncoW = (kid ? 88 : 104) * (k.corpo === 'gordo' ? 1.3 : k.corpo === 'magro' ? 0.8 : 1);
-  const r = kid ? 64 : 66;
-  const LW = (kid ? 20 : 22);
+  const perna = 128 * G, troncoH = 112 * G, troncoW = (kid ? 98 : 116) * (k.corpo === 'gordo' ? 1.3 : k.corpo === 'magro' ? 0.82 : 1);
+  const r = kid ? 78 : 76;
+  const LW = (kid ? 28 : 30);
   const quadY = -perna + p.quadril;
   const ombY = quadY - troncoH - p.ombro;
   const pesc: V = [0, quadY - troncoH];
   const cab: V = [p.cabX, pesc[1] - r * 0.78 + p.cabY + p.ombro * 0.4];
   // braços
   const sE: V = [-troncoW * 0.4, ombY + 14], sD: V = [troncoW * 0.4, ombY + 14];
-  const ua = 64 * G, fa = 60 * G;
-  const T = (v: V): V => [v[0] * G, v[1] * G]; // alvos são definidos para adulto e escalam com o corpo
+  const ua = 56 * G, fa = 52 * G;
+  // Os alvos dos movimentos foram escritos para o esqueleto antigo (quadril -150, ombro -275, centro da cabeça -326);
+  // aqui são levados para as proporções atuais (cabeça maior, corpo mais curto).
+  const cabY0 = quadY - troncoH - r * 0.78;
+  const mapY = (y: number) => {
+    const A: V[] = [[0, 0], [-150, quadY / G], [-275, (quadY - troncoH) / G], [-326, cabY0 / G], [-450, (cabY0 - 130) / G]];
+    for (let i = 1; i < A.length; i++) if (y >= A[i][0]) { const [a0, b0] = A[i - 1], [a1, b1] = A[i]; return b0 + ((y - a0) / (a1 - a0)) * (b1 - b0); }
+    const [a0, b0] = A[A.length - 2], [a1, b1] = A[A.length - 1]; return b0 + ((y - a0) / (a1 - a0)) * (b1 - b0);
+  };
+  const T = (v: V): V => [v[0] * G * (troncoW / ((kid ? 88 : 104) * G)) ** 0.5, mapY(v[1]) * G];
   const mE = fim(sE, T(p.maoE), ua, fa), mD = fim(sD, T(p.maoD), ua, fa);
   const cE = ik(sE, mE, ua, fa, 1), cD = ik(sD, mD, ua, fa, -1);
   // pernas
@@ -141,7 +152,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
   const braco = (sh: V, el: V, m: V) => (
     <g>
       {membro([sh, el, m], manga, LW)}
-      <circle cx={m[0]} cy={m[1]} r={LW / 2 + 7} fill={pele} stroke={L} strokeWidth={4} />
+      <path d={`M${sh[0] + (el[0] - sh[0]) * 0.2} ${sh[1] + (el[1] - sh[1]) * 0.2} L${sh[0] + (el[0] - sh[0]) * 0.7} ${sh[1] + (el[1] - sh[1]) * 0.7}`} stroke="#fff" strokeWidth={6} strokeLinecap="round" opacity={0.35} transform={`translate(${-LW * 0.2} 0)`} />
+      <circle cx={m[0]} cy={m[1]} r={LW / 2 + 5} fill={pele} stroke={L} strokeWidth={4.5} />
     </g>
   );
   const a = troncoW, hh = troncoH, b = quadY + 8, o = ombY;
@@ -161,15 +173,17 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {!p.frenteD && braco(sD, cD, mD)}
       {/* tronco */}
       <path d={tronco} fill={k.roupa} stroke={L} strokeWidth={5} />
+      <path d={`M${-0.3 * a} ${o + 0.22 * hh} q${-0.06 * a} ${0.2 * hh} ${-0.02 * a} ${0.42 * hh}`} stroke="#fff" strokeWidth={7} strokeLinecap="round" fill="none" opacity={0.35} />
       {k.colete && <path d={`M${-a * 0.5} ${o + 30} h${a} M${-a * 0.52} ${o + 70} h${a * 1.04}`} stroke={k.colete} strokeWidth={10} />}
       {k.peito && <text x={0} y={o + hh * 0.62} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.42} fill="#fff" stroke={L} strokeWidth={2}>{k.peito}</text>}
       {k.gravata && <path d={`M0 ${o + 2} l-9 12 l9 50 l9 -50 z`} fill={k.gravata} stroke={L} strokeWidth={3} />}
       {/* cabeça */}
       <g transform={`translate(${cab[0]} ${cab[1]}) rotate(${p.cabRot} 0 ${r * 0.8})`}>
         {hair.atras && <g dangerouslySetInnerHTML={{ __html: hair.atras }} />}
+        {[-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
         <circle r={r} fill={pele} stroke={L} strokeWidth={5} />
         <g transform={`translate(${p.cabX * 0.6} ${p.cabY * 0.3})`}>
-          <Rosto p={p} r={r} pele={pele} />
+          <Rosto p={p} r={r} pele={pele} iris={k.iris ?? '#6c9bd2'} corSobr={k.corSobr ?? (k.corCabelo === '#f7f7f7' || k.corCabelo === '#d6d6d6' ? '#9a9aa6' : k.corCabelo ?? L)} />
         </g>
         {hair.frente && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
         {hat && <g dangerouslySetInnerHTML={{ __html: hat }} />}

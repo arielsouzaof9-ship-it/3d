@@ -5,6 +5,7 @@ import { Auditorio, Boneco, CHAO_RUA, CHAO_SALA, Escola, Foto, Liso, Rua, Sala, 
 import { ADULTO, AVO, Balao, Brilho, Cam, clamp, COLEGAS, FADE, FILHO, Legenda, MENINO, Moto, P, PAI, Placa, Pop, VIZINHO } from './FiosBrancos';
 import { pose } from './movimentos';
 import { Pose, Rig } from './Rig';
+import { Granulado } from './Granulado';
 import { END, LINES, W } from './timeline-fios';
 
 // Ator: boneco articulado num quadro 1080×1920. h ≈ altura do antigo <Boneco> (para manter os mesmos enquadramentos).
@@ -308,6 +309,7 @@ export const FiosBrancosArticulado = () => {
           </Sequence>
         );
       })}
+      <Granulado />
       <Legenda />
       <Audio src={staticFile('voz-fios.mp3')} />
     </AbsoluteFill>
