@@ -120,8 +120,9 @@ const Calcada = ({ carro = true }: { carro?: boolean }) => (
     <rect x={0} y={1318} width={1080} height={22} fill="#b5ab98" stroke={L} strokeWidth={3} />
     <rect x={0} y={1340} width={1080} height={580} fill="#5c6370" />
     {Array.from({ length: 6 }, (_, i) => <rect key={i} x={i * 200 + 30} y={1700} width={120} height={16} rx={6} fill="#f1f1f1" />)}
-    {Array.from({ length: 7 }, (_, i) => <rect key={i} x={760 + i * 44} y={1360} width={28} height={300} fill="#f1f1f1" opacity={0.85} />)}
-    {carro && <Carro x={60} y={1600} cor="#e5484d" />}
+    {/* faixa de pedestres: listras deitadas, atravessando a rua */}
+    {Array.from({ length: 7 }, (_, i) => <rect key={i} x={760} y={1370 + i * 44} width={280} height={26} rx={3} fill="#f1f1f1" opacity={0.9} />)}
+    {carro && <g transform="translate(90 1640) scale(1.45) translate(-90 -1640)"><Carro x={90} y={1640} cor="#e5484d" /></g>}
   </>
 );
 
