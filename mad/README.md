@@ -46,3 +46,13 @@ Papai Noel (`papai-noel`), Fada (`fada`), Anjo (`anjo`), Diabinho (`diabinho`), 
 - **Roupa:** saia, vestido, tutu, short, jaleco, capa, asas, colete, gravata, avental, capuz, mochila, colar, cinto, medalha, estetoscópio, luvas de boxe, cadeira de rodas; estampas listras, xadrez, bolinhas, florido; no peito: estrela, distintivo, número, coração, raio.
 - **Poses de braço:** baixo, acena, palma, cintura, continência, colo.
 - **Objetos:** livro, bola, microfone, pincel, paleta, varinha, celular, maleta, tubo de ensaio, bengala, saco de dinheiro, prancheta, violão, pizza, espada, flor, controle, skate, prancha, caixa, carta, bandeja, martelo, malhete, vassoura, lupa, buquê, laço, disco, balão, bandeira, presentes, chave inglesa, pão, sorvete, regador, vara de pescar, escova, tesoura, raquete, tridente, harpa, lanterna, câmera, bolsa.
+
+## Versão articulada (com movimentos)
+
+Todos os personagens também podem ser animados como **bonecos articulados**, no mesmo padrão de movimentos dos vídeos de referência:
+nunca ficam totalmente parados (respiram, piscam, mexem a cabeça e os olhos) e fazem gestos com o braço inteiro.
+
+- Boneco: `estudio-animacoes-3d/src/mad/Rig.tsx` (aceita o mesmo objeto de qualquer personagem deste catálogo).
+- Movimentos: `estudio-animacoes-3d/src/mad/movimentos.ts`: parado, falar, acenar, pensar, rir, gargalhar, chorar, susto,
+  comemorar, andar, esconder, sim, não, apontar, dar de ombros, bravo, nervoso, entrar com "pop".
+- Demonstração: `movimentos-mad.mp4` na raiz do repositório.

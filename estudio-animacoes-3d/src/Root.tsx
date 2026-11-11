@@ -2,6 +2,7 @@ import { Composition } from 'remotion';
 import { Elenco } from './Elenco';
 import { Film } from './Film';
 import { DURACAO_FIOS, FiosBrancos } from './mad/FiosBrancos';
+import { DURACAO_MOV, Movimentos } from './mad/Movimentos';
 import { END, FPS } from './timeline';
 import { VOZ } from './voz';
 
@@ -18,6 +19,8 @@ export const Root = () => (
     />
     {/* "Fios Brancos" com os personagens mad (2D) */}
     <Composition id="FiosBrancos" component={FiosBrancos} durationInFrames={Math.round(DURACAO_FIOS * FPS)} fps={FPS} width={1080} height={1920} />
+    {/* Demonstração dos movimentos dos personagens mad articulados */}
+    <Composition id="MovimentosMad" component={Movimentos} durationInFrames={Math.round(DURACAO_MOV * FPS)} fps={FPS} width={1080} height={1920} />
     {/* Folha com todo o elenco disponível (node tools/elenco.mjs) */}
     <Composition id="Elenco" component={Elenco} durationInFrames={1} fps={FPS} width={1920} height={1760} />
   </>

@@ -35,7 +35,7 @@ const rosto = (e, cx, cy, r) => {
 };
 
 // ---------- Cabelos e chapéus (atrás = desenhado antes da cabeça) ----------
-const cabelo = (tipo, cor, cx, cy, r) => {
+export const cabelo = (tipo, cor, cx, cy, r) => {
   const s = `fill="${cor}" stroke="${LINHA}" stroke-width="${r * 0.05}"`;
   switch (tipo) {
     case 'curto': return { frente: `<path d="M${cx - r * 0.98} ${cy - r * 0.05} C${cx - r} ${cy - r * 1.25}, ${cx + r} ${cy - r * 1.25}, ${cx + r * 0.98} ${cy - r * 0.05} C${cx + r * 0.7} ${cy - r * 0.55}, ${cx - r * 0.2} ${cy - r * 0.62}, ${cx - r * 0.98} ${cy - r * 0.05} z" ${s}/>` };
@@ -74,7 +74,7 @@ const cabelo = (tipo, cor, cx, cy, r) => {
     default: return {};
   }
 };
-const chapeu = (tipo, cor, cx, cy, r) => {
+export const chapeu = (tipo, cor, cx, cy, r) => {
   const s = `fill="${cor}" stroke="${LINHA}" stroke-width="${r * 0.05}"`;
   if (tipo === 'capacete') cy -= r * 0.2;
   if (tipo === 'capacete') return `<path d="M${cx - r * 0.95} ${cy - r * 0.25} C${cx - r * 0.95} ${cy - r * 1.35}, ${cx + r * 0.95} ${cy - r * 1.35}, ${cx + r * 0.95} ${cy - r * 0.25} z" ${s}/><path d="M${cx - r * 1.25} ${cy - r * 0.22} h${r * 2.5} v${r * 0.16} h${-r * 2.5} z" ${s}/><path d="M${cx} ${cy - r * 1.1} v${r * 0.85}" stroke="${LINHA}" stroke-width="${r * 0.05}" opacity="0.5"/>`;
