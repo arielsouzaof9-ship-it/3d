@@ -13,7 +13,7 @@ export const LINES = [
   'O carteiro usa um *torto*.',
   'A noiva comprou o tamanho *errado*.',
   'Até o *cachorro* tem um.',
-  'A vovó cola o dela de *cabeça* pra baixo, e ninguém nota.',
+  'A vovó cola o dela de *cabeça* para baixo, e ninguém nota.',
   'Todo dia, a *fila* da farmácia dá a volta no quarteirão.',
   'O jornal só tem uma *notícia*: promoção de adesivo.',
   'Eu sou a *Tita*, e tenho *alergia* a cola.',
@@ -30,7 +30,7 @@ export const LINES = [
   'Milhares de *potes*, cada um com uma risada presa.',
   'Ele roubava os sorrisos de *manhã*, e vendia de volta à *tarde*.',
   'Aí eu pisei num *pote*. Ele me viu.',
-  'Ele apontou o aspirador pra *mim*.',
+  'Ele apontou o aspirador para *mim*.',
   'Eu corri entre as prateleiras, mas a porta estava *trancada*.',
   'Eu ri a maior *gargalhada* da minha vida.',
   'O aspirador engoliu, engasgou, e *explodiu*.',
@@ -40,7 +40,7 @@ export const LINES = [
   'A noiva *casou* rindo.',
   'E o cachorro? Abanou o rabo de *verdade*.',
   'O farmacêutico tentou sorrir. Não *conseguiu*.',
-  'Teve que comprar um adesivo, e colou de *cabeça* pra baixo.',
+  'Teve que comprar um adesivo, e colou de *cabeça* para baixo.',
 ];
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };
