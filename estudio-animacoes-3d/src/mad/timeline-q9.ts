@@ -76,7 +76,7 @@ const L3 = [
   'O desenho continua na parede. Mas embaixo de "Mamãe veio me buscar", agora tem uma frase nova, numa letra de adulta:',
   '"E finalmente me *encontrou."*',
 ];
-const IG = { nove: '9', vinte: '20', catorze: '14', trinta: '30', c: 'c' };
+const IG = { indo: 'inga', nove: '9', vinte: '20', catorze: '14', trinta: '30', c: 'c' };
 export const TL1 = criarTimeline(L1, PALAVRAS_Q9[1], 88, IG);
 export const TL2 = criarTimeline(L2, PALAVRAS_Q9[2], 90, IG);
 export const TL3 = criarTimeline(L3, PALAVRAS_Q9[3], 93, IG);

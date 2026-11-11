@@ -34,7 +34,7 @@ export const criarTimeline = (LINES: string[], PALAVRAS: Palavra[], duracao: num
         if (!k) return;
         const alvo = IG[k] ?? k;
         let hit = -1;
-        for (let d = 0; d < 4 && j + d < fal.length; d++) if (fal[j + d].k === alvo || fal[j + d].k.startsWith(alvo) || alvo.startsWith(fal[j + d].k)) { hit = j + d; break; }
+        for (let d = 0; d < 4 && j + d < fal.length; d++) if ([alvo, k].some((a) => fal[j + d].k === a || fal[j + d].k.startsWith(a) || a.startsWith(fal[j + d].k))) { hit = j + d; break; }
         const prev = out[out.length - 1];
         const t0 = hit >= 0 ? fal[hit].t0 : prev ? prev.t1 : 0;
         if (hit >= 0) j = hit + 1;
