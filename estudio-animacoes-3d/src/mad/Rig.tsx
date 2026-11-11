@@ -65,7 +65,7 @@ const membro = (pts: V[], cor: string, w: number) => {
 };
 
 // ---------- Rosto de olhos grandes ----------
-const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L }: { p: Pose; r: number; pele: string; iris?: string; corSobr?: string }) => {
+const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L, cicatriz = false }: { p: Pose; r: number; pele: string; iris?: string; corSobr?: string; cicatriz?: boolean }) => {
   const ex = r * 0.37, ey = r * 0.0, rx = r * 0.27, ry = r * 0.31 * Math.max(0.05, p.olho);
   const px = p.pupila[0] * rx * 0.45, py = p.pupila[1] * ry * 0.4;
   const sb = p.sobr;
@@ -107,6 +107,7 @@ const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L }: { p: Pose; r: numb
       {[-1, 1].map((s) => <circle key={s} cx={s * r * 0.62} cy={r * 0.3} r={r * 0.17} fill="#f29aa3" opacity={0.42 + p.vermelho * 0.4} />)}
       {olhos}
       {sobr}
+      {cicatriz && <path d={`M${-r * 0.42} ${-r * 0.48} l${r * 0.1} ${r * 0.2} M${-r * 0.36} ${-r * 0.5} l${r * 0.1} ${r * 0.2}`} stroke="#b5524f" strokeWidth={r * 0.035} strokeLinecap="round" />}
       {boca}
       {p.lagrima > 0 && [-1, 1].map((s) => <path key={s} d={`M${s * ex} ${ey + ry * 0.6} q${-6} ${r * 0.5 * p.lagrima} 0 ${r * 0.62 * p.lagrima} q${6} ${-r * 0.12} 0 ${-r * 0.62 * p.lagrima}`} fill="#6ab7ff" stroke="#3d8bfd" strokeWidth={2} opacity={0.9} />)}
       {p.suor > 0 && <path d={`M${r * 0.78} ${-r * 0.55 + p.suor * 8} q${-r * 0.13} ${r * 0.22} 0 ${r * 0.3} q${r * 0.13} ${-r * 0.08} 0 ${-r * 0.3}`} fill="#9fd4ff" stroke={L} strokeWidth={2.5} opacity={Math.min(1, p.suor * 2)} />}
@@ -175,6 +176,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       <path d={tronco} fill={k.roupa} stroke={L} strokeWidth={5} />
       <path d={`M${-0.3 * a} ${o + 0.22 * hh} q${-0.06 * a} ${0.2 * hh} ${-0.02 * a} ${0.42 * hh}`} stroke="#fff" strokeWidth={7} strokeLinecap="round" fill="none" opacity={0.35} />
       {k.colete && <path d={`M${-a * 0.5} ${o + 30} h${a} M${-a * 0.52} ${o + 70} h${a * 1.04}`} stroke={k.colete} strokeWidth={10} />}
+      {k.avental && <g><path d={`M${-a * 0.3} ${o + 0.2 * hh} h${a * 0.6} l${a * 0.04} ${hh * 0.95} h${-a * 0.68} z`} fill={k.avental} stroke={L} strokeWidth={3.5} />{k.bordado && <text x={0} y={o + 0.5 * hh} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.13} fill="#d1495b">{k.bordado}</text>}</g>}
+      {k.distintivo && <path d={`M${a * 0.18} ${o + 0.28 * hh} l9 -6 l9 6 v12 q-9 9 -18 0 z`} fill="#f2c94c" stroke={L} strokeWidth={3} />}
       {k.peito && <text x={0} y={o + hh * 0.62} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.42} fill="#fff" stroke={L} strokeWidth={2}>{k.peito}</text>}
       {k.gravata && <path d={`M0 ${o + 2} l-9 12 l9 50 l9 -50 z`} fill={k.gravata} stroke={L} strokeWidth={3} />}
       {/* cabeça */}
@@ -183,7 +186,7 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
         {[-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
         <circle r={r} fill={pele} stroke={L} strokeWidth={5} />
         <g transform={`translate(${p.cabX * 0.6} ${p.cabY * 0.3})`}>
-          <Rosto p={p} r={r} pele={pele} iris={k.iris ?? '#6c9bd2'} corSobr={k.corSobr ?? (k.corCabelo === '#f7f7f7' || k.corCabelo === '#d6d6d6' ? '#9a9aa6' : k.corCabelo ?? L)} />
+          <Rosto p={p} r={r} pele={pele} cicatriz={!!k.cicatriz} iris={k.iris ?? '#6c9bd2'} corSobr={k.corSobr ?? (k.corCabelo === '#f7f7f7' || k.corCabelo === '#d6d6d6' ? '#9a9aa6' : k.corCabelo ?? L)} />
         </g>
         {hair.frente && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
         {hat && <g dangerouslySetInnerHTML={{ __html: hat }} />}
