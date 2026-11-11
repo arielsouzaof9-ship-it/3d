@@ -91,6 +91,9 @@ export const stick = (k, w = 300, h = 520) => {
   const ombro = quadril - troncoH;
   const cy = baby ? chao - 120 : ombro - r * 0.82;
   const lw = 9.5 * (kid ? 0.9 : 1);
+  const GROSSO = lw * 2.3;
+  // Braços e pernas: mesma grossura, com contorno escuro.
+  const membro = (d, cor) => `<path d="${d}" stroke="${LINHA}" stroke-width="${GROSSO + 8}" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="${d}" stroke="${cor}" stroke-width="${GROSSO}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
   const st = `stroke="${LINHA}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round" fill="none"`;
   let out = '';
   // sombra
@@ -105,10 +108,10 @@ export const stick = (k, w = 300, h = 520) => {
     const lx = troncoW * 0.22;
     if (k.calca && !k.saia) {
       const pl = `M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 8} M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 8}`;
-      out += `<path d="${pl}" stroke="${LINHA}" stroke-width="${lw * 2.3 + 8}" stroke-linecap="round"/>`;
-      out += `<path d="${pl}" stroke="${k.calca}" stroke-width="${lw * 2.3}" stroke-linecap="round"/>`;
+      out += membro(pl, k.calca);
     } else {
-      out += `<path d="M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 4} M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 4}" ${st}/>`;
+      const pl = `M${cx - lx} ${quadril - 4} L${cx - lx - 4} ${chao - 8} M${cx + lx} ${quadril - 4} L${cx + lx + 4} ${chao - 8}`;
+      out += membro(pl, k.pele);
     }
     out += pe(cx - lx - 8) + pe(cx + lx + 8);
     if (k.saia) out += `<path d="M${cx - troncoW * 0.55} ${quadril - 12} L${cx - troncoW * 0.85} ${quadril + 42 * S} H${cx + troncoW * 0.85} L${cx + troncoW * 0.55} ${quadril - 12} z" fill="${k.saia}" stroke="${LINHA}" stroke-width="4"/>`;
@@ -121,9 +124,9 @@ export const stick = (k, w = 300, h = 520) => {
       continencia: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 18} ${ombro + 70} L${cx - troncoW / 2 - 22} ${ombro + 112}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 52} ${ombro - 4} L${cx + r * 0.62} ${cy - r * 0.45}`],
       colo: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 6} ${ombro + 66} L${cx + 20} ${ombro + 72}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 6} ${ombro + 66} L${cx - 20} ${ombro + 72}`],
     }[k.braco ?? 'baixo'];
-    const mao = (d) => { const p = d.trim().split(/[ ML]+/).filter(Boolean); const x = p[p.length - 2], y = p[p.length - 1]; return `<circle cx="${x}" cy="${y}" r="${12 * S}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`; };
+    const mao = (d) => { const p = d.trim().split(/[ ML]+/).filter(Boolean); const x = p[p.length - 2], y = p[p.length - 1]; return `<circle cx="${x}" cy="${y}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`; };
     const frenteBracos = ['colo', 'cintura'].includes(k.braco);
-    const desenhaBracos = bracos.map((d) => `<path d="${d}" ${st}/>`).join('') + bracos.map(mao).join('');
+    const desenhaBracos = bracos.map((d) => membro(d, k.manga ?? k.roupa)).join('') + bracos.map(mao).join('');
     if (!frenteBracos) out += desenhaBracos;
     // tronco (camiseta)
     { const a = troncoW, hh = troncoH, b = quadril + 8;
@@ -146,7 +149,7 @@ export const stick = (k, w = 300, h = 520) => {
   if (k.oculos) out += `<circle cx="${cx - r * 0.34}" cy="${cy - r * 0.05}" r="${r * 0.2}" fill="none" stroke="${LINHA}" stroke-width="4"/><circle cx="${cx + r * 0.34}" cy="${cy - r * 0.05}" r="${r * 0.2}" fill="none" stroke="${LINHA}" stroke-width="4"/><path d="M${cx - r * 0.14} ${cy - r * 0.05} h${r * 0.28}" stroke="${LINHA}" stroke-width="4"/>`;
   out += rosto(k.rosto ?? 'neutro', cx, cy, r);
   if (k.bigode) out += `<path d="M${cx - r * 0.3} ${cy + r * 0.22} q${r * 0.3} ${-r * 0.2} ${r * 0.3} 0 q0 ${-r * 0.2} ${r * 0.3} 0 q-${r * 0.05} ${r * 0.2} -${r * 0.3} ${r * 0.12} q-${r * 0.25} ${r * 0.08} -${r * 0.3} -${r * 0.12} z" fill="${k.corCabelo}" stroke="${LINHA}" stroke-width="2"/>`;
-  if (baby && k.braco === 'palma') out += `<path d="M${cx + 40} ${chao - 70} L${cx + 82} ${chao - 128}" ${st}/><circle cx="${cx + 84}" cy="${chao - 132}" r="11" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
+  if (baby && k.braco === 'palma') out += membro(`M${cx + 40} ${chao - 70} L${cx + 82} ${chao - 128}`, k.pele) + `<circle cx="${cx + 84}" cy="${chao - 132}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
   // número da palma
   if (k.numero) {
     const n = k.numero, bw = Math.max(46, n.length * 19 + 22);
