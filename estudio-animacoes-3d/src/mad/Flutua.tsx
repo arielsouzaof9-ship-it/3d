@@ -504,6 +504,59 @@ const Cena = ({ C, t0, t1, fade }: { C: (p: P) => JSX.Element; t0: number; t1: n
     </AbsoluteFill>
   );
 };
+
+// ---------- Efeitos sonoros (ElevenLabs, public/sfx-flutua), ancorados nas palavras ----------
+// [arquivo, início (s), volume, duração máx. (s, corta com fade)]
+type Sfx = [string, number, number, number?];
+const GANHO_SFX = COM_VOZ ? 0.6 : 1.2; // sem narração os efeitos sobem um pouco
+const sfxLista = (): Sfx[] => [
+  // ambientes
+  ['rua', 0, 0.14, W(7, 0)],
+  ['murmurio', W(7, 0), 0.12, W(15, 0) - W(7, 0)],
+  ['rua', W(15, 0), 0.14, W(16, 0) - W(15, 0)],
+  ['murmurio', W(16, 0), 0.12, W(22, 'ventilador') - W(16, 0)],
+  ['ventilador', W(22, 'ventilador'), 0.3, W(25, 0) - W(22, 'ventilador')],
+  ['rua', W(25, 0), 0.14, END - W(25, 0)],
+  // rua
+  ['carro', 0.2, 0.4],
+  ['ploc', W(1, 'flutua'), 0.5],
+  ['dente', W(5, 'branquissimo'), 0.45],
+  // debate
+  ['ploc', W(10, 'ploc'), 0.55],
+  ['ploc', W(12, 'mais'), 0.55],
+  ['ploc', W(14, 'mais'), 0.55],
+  ['carro', W(15, 0), 0.35],
+  ['pisao', W(15, 'pisar'), 0.5],
+  ['risada', W(19, 'gargalhou') - 0.1, 0.45],
+  ['subida', W(22, 'disparou'), 0.5],
+  ['lampada', W(22, 'disparou') + 0.2, 0.5],
+  ['crac', W(24, 'subiu'), 0.5],
+  ['subida', W(24, 'subiu'), 0.35],
+  // final
+  ['torcida', W(25, 'ganhou'), 0.45],
+  ['risada', W(26, 'poste'), 0.22],
+  ['passarinho', W(26, 'balao') + 0.4, 0.3],
+  ['passarinho', W(27, 0) + 1, 0.25],
+  ['ploc', W(28, 'pouco') - 0.3, 0.55],
+  ['subida', W(28, 'pouco') - 0.25, 0.3],
+];
+const Efeitos = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {sfxLista().map(([f, at, vol, max], i) => {
+        const from = Math.max(0, Math.round(at * fps));
+        const dur = Math.max(1, Math.round((max ?? 8) * fps));
+        const fade = Math.round(0.4 * fps);
+        return (
+          <Sequence key={i} from={from} durationInFrames={dur} layout="none" name={`sfx ${f}`}>
+            <Audio src={staticFile(`sfx-flutua/${f}.mp3`)} volume={(fr) => GANHO_SFX * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
+          </Sequence>
+        );
+      })}
+    </>
+  );
+};
 export const Flutua = () => {
   const { fps } = useVideoConfig();
   const inicio = LINES.map((_, i) => (i === 0 ? 0 : W(i, 0)));
@@ -523,6 +576,7 @@ export const Flutua = () => {
       <Granulado />
       <Legenda />
       {COM_VOZ && <Audio src={staticFile('voz-flutua.mp3')} />}
+      <Efeitos />
     </AbsoluteFill>
   );
 };
