@@ -306,7 +306,7 @@ const C15 = ({ t, t0, t1 }: P) => {
   const p = W(15, 'pisar');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.15} z1={1.25} cy={1050}>
-      <RuaDia t={t} carro={false} />
+      <RuaDia t={t} carroDesde={t0} />
       <Ator k={OTAVIO} t={t} x={430} y={CHAO_RUA} movs={[['andar', t0]]} over={{ x: 0, boca: 'riso', pupila: [0, -1] }} seed={4} />
       <Ator k={MENINO} t={t} x={650} y={CHAO_RUA} h={540} movs={[['parado', t0], ['chorar', p]]} seed={6} flip />
       <Pop t={t} at={p} x={620} y={760}><Balao texto="AI!" cor="#ffd166" /></Pop>

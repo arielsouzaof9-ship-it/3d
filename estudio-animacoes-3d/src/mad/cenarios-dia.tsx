@@ -103,31 +103,52 @@ const Moita = ({ x, y }: { x: number; y: number }) => (
     {[[-24, -26], [10, -40], [24, -18]].map(([dx, dy], i) => <circle key={i} cx={x + dx} cy={y + dy} r={6} fill={['#f28fb0', '#ffd166', '#fff'][i]} />)}
   </g>
 );
-const Carro = ({ x, y, cor = '#3d8bfd' }: { x: number; y: number; cor?: string }) => (
+// Carro de lado (frente para a direita). gira = ângulo das rodas em radianos.
+const Carro = ({ x, y, cor = '#3d8bfd', gira = 0 }: { x: number; y: number; cor?: string; gira?: number }) => (
   <g>
     <path d={`M${x} ${y - 30} q0 -40 40 -46 l40 -40 h120 l50 40 q40 6 40 46 v20 h-290 z`} fill={cor} stroke={L} strokeWidth={5} strokeLinejoin="round" />
     <path d={`M${x + 90} ${y - 76} l30 -32 h50 v32 z M${x + 180} ${y - 76} v-32 h30 l36 32 z`} fill="#bfe6ff" stroke={L} strokeWidth={3} />
-    {[x + 60, x + 230].map((cx) => <g key={cx}><circle cx={cx} cy={y - 10} r={30} fill="#2a2a2e" stroke={L} strokeWidth={4} /><circle cx={cx} cy={y - 10} r={12} fill="#c9ccd4" /></g>)}
+    <path d={`M${x + 120} ${y - 70} v50 M${x + 196} ${y - 70} h14`} stroke={L} strokeWidth={3} opacity={0.5} />
+    {[x + 60, x + 230].map((cx) => (
+      <g key={cx}>
+        <circle cx={cx} cy={y - 10} r={30} fill="#2a2a2e" stroke={L} strokeWidth={4} />
+        <circle cx={cx} cy={y - 10} r={14} fill="#c9ccd4" />
+        {[0, 1, 2].map((k) => { const a = gira + (k * Math.PI * 2) / 3; return <path key={k} d={`M${cx} ${y - 10} l${Math.cos(a) * 13} ${Math.sin(a) * 13}`} stroke="#6c727f" strokeWidth={4} strokeLinecap="round" />; })}
+      </g>
+    ))}
     <rect x={x + 276} y={y - 52} width={14} height={12} rx={3} fill="#ffd166" stroke={L} strokeWidth={2} />
+    <rect x={x - 2} y={y - 46} width={10} height={12} rx={3} fill="#e5484d" stroke={L} strokeWidth={2} />
   </g>
 );
 // Calçada + rua com faixa de pedestres (chão da calçada em y = 1330).
-const Calcada = ({ carro = true }: { carro?: boolean }) => (
-  <>
-    <rect x={0} y={1150} width={1080} height={180} fill="#e6d9bf" stroke={L} strokeWidth={5} />
-    {Array.from({ length: 14 }, (_, i) => <path key={i} d={`M${i * 80} 1150 l-20 180`} stroke={L} strokeWidth={2} opacity={0.15} />)}
-    <path d="M0 1240 H1080" stroke={L} strokeWidth={2} opacity={0.15} />
-    <rect x={0} y={1318} width={1080} height={22} fill="#b5ab98" stroke={L} strokeWidth={3} />
-    <rect x={0} y={1340} width={1080} height={580} fill="#5c6370" />
-    {Array.from({ length: 6 }, (_, i) => <rect key={i} x={i * 200 + 30} y={1700} width={120} height={16} rx={6} fill="#f1f1f1" />)}
-    {/* faixa de pedestres: listras deitadas, atravessando a rua */}
-    {Array.from({ length: 7 }, (_, i) => <rect key={i} x={760} y={1370 + i * 44} width={280} height={26} rx={3} fill="#f1f1f1" opacity={0.9} />)}
-    {carro && <g transform="translate(90 1640) scale(1.45) translate(-90 -1640)"><Carro x={90} y={1640} cor="#e5484d" /></g>}
-  </>
-);
+// O carro entra pela esquerda a partir de `desde` (segundos), atravessa a cena inteira e sai pela direita.
+const ESCALA_CARRO = 1.45;
+const Calcada = ({ t, carro = true, desde = 0 }: { t: number; carro?: boolean; desde?: number }) => {
+  const x = -300 * ESCALA_CARRO - 20 + (t - desde) * 380;
+  const andando = carro && t >= desde && x < 1100;
+  return (
+    <>
+      <rect x={0} y={1150} width={1080} height={180} fill="#e6d9bf" stroke={L} strokeWidth={5} />
+      {Array.from({ length: 14 }, (_, i) => <path key={i} d={`M${i * 80} 1150 l-20 180`} stroke={L} strokeWidth={2} opacity={0.15} />)}
+      <path d="M0 1240 H1080" stroke={L} strokeWidth={2} opacity={0.15} />
+      <rect x={0} y={1318} width={1080} height={22} fill="#b5ab98" stroke={L} strokeWidth={3} />
+      <rect x={0} y={1340} width={1080} height={580} fill="#5c6370" />
+      {Array.from({ length: 6 }, (_, i) => <rect key={i} x={i * 200 + 30} y={1700} width={120} height={16} rx={6} fill="#f1f1f1" />)}
+      {/* faixa de pedestres: listras deitadas cobrindo a rua toda, de um meio-fio ao outro */}
+      {Array.from({ length: 12 }, (_, i) => <rect key={i} x={770} y={1352 + i * 48} width={270} height={30} rx={3} fill="#f1f1f1" opacity={0.92} />)}
+      {andando && (
+        <g transform={`translate(${x} ${1640 + 2 * Math.abs(Math.sin(t * 14))}) scale(${ESCALA_CARRO})`}>
+          <ellipse cx={145} cy={22} rx={150} ry={10} fill="#000" opacity={0.18} />
+          <Carro x={0} y={0} cor="#e5484d" gira={(t - desde) * 380 / (30 * ESCALA_CARRO)} />
+          {[0, 1, 2].map((k) => <path key={k} d={`M${-20 - k * 26} ${-40 + k * 16} h${-40 - k * 10}`} stroke="#fff" strokeWidth={5} strokeLinecap="round" opacity={0.6} />)}
+        </g>
+      )}
+    </>
+  );
+};
 
 // ---------- Rua de dia detalhada ----------
-export const RuaDia = ({ t, carro = true }: { t: number; carro?: boolean }) => (
+export const RuaDia = ({ t, carro = true, carroDesde = 0.2 }: { t: number; carro?: boolean; carroDesde?: number }) => (
   <Svg>
     <CeuDia t={t} />
     <Casa x={110} y={1150} cor="#f2c94c" telhado="#d1495b" t={t} />
@@ -137,7 +158,7 @@ export const RuaDia = ({ t, carro = true }: { t: number; carro?: boolean }) => (
     <Cerca x0={680} x1={780} y={1150} />
     {[[60, 1150], [400, 1150], [735, 1150], [1050, 1150]].map(([x, y], i) => <Moita key={i} x={x} y={y} />)}
     <g><rect x={355} y={1205} width={10} height={70} fill="#3a3f4a" /><rect x={335} y={1180} width={50} height={32} rx={14} fill="#3d6ad1" stroke={L} strokeWidth={3} /></g>
-    <Calcada carro={carro} />
+    <Calcada t={t} carro={carro} desde={carroDesde} />
   </Svg>
 );
 
@@ -175,7 +196,7 @@ export const PrefeituraDia = ({ t }: { t: number }) => (
     {[-1, 1].map((s) => <path key={s} d={`M150 1200 q${s * 40} -${60 + 6 * Math.sin(t * 8)} ${s * 70} 50`} stroke="#7fc8ef" strokeWidth={6} fill="none" />)}
     <rect x={140} y={1180} width={20} height={70} fill="#9aa8b8" stroke={L} strokeWidth={3} />
     {[1000].map((x) => <g key={x}><rect x={x - 10} y={1060} width={20} height={90} fill="#8a5a32" stroke={L} strokeWidth={4} /><circle cx={x} cy={1010} r={70} fill="#57a773" stroke={L} strokeWidth={5} />{[[-30, -20], [20, -40], [30, 10]].map(([dx, dy], i) => <circle key={i} cx={x + dx} cy={1010 + dy} r={9} fill="#f28fb0" />)}</g>)}
-    <Calcada carro={false} />
+    <Calcada t={t} carro={false} />
     {/* pombos na calçada */}
     {[[420, 1300], [470, 1310], [680, 1296]].map(([x, y], i) => (
       <g key={i} transform={`translate(${x} ${y - Math.max(0, Math.sin(t * 6 + i)) ** 6 * 6})`}>
