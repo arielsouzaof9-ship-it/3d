@@ -89,7 +89,7 @@ export const stick = (k, w = 300, h = 520) => {
   const r = (baby ? 64 : kid ? 64 : 66);
   const quadril = chao - perna;
   const ombro = quadril - troncoH;
-  const cy = baby ? chao - 120 : ombro - r * 0.82;
+  const cy = baby ? chao - 150 : ombro - r * 0.82;
   const lw = 9.5 * (kid ? 0.9 : 1);
   const GROSSO = lw * 2.3;
   // Braços e pernas: mesma grossura, com contorno escuro.
@@ -100,8 +100,13 @@ export const stick = (k, w = 300, h = 520) => {
   out += `<ellipse cx="${cx}" cy="${chao + 6}" rx="${baby ? 70 : 70 * S}" ry="9" fill="#000" opacity="0.12"/>`;
   if (baby) {
     // bebê enrolado na manta
-    out += `<ellipse cx="${cx}" cy="${chao - 40}" rx="70" ry="62" fill="${k.roupa}" stroke="${LINHA}" stroke-width="5"/>`;
-    out += `<path d="M${cx - 55} ${chao - 70} q55 30 110 0" stroke="${LINHA}" stroke-width="4" fill="none" opacity="0.35"/>`;
+    // perninhas curtas saindo da manta (mesma grossura dos braços)
+    out += membro(`M${cx - 24} ${chao - 50} L${cx - 30} ${chao - 6} M${cx + 24} ${chao - 50} L${cx + 30} ${chao - 6}`, k.pele);
+    out += `<ellipse cx="${cx - 32}" cy="${chao}" rx="15" ry="9" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/><ellipse cx="${cx + 32}" cy="${chao}" rx="15" ry="9" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`;
+    out += `<ellipse cx="${cx}" cy="${chao - 84}" rx="66" ry="50" fill="${k.roupa}" stroke="${LINHA}" stroke-width="5"/>`;
+    out += `<path d="M${cx - 50} ${chao - 104} q50 26 100 0" stroke="${LINHA}" stroke-width="4" fill="none" opacity="0.35"/>`;
+    // bracinho do outro lado
+    out += membro(`M${cx - 40} ${chao - 84} L${cx - 72} ${chao - 58}`, k.pele) + `<circle cx="${cx - 74}" cy="${chao - 56}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`;
   } else {
     // pernas
     const pe = (x) => `<ellipse cx="${x}" cy="${chao}" rx="${17 * S}" ry="${9 * S}" fill="${k.sapato ?? LINHA}" stroke="${LINHA}" stroke-width="3"/>`;
@@ -149,12 +154,12 @@ export const stick = (k, w = 300, h = 520) => {
   if (k.oculos) out += `<circle cx="${cx - r * 0.34}" cy="${cy - r * 0.05}" r="${r * 0.2}" fill="none" stroke="${LINHA}" stroke-width="4"/><circle cx="${cx + r * 0.34}" cy="${cy - r * 0.05}" r="${r * 0.2}" fill="none" stroke="${LINHA}" stroke-width="4"/><path d="M${cx - r * 0.14} ${cy - r * 0.05} h${r * 0.28}" stroke="${LINHA}" stroke-width="4"/>`;
   out += rosto(k.rosto ?? 'neutro', cx, cy, r);
   if (k.bigode) out += `<path d="M${cx - r * 0.3} ${cy + r * 0.22} q${r * 0.3} ${-r * 0.2} ${r * 0.3} 0 q0 ${-r * 0.2} ${r * 0.3} 0 q-${r * 0.05} ${r * 0.2} -${r * 0.3} ${r * 0.12} q-${r * 0.25} ${r * 0.08} -${r * 0.3} -${r * 0.12} z" fill="${k.corCabelo}" stroke="${LINHA}" stroke-width="2"/>`;
-  if (baby && k.braco === 'palma') out += membro(`M${cx + 40} ${chao - 70} L${cx + 82} ${chao - 128}`, k.pele) + `<circle cx="${cx + 84}" cy="${chao - 132}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
+  if (baby && k.braco === 'palma') out += membro(`M${cx + 40} ${chao - 96} L${cx + 82} ${chao - 150}`, k.pele) + `<circle cx="${cx + 84}" cy="${chao - 154}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
   // número da palma
   if (k.numero) {
     const n = k.numero, bw = Math.max(46, n.length * 19 + 22);
     const px = baby ? cx + 84 : k.braco === 'palma' ? cx + troncoW / 2 + 70 : cx + troncoW / 2 + 22;
-    const py = baby ? chao - 132 : k.braco === 'palma' ? ombro - 30 : ombro + 112;
+    const py = baby ? chao - 154 : k.braco === 'palma' ? ombro - 30 : ombro + 112;
     const bx = Math.min(w - bw - 6, Math.max(6, px - bw / 2)), by = baby ? py - 84 : k.braco === 'palma' ? Math.min(py - 64, cy - r - 52) : py - 64;
     out += `<rect x="${bx}" y="${by}" width="${bw}" height="38" rx="9" fill="#1b1530" stroke="${k.corNumero ?? '#ffd23a'}" stroke-width="3"/><text x="${bx + bw / 2}" y="${by + 27}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="${k.corNumero ?? '#ffd23a'}">${n}</text>`;
   }
