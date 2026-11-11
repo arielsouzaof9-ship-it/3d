@@ -6,6 +6,7 @@ import { Ceu, CHAO_RUA, L, Rua, Svg } from './cenarios';
 import { Balao, Brilho, Cam, clamp, FADE, P, Placa, Pop } from './FiosBrancos';
 import { Ator, Mov } from './FiosBrancosArticulado';
 import { Granulado } from './Granulado';
+import { FeiraDia, Passarinho, PrefeituraDia, RuaDia } from './cenarios-dia';
 import { COM_VOZ, END, LINES, W, WORDS } from './timeline-flutua';
 
 // ---------- Elenco ----------
@@ -99,6 +100,14 @@ const Quadra = ({ t, ventilador = 1, lampada = true, rir = false }: { t: number;
     ) : (
       <g><path d="M280 210 l10 18 l-8 10 l14 12 M320 210 l-12 20 l10 8" stroke={L} strokeWidth={4} fill="none" /></g>
     )}
+    {/* janelas altas com feixes de luz */}
+    {[60, 880].map((x) => <g key={x}><rect x={x} y={150} width={140} height={110} fill="#bfe6ff" stroke={L} strokeWidth={5} /><path d={`M${x + 70} 150 v110 M${x} 205 h140`} stroke={L} strokeWidth={3} /><path d={`M${x} 260 L${x - 80} 760 H${x + 260} L${x + 140} 260 z`} fill="#fff6c8" opacity={0.18} /></g>)}
+    {/* tabelas de basquete */}
+    {[[40, 1], [1040, -1]].map(([x, d]) => <g key={x}><rect x={x - 40} y={450} width={80} height={110} fill="#fff" stroke={L} strokeWidth={4} /><rect x={x - 20} y={500} width={40} height={36} fill="none" stroke="#d1495b" strokeWidth={4} /><ellipse cx={x + d * 40} cy={560} rx={34} ry={8} fill="none" stroke="#ff8a2f" strokeWidth={6} />{[-24, -8, 8, 24].map((k) => <path key={k} d={`M${x + d * 40 + k} 562 l${-k * 0.3} 50`} stroke="#fff" strokeWidth={2} />)}</g>)}
+    {/* placar */}
+    <g><rect x={400} y={440} width={280} height={110} rx={10} fill="#1a1a1e" stroke={L} strokeWidth={5} /><rect x={470} y={410} width={140} height={32} rx={6} fill="#ffd166" stroke={L} strokeWidth={3} /><text x={470} y={482} textAnchor="middle" fontFamily="Arial Black" fontSize={22} fill="#ff8a7a">OTÁVIO</text><text x={610} y={482} textAnchor="middle" fontFamily="Arial Black" fontSize={22} fill="#7be07b">RITA</text><text x={470} y={530} textAnchor="middle" fontFamily="Courier New, monospace" fontWeight={900} fontSize={40} fill="#ffd166">{String(mentiras(t)).padStart(2, '0')}</text><text x={540} y={432} textAnchor="middle" fontFamily="Arial Black" fontSize={22} fill={L}>MENTIRAS</text><text x={610} y={530} textAnchor="middle" fontFamily="Courier New, monospace" fontWeight={900} fontSize={40} fill="#ffd166">00</text><text x={540} y={530} textAnchor="middle" fontFamily="Arial Black" fontSize={30} fill="#fff">x</text></g>
+    {/* refletores */}
+    {[180, 900].map((x, i) => <g key={x}><path d={`M${x} 130 L${x - 110 + i * 40} 1150 H${x + 70 + i * 40} z`} fill="#fffbe0" opacity={0.08 + 0.02 * Math.sin(t * 3 + i)} /><rect x={x - 26} y={118} width={52} height={36} rx={8} fill="#3a3f4a" stroke={L} strokeWidth={3} /></g>)}
     {/* faixa */}
     <rect x={190} y={300} width={700} height={100} rx={12} fill="#2f4f8f" stroke={L} strokeWidth={5} />
     <text x={540} y={368} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={54} fill="#ffd166">DEBATE AO VIVO</text>
@@ -122,11 +131,27 @@ const Quadra = ({ t, ventilador = 1, lampada = true, rir = false }: { t: number;
         })}
       </g>
     ))}
+    {/* cartazes na plateia */}
+    {[[220, 720, 'RITA ♥', '#2fa36b', -6], [700, 850, 'OTÁVIO ★', '#d1495b', 5], [980, 720, 'FORA MENTIRA!', '#ffd166', -4]].map(([x, y, txt, cor, r], i) => (
+      <g key={i} transform={`translate(${x} ${Number(y) - (rir ? Math.abs(Math.sin(t * 9 + i)) * 16 : Math.abs(Math.sin(t * 2 + i)) * 6)}) rotate(${r})`}>
+        <rect x={-6} y={0} width={12} height={90} fill="#8a5a32" />
+        <rect x={-90} y={-60} width={180} height={70} rx={8} fill={cor as string} stroke={L} strokeWidth={4} />
+        <text x={0} y={-14} textAnchor="middle" fontFamily="Arial Black" fontSize={26} fill={cor === '#ffd166' ? L : '#fff'}>{txt}</text>
+      </g>
+    ))}
     {/* piso da quadra */}
     <rect x={0} y={1150} width={1080} height={770} fill="#d9a066" />
     {Array.from({ length: 12 }, (_, i) => <path key={i} d={`M0 ${1180 + i * 62} H1080`} stroke="#b9824a" strokeWidth={3} />)}
     <path d="M0 1500 H1080 M540 1150 V1920" stroke="#fff" strokeWidth={8} opacity={0.8} />
     <ellipse cx={540} cy={1500} rx={170} ry={60} fill="none" stroke="#fff" strokeWidth={8} opacity={0.8} />
+    {[[180, 1300], [700, 1700]].map(([x, y], i) => <ellipse key={i} cx={x} cy={y} rx={160} ry={18} fill="#fff" opacity={0.12} />)}
+    {/* câmera de TV ao vivo */}
+    <g transform="translate(1010 1700)">
+      <path d="M0 0 L-60 220 M0 0 L60 220 M0 0 V220" stroke="#3a3f4a" strokeWidth={8} />
+      <rect x={-90} y={-90} width={150} height={90} rx={10} fill="#2a2d3a" stroke={L} strokeWidth={4} />
+      <rect x={-140} y={-70} width={60} height={50} rx={6} fill="#3a3f4a" stroke={L} strokeWidth={4} />
+      <circle cx={40} cy={-70} r={9} fill="#ff3b3b" opacity={(t * 2) % 1 < 0.5 ? 1 : 0.25} />
+    </g>
   </Svg>
 );
 // Púlpito (desenhado NA FRENTE do personagem).
@@ -139,6 +164,16 @@ const Pulpito = ({ x, y = CHAO_Q, nome, cor = '#2f4f8f' }: { x: number; y?: numb
     <rect x={x + 58} y={y - 390} width={22} height={40} rx={10} fill="#3a3a44" stroke={L} strokeWidth={3} />
   </Svg>
 );
+// Placar de mentiras do Seu Otávio.
+const mentiras = (t: number) => [W(9, 'nunca'), W(12, 'todos'), W(14, 'amo'), W(21, 'lua'), W(24, 'otimo')].filter((a) => t >= a).length;
+// Nuvenzinha de poeira no púlpito a cada palmo que ele sobe.
+const Poeira = ({ t, x, y }: { t: number; x: number; y: number }) => {
+  const ats = [W(10, 'ploc'), W(12, 'mais'), W(14, 'mais')];
+  const at = ats.filter((a) => t >= a - 0.05 && t < a + 0.7).pop();
+  if (at === undefined) return null;
+  const k = clamp((t - at) / 0.7);
+  return <Svg>{[-1, -0.4, 0.4, 1].map((d, i) => <circle key={i} cx={x + d * (60 + k * 90)} cy={y - k * 30 - (i % 2) * 14} r={20 + k * 26} fill="#efe4cf" opacity={0.85 * (1 - k)} />)}</Svg>;
+};
 // Medida em palmos ao lado de quem flutua.
 const Regua = ({ x, y, h }: { x: number; y: number; h: number }) =>
   h > 5 ? (
@@ -154,7 +189,7 @@ const Icone = ({ t, at, x, y, c }: { t: number; at: number; x: number; y: number
 // 0 — Nessa cidade, ninguém mente.
 const C00 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={1000}>
-    <Svg><Rua t={t} /></Svg>
+    <RuaDia t={t} />
     <Ator k={MENINA} t={t} x={230} y={CHAO_RUA} h={560} movs={[['acenar', t0 + 0.3]]} seed={1} />
     <Ator k={VIZINHO} t={t} x={540} y={CHAO_RUA} movs={[['falar', t0]]} seed={2} />
     <Ator k={MEDIADOR} t={t} x={850} y={CHAO_RUA} movs={[['sim', t0 + 0.4]]} seed={3} flip />
@@ -165,7 +200,7 @@ const C01 = ({ t, t0, t1 }: P) => {
   const f = W(1, 'flutua');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.05} z1={1.15} cy={950}>
-      <Svg><Rua t={t} /></Svg>
+      <RuaDia t={t} />
       <div style={{ transform: `translateY(${-subir(t, f, PALMO) + (t > f ? boia(t) : 0)}px)` }}>
         <Ator k={VIZINHO} t={t} x={540} y={CHAO_RUA} movs={[['falar', t0], ['susto', f, 1.2], ['nervoso', f + 1.2]]} seed={2} />
       </div>
@@ -178,7 +213,7 @@ const C02 = ({ t, t0, t1 }: P) => {
   const h = PALMO;
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.2} z1={1.3} cy={1050}>
-      <Svg><Rua t={t} /></Svg>
+      <RuaDia t={t} />
       <div style={{ transform: `translateY(${-h + boia(t)}px)` }}><Ator k={VIZINHO} t={t} x={540} y={CHAO_RUA} movs={[['nervoso', t0]]} seed={2} /></div>
       <Regua x={700} y={CHAO_RUA} h={h} />
       <Pop t={t} at={W(2, 'palmo')} x={540} y={560}><Placa texto={'1 MENTIRA\n= 1 PALMO'} bg="#ffd166" size={50} /></Pop>
@@ -188,14 +223,14 @@ const C02 = ({ t, t0, t1 }: P) => {
 // 3 — A cidade ia escolher o prefeito.
 const C03 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={900}>
-    <Prefeitura t={t} />
+    <PrefeituraDia t={t} />
     <Pop t={t} at={W(3, 'prefeito')} x={540} y={1250}><Placa texto="ELEIÇÃO NO DOMINGO" bg="#fff" size={46} /></Pop>
   </Cam>
 );
 // 4 — Seu Otávio, o favorito.
 const C04 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1.05} z1={1.15} cy={950}>
-    <Prefeitura t={t} />
+    <PrefeituraDia t={t} />
     <Ator k={OTAVIO} t={t} x={540} y={CHAO_RUA} movs={[['entrar', t0], ['acenar', t0 + 0.7]]} seed={4} />
     <Pop t={t} at={W(4, 'favorito')} x={540} y={420}><Placa texto="VOTE OTÁVIO ★" bg="#d1495b" fg="#fff" size={52} /></Pop>
   </Cam>
@@ -205,7 +240,7 @@ const C05 = ({ t, t0, t1 }: P) => {
   const d = W(5, 'branquissimo');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.5} z1={1.6} cy={880}>
-      <Prefeitura t={t} />
+      <PrefeituraDia t={t} />
       <Ator k={OTAVIO} t={t} x={540} y={CHAO_RUA} movs={[['parado', t0]]} over={{ boca: 'riso', olhoFeliz: t > d, cabRot: -5 }} seed={4} />
       <Brilho t={t} at={d} x={560} y={760} n={10} r={60} />
       <Pop t={t} at={d} x={700} y={700}><div style={{ fontSize: 90 }}>✨</div></Pop>
@@ -215,7 +250,7 @@ const C05 = ({ t, t0, t1 }: P) => {
 // 6 — Dona Rita, a feirante.
 const C06 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1.05} z1={1.12} cy={1000}>
-    <Feira t={t} />
+    <FeiraDia t={t} />
     <Ator k={RITA} t={t} x={540} y={CHAO_RUA} movs={[['entrar', t0], ['acenar', t0 + 0.7]]} seed={5} />
     <Pop t={t} at={W(6, 'rita')} x={540} y={470}><Placa texto="DONA RITA" bg="#2fa36b" fg="#fff" size={52} /></Pop>
   </Cam>
@@ -230,6 +265,7 @@ const Debate = ({ t, otMov, ritaMov, medMov, h = altura(t), rir = false, z = [1,
     <Pulpito x={230} nome="OTÁVIO" cor="#d1495b" />
     <Pulpito x={850} nome="RITA" cor="#2fa36b" />
     <Regua x={60} y={CHAO_Q - 270} h={h} />
+    <Poeira t={t} x={230} y={CHAO_Q - 270} />
     {extra}
   </Cam>
 );
@@ -270,7 +306,7 @@ const C15 = ({ t, t0, t1 }: P) => {
   const p = W(15, 'pisar');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.15} z1={1.25} cy={1050}>
-      <Svg><Rua t={t} ceu={['#e8d5b0', '#c9b79a']} sol={false} /></Svg>
+      <RuaDia t={t} carro={false} />
       <Ator k={OTAVIO} t={t} x={430} y={CHAO_RUA} movs={[['andar', t0]]} over={{ x: 0, boca: 'riso', pupila: [0, -1] }} seed={4} />
       <Ator k={MENINO} t={t} x={650} y={CHAO_RUA} h={540} movs={[['parado', t0], ['chorar', p]]} seed={6} flip />
       <Pop t={t} at={p} x={620} y={760}><Balao texto="AI!" cor="#ffd166" /></Pop>
@@ -332,6 +368,9 @@ const C22 = ({ t, t0, t1 }: P) => {
       <Ator k={MEDIADOR} t={t} x={540} y={CHAO_Q - 40} h={560} movs={[['susto', d]]} seed={3} />
       <Ator k={RITA} t={t} x={850} y={CHAO_Q} movs={[['parado', t0]]} over={{ pupila: [-0.6, -1], boca: 'o' }} seed={5} flip />
       <Pulpito x={850} nome="RITA" cor="#2fa36b" />
+      {!preso && t > d && (
+        <Svg>{[-60, -20, 20, 60].map((dx, i) => <path key={i} d={`M${230 + voo * 550 + dx} ${CHAO_Q - 200 - altura(t) - voo * 1150 + 120 + i * 30} v${180 + i * 30}`} stroke="#fff" strokeWidth={8} strokeLinecap="round" opacity={0.8} />)}</Svg>
+      )}
       {!preso ? (
         <div style={{ transform: `translate(${voo * 550}px, ${-altura(t) - voo * 1150}px)` }}><Ator k={OTAVIO} t={t} x={230} y={CHAO_Q} movs={[['susto', d]]} seed={4} /></div>
       ) : (
@@ -378,7 +417,7 @@ const C25 = ({ t, t0, t1 }: P) => {
   const g = W(25, 'ganhou');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.05} z1={1.12} cy={950}>
-      <Prefeitura t={t} />
+      <PrefeituraDia t={t} />
       <Ator k={RITA} t={t} x={540} y={CHAO_RUA} movs={[['parado', t0], ['comemorar', g]]} seed={5} />
       <Ator k={MENINA} t={t} x={260} y={CHAO_RUA} h={540} movs={[['comemorar', g + 0.2]]} seed={1} />
       <Ator k={VIZINHO} t={t} x={830} y={CHAO_RUA} movs={[['acenar', g + 0.1]]} seed={2} flip />
@@ -392,13 +431,14 @@ const Balaozinho = ({ t, t0, alt = 0, extra, movs, over }: { t: number; t0: numb
   const bx = 640 + 30 * Math.sin(t * 1.3), by = 760 - alt + 20 * Math.sin(t * 1.7);
   return (
     <>
-      <Prefeitura t={t} />
+      <PrefeituraDia t={t} />
       <Svg>
         <rect x={232} y={760} width={18} height={570} fill="#3a3f4a" stroke={L} strokeWidth={4} />
         <path d={`M241 760 q20 -30 60 -10`} stroke="#3a3f4a" strokeWidth={10} fill="none" />
         <path d={`M245 900 Q${(245 + bx) / 2} ${(900 + by) / 2 + 120} ${bx} ${by - 160}`} stroke="#8a5a32" strokeWidth={6} fill="none" />
       </Svg>
       <Ator k={OTAVIO} t={t} x={bx} y={by} h={560} movs={movs} over={{ peE: [-20, -10], peD: [20, -10], ...over }} seed={4} />
+      {t > W(26, 'balao') + 0.4 && <Passarinho t={t} x={bx + 8} y={by - 400 + 10 * Math.sin(t * 1.7)} s={1.1} />}
       {extra}
     </>
   );
