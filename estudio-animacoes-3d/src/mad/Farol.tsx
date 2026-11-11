@@ -338,7 +338,7 @@ const Cena = ({ C, t0, t1, fade }: { C: (p: P) => JSX.Element; t0: number; t1: n
   );
 };
 
-// ---------- Efeitos sonoros (public/sfx-farol, gerados por tools/sfx_farol.py) ----------
+// ---------- Efeitos sonoros gerados no ElevenLabs (public/sfx-eleven; os sintetizados ficam em public/sfx-farol) ----------
 // [arquivo, início (s), volume, duração máx. (s, corta com fade)]
 type Sfx = [string, number, number, number?];
 const GANHO_SFX = 0.6; // volume geral dos efeitos (a narração fica na frente)
@@ -380,7 +380,7 @@ const Efeitos = () => {
         const fade = Math.round(0.4 * fps);
         return (
           <Sequence key={i} from={from} durationInFrames={dur} layout="none" name={`sfx ${f}`}>
-            <Audio src={staticFile(`sfx-farol/${f}.mp3`)} volume={(fr) => GANHO_SFX * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
+            <Audio src={staticFile(`sfx-eleven/${f}.mp3`)} volume={(fr) => GANHO_SFX * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
           </Sequence>
         );
       })}
