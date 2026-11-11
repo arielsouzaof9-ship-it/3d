@@ -188,7 +188,14 @@ export const Cachorro = ({ t, adesivo = true, ...g }: { t: number; adesivo?: boo
           </mesh>
         </group>
       ))}
-      {adesivo && <AdesivoPlano w={0.3} position={[0, 0.74, 0.745]} />}
+      {adesivo ? (
+        <AdesivoPlano w={0.3} position={[0, 0.74, 0.745]} />
+      ) : (
+        <mesh position={[0.03, 0.66, 0.72]} rotation={[0.3, 0, 0]}>
+          <boxGeometry args={[0.09, 0.03, 0.14 + Math.abs(Math.sin(t * 10)) * 0.03]} />
+          <meshStandardMaterial color="#e8566b" />
+        </mesh>
+      )}
     </group>
   );
 };
@@ -427,3 +434,68 @@ export const Teia = ({ s = 1, ...g }: { s?: number; position?: V3; rotation?: V3
 };
 
 export const flash = (t: number, at: number) => seg(t, at - 0.05, at + 0.05) * (1 - seg(t, at + 0.1, at + 0.5));
+
+// ---------- Jornal ----------
+const jornalTex = () =>
+  canvasTex('jornal', 512, 360, (c) => {
+    c.fillStyle = '#f4f0e4';
+    c.fillRect(0, 0, 512, 360);
+    c.fillStyle = '#222';
+    c.font = '900 40px "Arial Black", Arial, sans-serif';
+    c.textAlign = 'center';
+    c.fillText('DIÁRIO DA PRAÇA', 256, 52);
+    c.fillRect(20, 66, 472, 5);
+    c.fillStyle = '#c4161c';
+    c.font = '900 50px "Arial Black", Arial, sans-serif';
+    c.fillText('PROMOÇÃO', 256, 130);
+    c.fillText('DE ADESIVO!', 256, 186);
+    c.fillStyle = '#9a9a9a';
+    for (let y = 222; y < 340; y += 22) {
+      c.fillRect(24, y, 220, 10);
+      c.fillRect(268, y, 220, 10);
+    }
+  });
+export const Jornal = (g: { position?: V3; rotation?: V3; scale?: number }) => (
+  <group {...g}>
+    <mesh castShadow>
+      <planeGeometry args={[0.95, 0.67]} />
+      <meshStandardMaterial map={jornalTex()} side={THREE.DoubleSide} roughness={0.9} />
+    </mesh>
+  </group>
+);
+
+// ---------- Alçapão (abre de 0 a 1) ----------
+export const Alcapao = ({ open = 0, ...g }: { open?: number; position?: V3 }) => (
+  <group {...g}>
+    <Box p={[0, 0.02, 0]} s={[1.2, 0.04, 1.0]} c="#0d0a08" />
+    <mesh position={[0, 0.045, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[1.0, 0.8]} />
+      <meshStandardMaterial color="#ffcf6a" emissive="#ffb03a" emissiveIntensity={1.6 * open} toneMapped={false} />
+    </mesh>
+    <group position={[0, 0.06, -0.45]} rotation={[-open * 1.9, 0, 0]}>
+      <Box p={[0, 0, 0.45]} s={[1.1, 0.06, 0.92]} c="#5a3a22" />
+      <mesh position={[0, 0.05, 0.75]} rotation={[0, 0, Math.PI / 2]}>
+        <torusGeometry args={[0.07, 0.015, 8, 16]} />
+        <meshStandardMaterial color="#888" metalness={0.8} />
+      </mesh>
+    </group>
+    {open > 0.3 && <pointLight position={[0, 0.6, 0]} intensity={4 * open} distance={4} color="#ffc86a" />}
+  </group>
+);
+
+// ---------- Porta trancada com cadeado ----------
+export const PortaTrancada = ({ shake = 0, t = 0, ...g }: { shake?: number; t?: number; position?: V3 }) => (
+  <group {...g}>
+    <Box p={[0, 1.6, 0]} s={[2.0, 3.2, 0.2]} c="#6b4426" r={0.6} />
+    {[-0.5, 0.5].map((x) => (
+      <Box key={x} p={[x, 1.6, 0.11]} s={[0.8, 2.9, 0.03]} c="#7d5230" />
+    ))}
+    <group position={[0.3 + Math.sin(t * 50) * 0.03 * shake, 1.35, 0.2]} rotation={[0, 0, Math.sin(t * 40) * 0.25 * shake]}>
+      <mesh position={[0, 0.16, 0]}>
+        <torusGeometry args={[0.1, 0.025, 10, 20, Math.PI]} />
+        <meshStandardMaterial color="#bdbdbd" metalness={0.9} roughness={0.2} />
+      </mesh>
+      <Box p={[0, 0, 0]} s={[0.28, 0.24, 0.1]} c="#d9a52e" r={0.3} />
+    </group>
+  </group>
+);

@@ -15,6 +15,7 @@ export const LINES = [
   'Até o *cachorro* tem um.',
   'A vovó cola o dela de *cabeça* pra baixo, e ninguém nota.',
   'Todo dia, a *fila* da farmácia dá a volta no quarteirão.',
+  'O jornal só tem uma *notícia*: promoção de adesivo.',
   'Eu sou a *Tita*, e tenho *alergia* a cola.',
   'Um dia, sem adesivo, eu *ri* de verdade.',
   'A rua *parou*. O padeiro derrubou a *bandeja*.',
@@ -22,15 +23,22 @@ export const LINES = [
   'O farmacêutico era o único *sem* adesivo.',
   'Cada adesivo tinha o *nome* de alguém.',
   'E todo mundo ficava *sério* depois do café da praça.',
+  'Eu provei o café. Tinha gosto de *tédio*.',
   'Naquela *noite*, segui ele até o porão.',
+  'Ele abriu um alçapão *escondido* no chão.',
   'Lá dentro, um *aspirador* gigante, ligado na máquina de café.',
   'Milhares de *potes*, cada um com uma risada presa.',
   'Ele roubava os sorrisos de *manhã*, e vendia de volta à *tarde*.',
+  'Aí eu pisei num *pote*. Ele me viu.',
   'Ele apontou o aspirador pra *mim*.',
+  'Eu corri entre as prateleiras, mas a porta estava *trancada*.',
   'Eu ri a maior *gargalhada* da minha vida.',
   'O aspirador engoliu, engasgou, e *explodiu*.',
   'As risadas voaram pelas *chaminés*, e cada um pegou a sua.',
   'De manhã, a fila da farmácia estava *vazia*.',
+  'O carteiro riu tanto que *entregou* as cartas certas.',
+  'A noiva *casou* rindo.',
+  'E o cachorro? Abanou o rabo de *verdade*.',
   'O farmacêutico tentou sorrir. Não *conseguiu*.',
   'Teve que comprar um adesivo, e colou de *cabeça* pra baixo.',
 ];
@@ -58,7 +66,7 @@ const build = (): Word[] => {
       out.push({ text, key: norm(text), stressed, t0: t, t1: t + d, line: li, i });
       t += d + (/[,]$/.test(text) ? 0.14 : 0);
     });
-    t += 0.3;
+    t += 0.5;
   });
   return out;
 };

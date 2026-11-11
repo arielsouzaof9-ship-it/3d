@@ -2,10 +2,10 @@ import { JSX } from 'react';
 import { seg, track, V3 } from './anim';
 import { Character, faceAt, FaceKey, Pose, REST } from './Character';
 import {
-  Adesivo, Aspirador, Bandeja, CARTEIRO, Cachorro, Cartela, CHAMINES, FARMA, Fechado, MaquinaCafe, Manchas, NOIVA,
+  Adesivo, Alcapao, Aspirador, Jornal, PortaTrancada, Bandeja, CARTEIRO, Cachorro, Cartela, CHAMINES, FARMA, Fechado, MaquinaCafe, Manchas, NOIVA,
   PADEIRO, Pote, poteItem, POVO, RisoChuva, RisoFluxo, Riso, Teia, Telhados, TITA, VOVO, Xicara,
 } from './historia';
-import { Calendar, CoinBurst, Comic, Magnifier, MoneyStack, Puff, Sign, Sparkles, Tag } from './props';
+import { Calendar, CoinBurst, Comic, Magnifier, MoneyStack, PaperRain, Puff, Sign, Sparkles, Tag } from './props';
 import { Box, Cam, Room, Stage, Street, Warehouse } from './sets';
 import { F, W } from './timeline';
 import { useMemo } from 'react';
@@ -128,8 +128,8 @@ const S07 = ({ t, t0, t1 }: ShotProps) => {
 
 // 8. "Eu sou a *Tita*, e tenho *alergia* a cola."
 const S08 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(7, 'tita');
-  const a = W(7, 'alergia');
+  const k = W(8, 'tita');
+  const a = W(8, 'alergia');
   const pose = track(t, P({ ry: 0.1 }), [{ at: k, v: { lsz: 2.5, lel: 0.5, hr: -0.1 } }, { at: a, v: { lsz: 0.12, lel: 0.15, hr: 0, rsx: 0.6, rel: -1.8, rsz: 0.6, hp: 0.1 } }]);
   return (
     <>
@@ -143,7 +143,7 @@ const S08 = ({ t, t0, t1 }: ShotProps) => {
 
 // 9. "Um dia, sem adesivo, eu *ri* de verdade."
 const S09 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(8, 'ri');
+  const k = W(9, 'ri');
   const pose = track(t, P({ ry: -0.1 }), [{ at: k, v: { lsz: 1.9, rsz: 1.9, lel: 0.4, rel: 0.4, hp: -0.2 } }]);
   return (
     <>
@@ -158,7 +158,7 @@ const S09 = ({ t, t0, t1 }: ShotProps) => {
 
 // 10. "A rua *parou*."
 const S10 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(9, 'parou');
+  const k = W(10, 'parou');
   const turn = seg(t, k - 9 * F, k - 4 * F);
   const ring = [
     { x: -1.6, z: -1.0, ry: 0.9 }, { x: 1.6, z: -1.0, ry: -0.9 }, { x: -1.9, z: 1.0, ry: 2.0 }, { x: 1.9, z: 0.9, ry: -2.0 }, { x: 0, z: -2.0, ry: 0 },
@@ -177,7 +177,7 @@ const S10 = ({ t, t0, t1 }: ShotProps) => {
 
 // 11. "O padeiro derrubou a *bandeja*."
 const S11 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(9, 'bandeja');
+  const k = W(10, 'bandeja');
   const pose = track(t, P({ lsx: 1.15, rsx: 1.15, lsz: 0.25, rsz: 0.25, lel: -0.25, rel: -0.25 }), [{ at: k, v: { lsx: 0, rsx: 0, lsz: 1.3, rsz: 1.3, lel: 0.3, rel: 0.3, hp: 0.15 }, lead: 0 }]);
   return (
     <>
@@ -192,7 +192,7 @@ const S11 = ({ t, t0, t1 }: ShotProps) => {
 
 // 12. "Então comecei a *reparar*."
 const S12 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(10, 'reparar');
+  const k = W(11, 'reparar');
   const pose = track(t, P({ ry: 0.2 }), [{ at: k, v: { rsx: 1.25, rsz: 0.35, rel: -1.0, hy: -0.1 } }]);
   return (
     <>
@@ -205,7 +205,7 @@ const S12 = ({ t, t0, t1 }: ShotProps) => {
 
 // 13. "O farmacêutico era o único *sem* adesivo."
 const S13 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(11, 'sem');
+  const k = W(12, 'sem');
   const pose = track(t, P({ x: -0.1, y: 0.75, z: -0.95 }), [{ at: k, v: { hy: 0.25, hr: 0.08 } }]);
   return (
     <>
@@ -220,7 +220,7 @@ const S13 = ({ t, t0, t1 }: ShotProps) => {
 
 // 14. "Cada adesivo tinha o *nome* de alguém."
 const S14 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(12, 'nome');
+  const k = W(13, 'nome');
   return (
     <>
       <Room placa="FARMÁCIA" parede="#2f6a5a" balcao={false} />
@@ -232,7 +232,7 @@ const S14 = ({ t, t0, t1 }: ShotProps) => {
 
 // 15. "E todo mundo ficava *sério* depois do café da praça."
 const S15 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(13, 'serio');
+  const k = W(14, 'serio');
   const pose = track(t, P({ x: -0.45, ry: 0.35, rsx: 0.9, rel: -1.1, rsz: 0.2 }), [{ at: k, v: { rsx: 0.3, rel: -0.4 } }]);
   return (
     <>
@@ -247,7 +247,7 @@ const S15 = ({ t, t0, t1 }: ShotProps) => {
 
 // 16. "Naquela *noite*, segui ele até o porão."
 const S16 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(14, 'noite');
+  const k = W(16, 'noite');
   const x = -2.2 + 3.2 * seg(t, t0, t1, (v) => v);
   const pose = P({ x, z: 0.3, ry: Math.PI / 2, walk: (x + 2.2) / 0.24, stride: 1 });
   const ti = P({ x: -2.9 + 1.2 * seg(t, t0 + 0.6, t1, (v) => v), z: -0.9, ry: Math.PI / 2 - 0.3, walk: (1.2 * seg(t, t0 + 0.6, t1, (v) => v)) / 0.24, stride: t > t0 + 0.6 ? 1 : 0 });
@@ -274,8 +274,8 @@ const Porao = () => {
 
 // 17. "Lá dentro, um *aspirador* gigante, ligado na máquina de café."
 const S17 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(15, 'aspirador');
-  const m = W(15, 'maquina');
+  const k = W(18, 'aspirador');
+  const m = W(18, 'maquina');
   return (
     <>
       <Porao />
@@ -300,8 +300,8 @@ const S18 = ({ t, t0, t1 }: ShotProps) => (
 
 // 19. "Ele roubava os sorrisos de *manhã*, e vendia de volta à *tarde*."
 const S19 = ({ t, t0, t1 }: ShotProps) => {
-  const m = W(17, 'manha');
-  const ta = W(17, 'tarde');
+  const m = W(20, 'manha');
+  const ta = W(20, 'tarde');
   const pose = track(t, P({ x: -1.15, ry: 0.45 }), [{ at: m, v: { lsz: 1.1, lel: 0.2, hy: 0.35 } }, { at: ta, v: { lsz: 2.4, rsz: 2.4, lel: 0.4, rel: 0.4, hy: 0 } }]);
   return (
     <>
@@ -321,7 +321,7 @@ const HOLD = { lsx: 1.45, rsx: 1.45, lsz: 0.3, rsz: 0.3, lel: 0.05, rel: 0.05 };
 const FARMA_P = { x: -0.9, z: 1.4, ry: 0.8 };
 const TITA_P = { x: 0.9, z: 1.4, ry: -0.8 };
 const S20 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(18, 'apontou');
+  const k = W(22, 'apontou');
   const pose = track(t, P({ ...FARMA_P }), [{ at: k, v: { ...HOLD, hp: -0.05 } }]);
   return (
     <>
@@ -344,7 +344,7 @@ const S21 = ({ t, t0, t1 }: ShotProps) => (
 
 // 22. "Eu ri a maior *gargalhada* da minha vida."
 const S22 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(19, 'gargalhada');
+  const k = W(24, 'gargalhada');
   const ti = track(t, P({ ...TITA_P, lsz: 0.7, rsz: 0.7, lel: 1.2, rel: 1.2 }), [{ at: k, v: { lsz: 2.1, rsz: 2.1, lel: 0.3, rel: 0.3, hp: -0.25 } }]);
   return (
     <>
@@ -361,9 +361,9 @@ const S22 = ({ t, t0, t1 }: ShotProps) => {
 
 // 23. "O aspirador engoliu, engasgou, e *explodiu*."
 const S23 = ({ t, t0, t1 }: ShotProps) => {
-  const en = W(20, 'engoliu');
-  const eg = W(20, 'engasgou');
-  const ex = W(20, 'explodiu');
+  const en = W(25, 'engoliu');
+  const eg = W(25, 'engasgou');
+  const ex = W(25, 'explodiu');
   const gone = t >= ex;
   const fp = track(t, P({ ...FARMA_P, ...HOLD }), [{ at: ex, v: { lean: -0.35, lsx: 0, rsx: 0, lsz: 1.6, rsz: 1.6, z: 2.0 }, lead: 0, dur: 4 }]);
   return (
@@ -383,7 +383,7 @@ const S23 = ({ t, t0, t1 }: ShotProps) => {
 
 // 24. "As risadas voaram pelas *chaminés*,"
 const S24 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(21, 'chamines');
+  const k = W(26, 'chamines');
   return (
     <>
       <Telhados />
@@ -398,8 +398,8 @@ const S24 = ({ t, t0, t1 }: ShotProps) => {
 
 // 25. "e cada um pegou a *sua*." — a vovó pega a dela
 const S25 = ({ t, t0, t1 }: ShotProps) => {
-  const c = W(21, 'cada');
-  const pg = W(21, 'pegou');
+  const c = W(26, 'cada');
+  const pg = W(26, 'pegou');
   const got = t >= pg;
   const k = seg(t, c - 0.2, pg, (v) => v);
   const pose = track(t, P({ ry: 0.1, hp: -0.15 }), [{ at: pg, v: { lsz: 1.8, rsz: 1.8, lel: 0.4, rel: 0.4, hp: -0.1 } }]);
@@ -427,8 +427,8 @@ const S26 = ({ t, t0, t1 }: ShotProps) => (
 
 // 27. "O farmacêutico tentou sorrir. Não *conseguiu*."
 const S27 = ({ t, t0, t1 }: ShotProps) => {
-  const s = W(23, 'sorrir');
-  const k = W(23, 'conseguiu');
+  const s = W(31, 'sorrir');
+  const k = W(31, 'conseguiu');
   const pose = track(t, P({}), [{ at: s, v: { squash: 0.12, lsz: 0.6, rsz: 0.6 } }, { at: k, v: { squash: 0, lsz: 0.12, rsz: 0.12, hp: 0.2 } }]);
   return (
     <>
@@ -442,7 +442,7 @@ const S27 = ({ t, t0, t1 }: ShotProps) => {
 
 // 28. "Teve que comprar um adesivo, e colou de *cabeça* pra baixo." — volta à praça (loop)
 const S28 = ({ t, t0, t1 }: ShotProps) => {
-  const k = W(24, 'cabeca');
+  const k = W(32, 'cabeca');
   const pose = track(t, P({}), [{ at: k - 0.3, v: { rsx: 1.6, rsz: 0.2, rel: -1.6 } }, { at: k + 0.25, v: { rsx: 0, rsz: 0.12, rel: 0.15 } }]);
   const gente = [
     { x: -1.3, z: -1.2, ry: 0.3, look: VOVO }, { x: 1.3, z: -1.2, ry: -0.3, look: CARTEIRO }, { x: -2.3, z: -0.4, ry: 0.5, look: NOIVA }, { x: 2.3, z: -0.4, ry: -0.5, look: PADEIRO },
@@ -459,6 +459,150 @@ const S28 = ({ t, t0, t1 }: ShotProps) => {
   );
 };
 
+
+// N1. "O jornal só tem uma *notícia*: promoção de adesivo."
+const N01 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(7, 'noticia');
+  return (
+    <>
+      <Street {...FARMACIA} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.7, 1.7, 4.0], [0, 1.35, 0.4]], [k, [0.2, 1.5, 3.0], [0, 1.25, 0.5]], [t1, [0.1, 1.45, 2.7], [0, 1.2, 0.5]]]} />
+      <Character pose={P({ lsx: 0.95, rsx: 0.95, lsz: 0.45, rsz: 0.45, lel: -0.2, rel: -0.2, hp: 0.15 })} face={fa(t, [{ at: t0, f: 'lookDown' }, { at: k, f: 'deadpan' }], 40)} look={POVO[4]} head={<Adesivo />} />
+      <Jornal position={[0, 1.02, 0.62]} rotation={[-0.25, 0, 0]} />
+    </>
+  );
+};
+
+// N2. "Eu provei o café. Tinha gosto de *tédio*."
+const N02 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(15, 'tedio');
+  const pose = track(t, P({ x: -0.45, ry: 0.35, rsx: 0.9, rel: -1.1, rsz: 0.2 }), [{ at: k, v: { rsx: 0.3, rel: -0.4, hp: 0.1 } }]);
+  return (
+    <>
+      <Street {...FARMACIA} />
+      <MaquinaCafe position={[0.85, 0, -0.7]} rotation={[0, -0.35, 0]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.6, 1.7, 3.6], [0.0, 1.45, -0.1]], [t1, [-0.2, 1.65, 3.0], [-0.2, 1.5, 0]]]} />
+      <Character pose={pose} face={fa(t, [{ at: t0, f: 'curious' }, { at: k, f: 'bored' }], 41)} look={TITA} right={<Xicara position={[0, -0.12, 0.04]} />} />
+      <RisoFluxo t={t} a={k - 0.3} b={k + 0.2} from={[-0.35, 1.45, 0.45]} to={[0.85, 1.95, -0.9]} n={4} arc={0.5} />
+    </>
+  );
+};
+
+// N3. "Ele abriu um alçapão *escondido* no chão."
+const N03 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(17, 'escondido');
+  const open = seg(t, t0 + 0.2, k - 3 * F);
+  const down = seg(t, k + 0.3, t1 + 0.2, (v) => v);
+  const pose = track(t, P({ x: -0.95, z: 0.3, ry: Math.PI / 2, lsx: 0.9, rsx: 0.9, lel: -0.2, rel: -0.2, lean: 0.3, squash: 0.3 }), [{ at: k, v: { lsx: 0, rsx: 0, lel: 0.15, rel: 0.15, lean: 0, squash: 0, hy: -0.7 } }]);
+  return (
+    <>
+      <Street {...FARMACIA} noite />
+      <Alcapao open={open} position={[0, 0, 0.3]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [1.6, 2.4, 3.8], [0, 0.9, 0]], [t1, [1.2, 2.0, 3.2], [0, 0.8, 0.1]]]} />
+      <Character pose={{ ...pose, x: pose.x + 0.95 * seg(t, k + 0.3, k + 0.9), y: -2.3 * down * down }} face={fa(t, [{ at: t0, f: 'sideEye' }, { at: k, f: 'smug' }], 42)} look={FARMA} />
+    </>
+  );
+};
+
+// N4. "Aí eu pisei num *pote*."
+const N04 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(21, 'pote');
+  const z = 3.0 - 0.6 * seg(t, t0, k - 4 * F, (v) => v);
+  const pose = track(t, P({ x: 0.5, z, ry: Math.PI + 0.2, walk: (3.0 - z) / 0.24, stride: t < k - 4 * F ? 0.6 : 0 }), [{ at: k, v: { lsz: 0.9, rsz: 0.9, squash: 0.25, lel: 1.0, rel: 1.0 }, lead: 0 }]);
+  return (
+    <>
+      <Porao />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [1.6, 1.4, -0.6], [0.5, 0.8, 2.4]], [t1, [1.3, 1.3, -0.2], [0.5, 0.75, 2.4]]]} />
+      <Character pose={{ ...pose, z }} face={fa(t, [{ at: t0, f: 'nervous' }, { at: k, f: 'panic', o: ['sweat3'] }], 43)} look={TITA} />
+      {t < k ? <Pote t={t} seed={7} position={[0.55, 0, 2.3]} scale={0.8} /> : <Puff t={t} at={k} n={8} position={[0.55, 0.1, 2.3]} color="#d8eeff" size={0.3} />}
+      <Comic t={t} at={k} text="CREC!" position={[1.0, 0.55, 2.2]} size={0.22} />
+    </>
+  );
+};
+
+// N5. "Ele me viu."
+const N05 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(21, 'viu');
+  const pose = track(t, P({ ...FARMA_P, ry: FARMA_P.ry - 1.4 }), [{ at: k, v: { ry: FARMA_P.ry }, dur: 6 }]);
+  return (
+    <>
+      <Porao />
+      <Aspirador t={t} from={999} at={1000} position={ASP} nozzle={NOZ} nozzleRot={NROT} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [1.9, 2.0, 3.6], [-0.7, 1.8, 1.5]], [t1, [1.5, 2.0, 3.1], [-0.7, 1.85, 1.5]]]} />
+      <Character pose={pose} face={fa(t, [{ at: t0, f: 'neutral' }, { at: k, f: 'anger', o: ['vein'] }], 44)} look={FARMA} />
+    </>
+  );
+};
+
+// N6. "Eu corri entre as prateleiras,"
+const N06 = ({ t, t0, t1 }: ShotProps) => {
+  const z = 1.0 - 6.5 * seg(t, t0, t1 + 0.2, (v) => v);
+  return (
+    <>
+      <Porao />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t, [0.4, 1.7, z - 3.4], [0, 1.25, z]]]} />
+      <Character pose={P({ z, ry: Math.PI, walk: (1 - z) / 0.2, stride: 1, lean: 0.2, lsx: -0.6, rsx: 0.6, lel: 0.8, rel: 0.8 })} face={fa(t, [{ at: t0, f: 'panic', o: ['sweat3'] }], 45)} look={TITA} />
+    </>
+  );
+};
+
+// N7. "mas a porta estava *trancada*."
+const N07 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(23, 'trancada');
+  const pose = track(t, P({ x: -0.35, z: -6.5, ry: Math.PI }), [{ at: k, v: { lsx: 1.5, rsx: 1.5, lsz: 0.3, rsz: 0.3, lel: 0.1, rel: 0.1, lean: 0.15 }, lead: 0 }]);
+  return (
+    <>
+      <Porao />
+      <PortaTrancada t={t} shake={seg(t, k, k + 0.1) * (1 - seg(t, k + 0.6, k + 0.9))} position={[0, 0, -7.3]} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.55, 2.7, -3.4], [0.05, 1.5, -7.3]], [t1, [0.5, 2.5, -3.9], [0.05, 1.45, -7.3]]]} />
+      <Character pose={pose} face={fa(t, [{ at: t0, f: 'scared' }], 46)} look={TITA} />
+    </>
+  );
+};
+
+// N8. "O carteiro riu tanto que *entregou* as cartas certas."
+const N08 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(28, 'entregou');
+  const pose = track(t, P({ ry: -0.1, lsz: 1.6, rsz: 1.6, lel: 0.4, rel: 0.4 }), [{ at: k, v: { rsx: 1.3, rsz: 0.3, rel: 0.0, lsz: 0.5 } }]);
+  return (
+    <>
+      <Street placa="CORREIO" parede="#f0d9c0" porta="#2f5fa8" />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [0.7, 1.8, 4.6], [0, 1.4, 0]], [t1, [0.3, 1.7, 3.9], [0, 1.45, 0]]]} />
+      <Character pose={pose} face={fa(t, [{ at: t0, f: 'laugh' }, { at: k, f: 'bigSmile' }], 47)} look={CARTEIRO} />
+      <PaperRain t={t} from={k - 0.6} n={26} area={1.5} top={4} title="CARTA" footer="CERTA!" position={[0, 0, 0.6]} />
+    </>
+  );
+};
+
+// N9. "A noiva *casou* rindo."
+const N09 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(29, 'casou');
+  const pose = track(t, P({ ry: 0.15 }), [{ at: k, v: { lsz: 2.4, rsz: 2.4, lel: 0.3, rel: 0.3, hp: -0.15 } }]);
+  return (
+    <>
+      <Street placa="IGREJA" parede="#f3eadf" porta="#7a4a2a" />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.6, 1.7, 3.8], [0.05, 1.5, 0]], [t1, [-0.2, 1.65, 3.2], [0.05, 1.55, 0]]]} />
+      <Character pose={pose} face={fa(t, [{ at: t0, f: 'happy' }, { at: k, f: 'laugh', o: ['blush'] }], 48)} look={NOIVA} />
+      <Sparkles t={t} from={k} n={12} radius={0.9} center={[0, 1.8, 0.2]} />
+      <Comic t={t} at={k} text="SIM!" position={[0.5, 2.5, 0.3]} size={0.3} hold={1.0} />
+    </>
+  );
+};
+
+// N10. "E o cachorro? Abanou o rabo de *verdade*."
+const N10 = ({ t, t0, t1 }: ShotProps) => {
+  const k = W(30, 'verdade');
+  return (
+    <>
+      <Street {...FARMACIA} />
+      <Cam t={t} t0={t0} t1={t1} keys={[[t0, [-0.8, 1.0, 2.9], [0, 0.75, 0.3]], [t1, [-0.3, 0.95, 2.4], [0, 0.75, 0.3]]]} />
+      <Cachorro t={t * (t > k ? 1.6 : 1)} adesivo={false} position={[0, 0, 0.3]} rotation={[0, -0.35, 0]} />
+      <Sparkles t={t} from={k} n={8} radius={0.6} center={[0, 1.0, 0.4]} size={0.14} />
+      <Comic t={t} at={k} text="AU!" position={[0.35, 1.45, 0.5]} size={0.22} />
+    </>
+  );
+};
+
 export const SHOTS: Shot[] = [
   { from: 0, name: '01 cidade', C: S01 },
   { from: W(1, 0), name: '02 farmacia', C: S02 },
@@ -467,25 +611,35 @@ export const SHOTS: Shot[] = [
   { from: W(4, 0), name: '05 cachorro', C: S05 },
   { from: W(5, 0), name: '06 vovo', C: S06 },
   { from: W(6, 0), name: '07 fila', C: S07 },
-  { from: W(7, 0), name: '08 tita', C: S08 },
-  { from: W(8, 0), name: '09 ri', C: S09 },
-  { from: W(9, 0), name: '10 parou', C: S10 },
-  { from: W(9, 3), name: '11 bandeja', C: S11 },
-  { from: W(10, 0), name: '12 reparar', C: S12 },
-  { from: W(11, 0), name: '13 sem', C: S13 },
-  { from: W(12, 0), name: '14 nome', C: S14 },
-  { from: W(13, 0), name: '15 cafe', C: S15 },
-  { from: W(14, 0), name: '16 noite', C: S16 },
-  { from: W(15, 0), name: '17 aspirador', C: S17 },
-  { from: W(16, 0), name: '18 potes', C: S18 },
-  { from: W(17, 0), name: '19 manha tarde', C: S19 },
-  { from: W(18, 0), name: '20 apontou', C: S20 },
-  { from: W(18, 'mim'), name: '21 mim', C: S21 },
-  { from: W(19, 0), name: '22 gargalhada', C: S22 },
-  { from: W(20, 0), name: '23 explodiu', C: S23 },
-  { from: W(21, 0), name: '24 chamines', C: S24 },
-  { from: W(21, 'cada'), name: '25 vovo pega', C: S25 },
-  { from: W(22, 0), name: '26 vazia', C: S26 },
-  { from: W(23, 0), name: '27 conseguiu', C: S27 },
-  { from: W(24, 0), name: '28 cabeca', C: S28 },
+  { from: W(7, 0), name: 'n1 jornal', C: N01 },
+  { from: W(8, 0), name: '08 tita', C: S08 },
+  { from: W(9, 0), name: '09 ri', C: S09 },
+  { from: W(10, 0), name: '10 parou', C: S10 },
+  { from: W(10, 3), name: '11 bandeja', C: S11 },
+  { from: W(11, 0), name: '12 reparar', C: S12 },
+  { from: W(12, 0), name: '13 sem', C: S13 },
+  { from: W(13, 0), name: '14 nome', C: S14 },
+  { from: W(14, 0), name: '15 cafe', C: S15 },
+  { from: W(15, 0), name: 'n2 tedio', C: N02 },
+  { from: W(16, 0), name: '16 noite', C: S16 },
+  { from: W(17, 0), name: 'n3 alcapao', C: N03 },
+  { from: W(18, 0), name: '17 aspirador', C: S17 },
+  { from: W(19, 0), name: '18 potes', C: S18 },
+  { from: W(20, 0), name: '19 manha tarde', C: S19 },
+  { from: W(21, 0), name: 'n4 pote', C: N04 },
+  { from: W(21, 'ele'), name: 'n5 viu', C: N05 },
+  { from: W(22, 0), name: '20 apontou', C: S20 },
+  { from: W(22, 'mim'), name: '21 mim', C: S21 },
+  { from: W(23, 0), name: 'n6 corri', C: N06 },
+  { from: W(23, 'porta'), name: 'n7 trancada', C: N07 },
+  { from: W(24, 0), name: '22 gargalhada', C: S22 },
+  { from: W(25, 0), name: '23 explodiu', C: S23 },
+  { from: W(26, 0), name: '24 chamines', C: S24 },
+  { from: W(26, 'cada'), name: '25 vovo pega', C: S25 },
+  { from: W(27, 0), name: '26 vazia', C: S26 },
+  { from: W(28, 0), name: 'n8 carteiro', C: N08 },
+  { from: W(29, 0), name: 'n9 noiva', C: N09 },
+  { from: W(30, 0), name: 'n10 cachorro', C: N10 },
+  { from: W(31, 0), name: '27 conseguiu', C: S27 },
+  { from: W(32, 0), name: '28 cabeca', C: S28 },
 ];

@@ -1,4 +1,4 @@
-# Storyboard — "Adesivos" (≈64 s, 1080×1920, sem áudio, com legendas)
+# Storyboard — "Adesivos" (≈90 s, 1080×1920, sem áudio, com legendas)
 
 Elenco: **Tita** (protagonista, touca amarela), **Farmacêutico** (jaleco, bigode), **Carteiro**, **Noiva**, **Vó Zuza**,
 **Chef Nico** (padeiro), povo da praça (Seu Bento, Caio, Gabi, Rafa, Dr. Henrique, Bruna, Tonhão, Tião) e o cachorro.
@@ -12,6 +12,7 @@ Elenco: **Tita** (protagonista, touca amarela), **Farmacêutico** (jaleco, bigod
 | 05 | Até o *cachorro* tem um. | Cachorro abanando o rabo, adesivo no focinho | câmera baixa | — |
 | 06 | A vovó cola o dela de *cabeça* pra baixo, e ninguém nota. | Vovó com adesivo invertido faz joinha; Seu Bento acena "tudo certo" | close → recua | satisfeita → confiante |
 | 07 | Todo dia, a *fila* da farmácia dá a volta no quarteirão. | Calendário vira SEG…SÁB → "TODO DIA"; fila de 9 pessoas | close no calendário → plano da fila | — |
+| n1 | O jornal só tem uma *notícia*: promoção de adesivo. | Dr. Henrique lê o "DIÁRIO DA PRAÇA": PROMOÇÃO DE ADESIVO! | empurra até o jornal | olhando pra baixo → sem expressão |
 | 08 | Eu sou a *Tita*, e tenho *alergia* a cola. | Tita acena; manchas vermelhas aparecem, "COÇA!" | close, empurra | sorrisão → enjoada (rubor) |
 | 09 | Um dia, sem adesivo, eu *ri* de verdade. | Braços abertos, brilhos, "HAHA!" | empurra | curiosa → gargalhada |
 | 10 | A rua *parou*. | Moradores giram para olhar a Tita | plano alto | neutro → chocados |
@@ -20,16 +21,25 @@ Elenco: **Tita** (protagonista, touca amarela), **Farmacêutico** (jaleco, bigod
 | 13 | O farmacêutico era o único *sem* adesivo. | Ele no balcão, sem adesivo, "?!" | empurra | neutro → convencido |
 | 14 | Cada adesivo tinha o *nome* de alguém. | Cartela com nomes; zoom no adesivo "TITA" | macro | — |
 | 15 | E todo mundo ficava *sério* depois do café da praça. | Carteiro bebe da máquina "CAFÉ GRÁTIS"; a risada sai voando para a máquina | médio | feliz → sério |
+| n2 | Eu provei o café. Tinha gosto de *tédio*. | Tita bebe da máquina; a risada dela foge para a máquina | close | curiosa → entediada |
 | 16 | Naquela *noite*, segui ele até o porão. | Rua à noite; farmacêutico caminha, Tita segue escondida | travelling | de lado / desconfiada |
+| n3 | Ele abriu um alçapão *escondido* no chão. | Tampa abre, luz amarela sai, farmacêutico desce | plano alto, noite | de lado → convencido |
 | 17 | Lá dentro, um *aspirador* gigante, ligado na máquina de café. | Porão de prateleiras com potes; aspirador "SUGA SORRISO", cano "CAFÉ" | grua de baixo para cima | — |
 | 18 | Milhares de *potes*, cada um com uma risada presa. | Potes com risadas douradas e etiquetas de nomes | travelling lateral | — |
 | 19 | Ele roubava os sorrisos de *manhã*, e vendia de volta à *tarde*. | Placa "MANHÃ: ROUBA" + pote → "TARDE: VENDE" + dinheiro e moedas | médio | convencido → olhar de lado → sorriso largo |
+| n4 | Aí eu pisei num *pote*. | Pote quebra sob o pé da Tita, "CREC!" | câmera baixa | nervosa → pânico |
+| n5 | Ele me viu. | Farmacêutico se vira | close | neutro → raiva (veia) |
 | 20 | Ele apontou o aspirador pra… | Farmacêutico segura o bico da mangueira | close | confiante → furioso |
 | 21 | …*mim*. | Tita apavorada | close | aterrorizada (suor) |
+| n6 | Eu corri entre as prateleiras, | Tita corre pelo corredor de potes | travelling à frente | pânico |
+| n7 | mas a porta estava *trancada*. | Porta com cadeado que balança quando ela bate | por trás da Tita | assustada |
 | 22 | Eu ri a maior *gargalhada* da minha vida. | Risadas voam da Tita para o bico, "HAHAHA!" | plano dos dois | nervosa → gargalhada |
 | 23 | O aspirador engoliu, engasgou, e *explodiu*. | Tanque incha, treme, medidor no máximo → "BUM!", fumaça, risadas soltas | plano aberto | surpreso → pânico → tonto |
 | 24 | As risadas voaram pelas *chaminés*, | Telhados à noite, risadas saem das chaminés | grua para cima | — |
 | 25 | e cada um pegou a sua. | Uma risada desce até a vovó; o adesivo some | close | olhando pra cima → gargalhada (lágrimas) |
 | 26 | De manhã, a fila da farmácia estava *vazia*. | Rua vazia, placa "FECHADO", teias de aranha | empurra lento | — |
+| n8 | O carteiro riu tanto que *entregou* as cartas certas. | Chuva de cartas "CARTA / CERTA!" | médio | gargalhada → sorrisão |
+| n9 | A noiva *casou* rindo. | Braços pra cima, brilhos, "SIM!" | close | feliz → gargalhada |
+| n10 | E o cachorro? Abanou o rabo de *verdade*. | Cachorro sem adesivo, língua de fora, "AU!" | câmera baixa | — |
 | 27 | O farmacêutico tentou sorrir. Não *conseguiu*. | Sorriso forçado | close | sorriso forçado (tensão) → frustrado (lágrimas) |
 | 28 | Teve que comprar um adesivo, e colou de *cabeça* pra baixo. | Ele cola o adesivo invertido; recua para a praça com todos rindo | close → plano aberto | irritado → sem expressão |
