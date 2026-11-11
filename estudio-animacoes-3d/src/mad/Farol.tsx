@@ -5,6 +5,7 @@ import { CHAO_RUA, L, Rua, Svg } from './cenarios';
 import { Balao, Brilho, Cam, clamp, FADE, P, Placa, Pop } from './FiosBrancos';
 import { Ator } from './FiosBrancosArticulado';
 import { Granulado } from './Granulado';
+import { RioNoite, RuaNoite, Sombra } from './cenarios-noite';
 import { END, LINES, W, WORDS } from './timeline-farol';
 
 // ---------- Elenco ----------
@@ -20,14 +21,6 @@ const POVO = [
 ];
 
 // ---------- Noite, luz e sombras ----------
-const CEU_NOITE: [string, string] = ['#2b3366', '#0d1230'];
-const Lua = () => (
-  <Svg>
-    <circle cx={840} cy={330} r={70} fill="#fff6c8" />
-    <circle cx={815} cy={315} r={12} fill="#e9dfa8" />
-    {[[120, 200], [300, 420], [520, 160], [660, 520], [960, 600], [200, 640], [430, 300]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={4} fill="#fff" />)}
-  </Svg>
-);
 // Escuridão com "buracos" de luz (luzes: x, y, raio).
 const Escuro = ({ luzes = [], forca = 0.8, cor = '#070a1c' }: { luzes?: [number, number, number][]; forca?: number; cor?: string }) => {
   const id = useId().replace(/:/g, '');
@@ -48,26 +41,6 @@ const Escuro = ({ luzes = [], forca = 0.8, cor = '#070a1c' }: { luzes?: [number,
   </Svg>
   );
 };
-// Sombra: corpo escuro ondulante + olhos que brilham (desenhados por cima da escuridão).
-const Sombra = ({ t, x, y, h = 700, olhos = false, sorriso = 0, seed = 0, op = 1 }: { t: number; x: number; y: number; h?: number; olhos?: boolean; sorriso?: number; seed?: number; op?: number }) => {
-  const w = h * 0.42;
-  const ond = (i: number) => 14 * Math.sin(t * 3 + i + seed);
-  const corpo = `M${x - w / 2} ${y} C${x - w * 0.6 + ond(1)} ${y - h * 0.5}, ${x - w * 0.55} ${y - h * 0.95}, ${x} ${y - h} C${x + w * 0.55} ${y - h * 0.95}, ${x + w * 0.6 + ond(2)} ${y - h * 0.5}, ${x + w / 2} ${y} ${Array.from({ length: 5 }, (_, i) => `Q${x + w / 2 - (i + 0.5) * (w / 5)} ${y + 26 + ond(i + 3)} ${x + w / 2 - (i + 1) * (w / 5)} ${y}`).join(' ')} z`;
-  const ey = y - h * 0.78, pisca = (t * 0.7 + seed) % 3.3 < 0.12 ? 0.15 : 1;
-  return (
-    <Svg>
-      {!olhos ? (
-        <path d={corpo} fill="#0b0d1a" stroke="#000" strokeWidth={4} opacity={op} />
-      ) : (
-        <g opacity={op}>
-          {[-1, 1].map((s) => <ellipse key={s} cx={x + s * w * 0.18} cy={ey} rx={w * 0.09} ry={w * 0.12 * pisca} fill="#fdfbe0" />)}
-          {[-1, 1].map((s) => <circle key={s} cx={x + s * w * 0.18} cy={ey} r={w * 0.25} fill="#fdfbe0" opacity={0.08} />)}
-          {sorriso > 0 && <path d={`M${x - w * 0.25} ${ey + w * 0.25} Q${x} ${ey + w * (0.25 + 0.35 * sorriso)} ${x + w * 0.25} ${ey + w * 0.25}`} stroke="#fdfbe0" strokeWidth={8} fill="none" strokeLinecap="round" opacity={sorriso} />}
-        </g>
-      )}
-    </Svg>
-  );
-};
 // Aura dourada em volta de quem brilha.
 const Aura = ({ x, y, r = 260, t, k = 1 }: { x: number; y: number; r?: number; t: number; k?: number }) => (
   <div style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,214,102,0.55) 0%, rgba(255,214,102,0.18) 45%, rgba(255,214,102,0) 70%)', transform: `scale(${(1 + 0.04 * Math.sin(t * 4)) * k})`, mixBlendMode: 'screen' }} />
@@ -84,8 +57,7 @@ const Notas = ({ t, x, y }: { t: number; x: number; y: number }) => (
 // Cena de rua à noite. Recebe camadas: atras (corpos das sombras e personagens), luzes e frente (olhos).
 const Noite = ({ t, atras, luzes, frente, forca = 0.8 }: { t: number; atras: ReactNode; luzes: [number, number, number][]; frente?: ReactNode; forca?: number }) => (
   <>
-    <Svg><Rua t={t} ceu={CEU_NOITE} sol={false} /></Svg>
-    <Lua />
+    <RuaNoite t={t} />
     {atras}
     <Escuro luzes={luzes} forca={forca} />
     {frente}
@@ -172,25 +144,21 @@ const C07 = ({ t, t0, t1 }: P) => (
       frente={<><Aura x={680} y={1050} t={t} /><Notas t={t} x={300} y={760} /></>} />
   </Cam>
 );
-// 8 — A luz da cidade apagou: as janelas se apagam uma a uma.
-const JANELAS: [number, number][] = [[140, 930], [280, 930], [460, 890], [590, 890], [820, 930], [960, 930]];
+// 8 — A luz da cidade apagou: as janelas e os postes se apagam um a um.
 const C08 = ({ t, t0, t1 }: P) => {
   const a = W(8, 'apagou');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={1000}>
-      <Svg><Rua t={t} ceu={CEU_NOITE} sol={false} /></Svg>
-      <Lua />
-      <Svg>{JANELAS.map(([x, y], i) => t < a + i * 0.12 && <rect key={i} x={x} y={y} width={60} height={60} fill="#ffd166" stroke={L} strokeWidth={4} />)}</Svg>
-      <Escuro forca={0.45 + 0.4 * clamp((t - a) / 1)} luzes={[]} />
-      <Svg>{JANELAS.map(([x, y], i) => t < a + i * 0.12 && <circle key={i} cx={x + 30} cy={y + 30} r={70} fill="#ffd166" opacity={0.25} />)}</Svg>
+      <RuaNoite t={t} acesa={(i) => t < a + i * 0.14} postes={t < a + 0.9} />
+      <Escuro forca={0.2 + 0.55 * clamp((t - a) / 1.2)} luzes={[]} />
     </Cam>
   );
 };
 // 9 — Trezentas pessoas no escuro: olhinhos nas janelas e na rua.
 const C09 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={1000}>
-    <Svg><Rua t={t} ceu={CEU_NOITE} sol={false} /></Svg>
-    <Escuro forca={0.88} luzes={[]} />
+    <RuaNoite t={t} acesa={() => false} postes={false} />
+    <Escuro forca={0.8} luzes={[]} />
     <Svg>
       {Array.from({ length: 46 }, (_, i) => {
         const h1 = Math.sin(i * 12.9898) * 43758.5453, h2 = Math.sin(i * 78.233) * 12345.678; const x = 60 + (h1 - Math.floor(h1)) * 940, y = 820 + (h2 - Math.floor(h2)) * 700;
@@ -202,39 +170,10 @@ const C09 = ({ t, t0, t1 }: P) => (
     <Pop t={t} at={W(9, 'trezentas')} x={540} y={560}><Placa texto="300 PESSOAS" bg="#ffd166" size={60} /></Pop>
   </Cam>
 );
-// Rio, ponte e a cidade iluminada do outro lado.
-const Rio = ({ t, ponte = false }: { t: number; ponte?: boolean }) => (
-  <Svg>
-    <defs>
-      <linearGradient id="ceuRio" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0d1230" /><stop offset="1" stopColor="#2b3366" /></linearGradient>
-    </defs>
-    <rect width={1080} height={1920} fill="url(#ceuRio)" />
-    <circle cx={200} cy={300} r={60} fill="#fff6c8" />
-    {[[700, 240], [900, 400], [460, 160], [120, 560]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={4} fill="#fff" />)}
-    {/* cidade iluminada ao longe */}
-    {[[640, 120, 300], [770, 90, 380], [880, 110, 260], [990, 100, 330]].map(([x, w, h], i) => (
-      <g key={i}>
-        <rect x={x} y={900 - h} width={w} height={h} fill="#3a3f6a" stroke={L} strokeWidth={4} />
-        {Array.from({ length: 12 }, (_, j) => <rect key={j} x={x + 14 + (j % 3) * (w / 3.4)} y={900 - h + 20 + Math.floor(j / 3) * 60} width={18} height={26} fill="#ffd166" opacity={0.6 + 0.4 * Math.sin(t * 2 + j + i)} />)}
-      </g>
-    ))}
-    <ellipse cx={850} cy={880} rx={300} ry={120} fill="#ffd166" opacity={0.15} />
-    <rect x={0} y={900} width={1080} height={1020} fill="#1e3b6e" />
-    {Array.from({ length: 10 }, (_, i) => <path key={i} d={`M${((i * 140 + t * 40) % 1200) - 100} ${1000 + (i % 4) * 160} q30 -14 60 0 t60 0`} stroke="#5d84c4" strokeWidth={5} fill="none" opacity={0.6} />)}
-    {ponte && (
-      <g>
-        <rect x={-20} y={1300} width={1120} height={60} fill="#8a5a32" stroke={L} strokeWidth={6} />
-        {Array.from({ length: 12 }, (_, i) => <rect key={i} x={i * 95} y={1180} width={14} height={130} fill="#6b4a2e" stroke={L} strokeWidth={4} />)}
-        <rect x={-20} y={1180} width={1120} height={16} fill="#6b4a2e" stroke={L} strokeWidth={4} />
-        {[150, 500, 850].map((x) => <rect key={x} x={x} y={1360} width={30} height={560} fill="#5a3a22" stroke={L} strokeWidth={4} />)}
-      </g>
-    )}
-  </Svg>
-);
 // 10 — Do outro lado do rio, uma cidade iluminada.
 const C10 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.15} cx={820} cy={800}>
-    <Rio t={t} />
+    <RioNoite t={t} />
     <Pop t={t} at={W(10, 'iluminada')} x={820} y={420}><Placa texto="CIDADE ILUMINADA" bg="#ffd166" size={44} /></Pop>
   </Cam>
 );
@@ -284,7 +223,7 @@ const C14 = ({ t, t0, t1 }: P) => {
   const some = t > c - 0.3 ? Math.min(3, 1 + Math.floor((t - c + 0.3) / 0.35)) : 0;
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.06} cy={1100}>
-      <Rio t={t} ponte />
+      <RioNoite t={t} ponte />
       <Escuro luzes={[[860, 1150, 420]]} forca={0.55} />
       <Fila t={t} t0={t0} x0={860} n={5} y={1300} h={420} some={some} cantar={!some} />
       <Ator k={TEO} t={t} x={860} y={1300} h={440} movs={[['andar', t0]]} over={{ x: 0, maoE: [-130, -170] }} seed={1} />
@@ -297,9 +236,9 @@ const C15 = ({ t, t0, t1 }: P) => {
   const a = W(15, 'apagavam');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.1} z1={1.2} cx={300} cy={1100}>
-      <Rio t={t} ponte />
+      <RioNoite t={t} ponte />
       <Sombra t={t} x={120} y={1310} h={760} seed={10} />
-      <Sombra t={t} x={330} y={1310} h={700} seed={11} />
+      <Sombra t={t} x={330} y={1310} h={700} seed={11} alcanca={clamp((t - a + 0.6) / 0.6)} />
       <Fila t={t} t0={t0} x0={860} n={3} y={1300} h={420} />
       {t < a + 0.4 && <div style={{ opacity: 1 - clamp((t - a) / 0.4) }}><Fila t={t} t0={t0} x0={860 - 3 * 185} n={1} y={1300} h={420} /></div>}
       <Escuro luzes={[[860, 1150, 400]]} forca={0.6} />
@@ -312,7 +251,7 @@ const C15 = ({ t, t0, t1 }: P) => {
 const C16 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1.1} z1={1.2} cy={1000}>
     <Noite t={t} luzes={[[540, 1050, 380]]}
-      atras={<><Sombra t={t} x={250} y={1260} h={760} seed={12} /><Sombra t={t} x={830} y={1260} h={760} seed={13} /><Ator k={TEO} t={t} x={540} y={CHAO_RUA} h={620} movs={[['parado', t0], ['susto', W(16, 'medo') - 0.2, 1.3], ['nervoso', W(16, 'medo') + 1.1]]} seed={1} /></>}
+      atras={<><Sombra t={t} x={250} y={1260} h={760} seed={12} alcanca={0.15 + 0.5 * clamp((t - t0) / 1.5)} lado={1} /><Sombra t={t} x={830} y={1260} h={760} seed={13} alcanca={0.15 + 0.5 * clamp((t - t0) / 1.5)} lado={-1} /><Ator k={TEO} t={t} x={540} y={CHAO_RUA} h={620} movs={[['parado', t0], ['susto', W(16, 'medo') - 0.2, 1.3], ['nervoso', W(16, 'medo') + 1.1]]} seed={1} /></>}
       frente={<><Aura x={540} y={1050} t={t} /><Sombra t={t} x={250} y={1260} h={760} seed={12} olhos sorriso={1} /><Sombra t={t} x={830} y={1260} h={760} seed={13} olhos sorriso={1} /></>} />
   </Cam>
 );
@@ -322,7 +261,7 @@ const C17 = ({ t, t0, t1 }: P) => {
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.06} cy={1000}>
       <Noite t={t} luzes={[[760, 1050, 380]]}
-        atras={<>{[0, 1, 2, 3].map((i) => <Sombra key={i} t={t} x={-80 + i * 170 + k * 120} y={1250} h={640 + i * 30} seed={14 + i} />)}<Ator k={TEO} t={t} x={760} y={CHAO_RUA} h={600} movs={[['andar', t0]]} over={{ x: 0, sobrTriste: true, boca: 'onda', pupila: [-1, 0] }} seed={1} /></>}
+        atras={<>{[0, 1, 2, 3].map((i) => <Sombra key={i} t={t} x={-80 + i * 170 + k * 120} y={1250} h={640 + i * 30} seed={14 + i} alcanca={i === 3 ? 0.6 : 0} />)}<Ator k={TEO} t={t} x={760} y={CHAO_RUA} h={600} movs={[['andar', t0]]} over={{ x: 0, sobrTriste: true, boca: 'onda', pupila: [-1, 0] }} seed={1} /></>}
         frente={<><Aura x={760} y={1050} t={t} />{[0, 1, 2, 3].map((i) => <Sombra key={i} t={t} x={-80 + i * 170 + k * 120} y={1250} h={640 + i * 30} seed={14 + i} olhos sorriso={0.8} />)}<Pop t={t} at={W(17, 'achar')} x={420} y={600}><Balao texto="ACHAMOS!" cor="#d1d5ff" /></Pop></>} />
     </Cam>
   );
@@ -330,7 +269,7 @@ const C17 = ({ t, t0, t1 }: P) => {
 // 18 — Só sobrou uma mão na minha: a da Lia.
 const C18 = ({ t, t0, t1 }: P) => (
   <Cam t={t} t0={t0} t1={t1} z0={1.2} z1={1.35} cy={1050}>
-    <Rio t={t} ponte />
+    <RioNoite t={t} ponte />
     <Escuro luzes={[[620, 1150, 360]]} forca={0.75} />
     <Ator k={LIA} t={t} x={430} y={1300} h={500} movs={[['chorar', t0], ['parado', W(18, 'lia') - 0.3]]} over={t >= W(18, 'lia') - 0.3 ? { maoD: [130, -175], sobrTriste: true, boca: 'triste', lagrima: 1 } : {}} seed={2} />
     <Ator k={TEO} t={t} x={680} y={1300} h={540} movs={[['parado', t0]]} over={{ maoE: [-130, -175], sobrTriste: true, boca: 'triste', pupila: [-0.8, 0.3] }} seed={1} />
@@ -342,7 +281,7 @@ const C19 = ({ t, t0, t1 }: P) => {
   const s = W(19, 'solta'), n = W(19, 'nunca');
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.3} z1={1.45} cy={1000}>
-      <Rio t={t} ponte />
+      <RioNoite t={t} ponte />
       <Escuro luzes={[[600, 1150, 380]]} forca={0.8} />
       <Ator k={LIA} t={t} x={450} y={1300} h={500} movs={[['parado', t0], ['sim', n]]} over={{ maoD: [130, -175], boca: t >= n ? 'sorriso' : 'triste', lagrima: 1 }} seed={2} />
       <Ator k={TEO} t={t} x={700} y={1300} h={540} movs={[['falar', s - 0.2, 1.2], ['parado', s + 1]]} over={{ maoE: [-130, -175], pupila: [-1, 0.4], sobrTriste: true }} seed={1} />
@@ -358,7 +297,7 @@ const C20 = ({ t, t0, t1 }: P) => {
   const k = clamp((t - a) / 1.2);
   return (
     <Cam t={t} t0={t0} t1={t1} z0={1.3} z1={1.5} cy={1050}>
-      <Rio t={t} ponte />
+      <RioNoite t={t} ponte />
       <Ator k={LIA} t={t} x={450} y={1300} h={500} movs={[['parado', t0]]} over={{ maoD: [130, -175], olho: 0, olhoFeliz: true, boca: 'sorriso' }} seed={2} />
       <Ator k={TEO} t={t} x={700} y={1300} h={540} movs={[['parado', t0]]} over={{ maoE: [-130, -175], olho: 0, olhoFeliz: true, boca: 'sorriso' }} seed={1} />
       <Escuro luzes={[[600, 1150, 380 * (1 - k) + 1]]} forca={0.8 + 0.2 * k} />
