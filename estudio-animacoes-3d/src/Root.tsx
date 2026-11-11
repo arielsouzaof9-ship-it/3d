@@ -1,6 +1,7 @@
 import { Composition } from 'remotion';
 import { Elenco } from './Elenco';
 import { Film } from './Film';
+import { DURACAO_FIOS, FiosBrancos } from './mad/FiosBrancos';
 import { END, FPS } from './timeline';
 import { VOZ } from './voz';
 
@@ -15,6 +16,8 @@ export const Root = () => (
       height={1920}
       defaultProps={{ legendas: true, voz: VOZ.length > 0, musica: false }}
     />
+    {/* "Fios Brancos" com os personagens mad (2D) */}
+    <Composition id="FiosBrancos" component={FiosBrancos} durationInFrames={Math.round(DURACAO_FIOS * FPS)} fps={FPS} width={1080} height={1920} />
     {/* Folha com todo o elenco disponível (node tools/elenco.mjs) */}
     <Composition id="Elenco" component={Elenco} durationInFrames={1} fps={FPS} width={1920} height={1760} />
   </>
