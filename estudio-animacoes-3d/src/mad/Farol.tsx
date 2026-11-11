@@ -337,6 +337,56 @@ const Cena = ({ C, t0, t1, fade }: { C: (p: P) => JSX.Element; t0: number; t1: n
     </AbsoluteFill>
   );
 };
+
+// ---------- Efeitos sonoros (public/sfx-farol, gerados por tools/sfx_farol.py) ----------
+// [arquivo, início (s), volume, duração máx. (s, corta com fade)]
+type Sfx = [string, number, number, number?];
+const GANHO_SFX = 0.6; // volume geral dos efeitos (a narração fica na frente)
+const SFX: Sfx[] = [
+  // ambientes
+  ['noite-rua', 0, 0.16, 28.6],
+  ['rio', W(10, 0), 0.14, 40],
+  ['drone', W(14, 0), 0.12, W(20, 'apaguei') + 0.5 - W(14, 0)],
+  // rua
+  ['rosnado', W(0, 'sombras'), 0.18], ['rosnado', W(0, 'sombras') + 0.25, 0.13], ['rosnado', W(0, 'sombras') + 0.5, 0.13],
+  ['brilho', W(1, 'eu'), 0.32], ['brilho', W(2, 'brilho'), 0.3],
+  ['whoosh', W(3, 'afastam') - 0.2, 0.4],
+  ['passos', W(4, 0), 0.32, W(5, 0) - W(4, 0)],
+  ['sino', W(5, 'seguro'), 0.3],
+  ['caixinha', W(7, 'danca') - 0.2, 0.26, W(8, 0) - W(7, 'danca') + 0.2],
+  ['apagao', W(8, 'apagou'), 0.38],
+  ['boom', W(9, 'trezentas'), 0.2],
+  // travessia
+  ['brilho', W(10, 'iluminada'), 0.26],
+  ['passos', W(11, 'fila'), 0.3, 3.2],
+  ['coro', W(12, 0), 0.24, W(14, 'curta') - W(12, 0)],
+  ['brilho', W(13, 'salvar'), 0.3],
+  ['boom', W(14, 'curta'), 0.2],
+  // revelação
+  ['whoosh', W(15, 'apagavam') - 0.3, 0.35], ['rosnado', W(15, 'apagavam'), 0.28],
+  ['susto', W(16, 'medo') - 0.05, 0.38],
+  ['rosnado', W(17, 'achar'), 0.25],
+  ['coracao', W(18, 0), 0.2, W(20, 'apaguei') + 0.3 - W(18, 0)],
+  ['desliga', W(20, 'apaguei'), 0.3],
+  ['boom', W(20, 'apaguei') + 0.8, 0.2],
+];
+const Efeitos = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {SFX.map(([f, at, vol, max], i) => {
+        const from = Math.max(0, Math.round(at * fps));
+        const dur = Math.round((max ?? 12) * fps);
+        const fade = Math.round(0.4 * fps);
+        return (
+          <Sequence key={i} from={from} durationInFrames={dur} layout="none" name={`sfx ${f}`}>
+            <Audio src={staticFile(`sfx-farol/${f}.mp3`)} volume={(fr) => GANHO_SFX * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
+          </Sequence>
+        );
+      })}
+    </>
+  );
+};
 export const Farol = () => {
   const { fps } = useVideoConfig();
   const inicio = LINES.map((_, i) => (i === 0 ? 0 : W(i, 0)));
@@ -356,6 +406,7 @@ export const Farol = () => {
       <Granulado />
       <Legenda />
       <Audio src={staticFile('voz-farol.mp3')} />
+      <Efeitos />
     </AbsoluteFill>
   );
 };
