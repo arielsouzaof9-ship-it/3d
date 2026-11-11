@@ -1,6 +1,6 @@
 // "O Farol": animação 2D com os PERSONAGENS MAD ARTICULADOS, sem áudio (só legendas).
 import { JSX, ReactNode, useId } from 'react';
-import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { CHAO_RUA, L, Rua, Svg } from './cenarios';
 import { Balao, Brilho, Cam, clamp, FADE, P, Placa, Pop } from './FiosBrancos';
 import { Ator } from './FiosBrancosArticulado';
@@ -355,6 +355,7 @@ export const Farol = () => {
       })}
       <Granulado />
       <Legenda />
+      <Audio src={staticFile('voz-farol.mp3')} />
     </AbsoluteFill>
   );
 };
