@@ -9,8 +9,8 @@ import { Granulado } from './Granulado';
 import { END, LINES, W } from './timeline-fios';
 
 // Ator: boneco articulado num quadro 1080×1920. h ≈ altura do antigo <Boneco> (para manter os mesmos enquadramentos).
-type Mov = [string, number, number?]; // [movimento, início, duração]
-const Ator = ({ k, t, x, y, h = 620, movs, over, seed = 0, flip, style }: { k: object; t: number; x: number; y: number; h?: number; movs: Mov[]; over?: Partial<Pose> | ((p: Pose) => Partial<Pose>); seed?: number; flip?: boolean; style?: CSSProperties }) => {
+export type Mov = [string, number, number?]; // [movimento, início, duração]
+export const Ator = ({ k, t, x, y, h = 620, movs, over, seed = 0, flip, style }: { k: object; t: number; x: number; y: number; h?: number; movs: Mov[]; over?: Partial<Pose> | ((p: Pose) => Partial<Pose>); seed?: number; flip?: boolean; style?: CSSProperties }) => {
   const atual = [...movs].reverse().find(([, ini]) => t >= ini) ?? movs[0];
   const [m, ini, dur] = atual;
   let p = pose(t, m, ini, dur ?? 999, seed);

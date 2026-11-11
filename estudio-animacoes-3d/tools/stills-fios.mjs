@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 const root = path.resolve(import.meta.dirname, '..');
-const { LINES, W, END, FPS } = await import(pathToFileURL(path.join(root, 'src', 'mad', 'timeline-fios.ts')).href);
+const { LINES, W, END, FPS } = await import(pathToFileURL(path.join(root, 'src', 'mad', process.env.TL || 'timeline-fios.ts')).href);
 const ini = LINES.map((_, i) => (i === 0 ? 0 : W(i, 0)));
 const fim = [...ini.slice(1), END];
 const frames = process.argv[2] ? process.argv[2].split(',').map(Number) : ini.map((a, i) => Math.round((a + (fim[i] - a) * 0.75) * FPS));
