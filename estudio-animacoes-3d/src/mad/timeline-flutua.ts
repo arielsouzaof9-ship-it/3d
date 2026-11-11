@@ -39,7 +39,7 @@ export const LINES = [
 
 export type Word = { text: string; key: string; stressed: boolean; t0: number; t1: number; line: number; i: number };
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
-const IGUAIS: Record<string, string> = { pra: 'para', cem: '100', mil: '1000', vinte: '20' };
+const IGUAIS: Record<string, string> = { pra: 'para', cem: '100', vinte: '20', ploc: 'poc' };
 
 const estimado = (): Word[] => {
   const out: Word[] = [];
