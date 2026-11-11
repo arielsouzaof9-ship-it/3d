@@ -5,41 +5,41 @@ import { Auditorio, Boneco, CHAO_RUA, CHAO_SALA, Escola, Foto, L, Liso, Rua, Sal
 import { END, F, LINES, W, WORDS } from './timeline-fios';
 
 // ---------- Elenco ----------
-const PAI = { tipo: 'adulto', pele: '#e2b48c', roupa: '#3d8bfd', calca: '#2c3346', cabelo: 'curto', corCabelo: '#f7f7f7', rosto: 'feliz', braco: 'baixo' };
-const MENINO = { tipo: 'crianca', pele: '#f6e3d3', roupa: '#2fa36b', calca: '#2f5fa8', sapato: '#e5484d', cabelo: 'curto', corCabelo: '#2a1a12', rosto: 'neutro', braco: 'baixo' };
-const AVO = { tipo: 'idoso', pele: '#e2b48c', roupa: '#7b5aa6', saia: '#5b467e', cabelo: 'coque', corCabelo: '#d6d6d6', oculos: true, rosto: 'feliz', braco: 'baixo' };
-const ADULTO = { tipo: 'adulto', pele: '#f6e3d3', roupa: '#2fa36b', calca: '#2f5fa8', cabelo: 'curto', corCabelo: '#f7f7f7', rosto: 'feliz', braco: 'baixo' };
-const FILHO = { tipo: 'crianca', pele: '#f6e3d3', roupa: '#f2c94c', calca: '#e5484d', short: true, cabelo: 'franja', corCabelo: '#2a1a12', rosto: 'neutro', braco: 'baixo' };
-const VIZINHO = { tipo: 'adulto', corpo: 'gordo', pele: '#b9805a', roupa: '#d1495b', calca: '#4a4f3e', cabelo: 'curto', corCabelo: '#1a120c', bigode: true, rosto: 'neutro', braco: 'baixo' };
-const COLEGAS = [
+export const PAI = { tipo: 'adulto', pele: '#e2b48c', roupa: '#3d8bfd', calca: '#2c3346', cabelo: 'curto', corCabelo: '#f7f7f7', rosto: 'feliz', braco: 'baixo' };
+export const MENINO = { tipo: 'crianca', pele: '#f6e3d3', roupa: '#2fa36b', calca: '#2f5fa8', sapato: '#e5484d', cabelo: 'curto', corCabelo: '#2a1a12', rosto: 'neutro', braco: 'baixo' };
+export const AVO = { tipo: 'idoso', pele: '#e2b48c', roupa: '#7b5aa6', saia: '#5b467e', cabelo: 'coque', corCabelo: '#d6d6d6', oculos: true, rosto: 'feliz', braco: 'baixo' };
+export const ADULTO = { tipo: 'adulto', pele: '#f6e3d3', roupa: '#2fa36b', calca: '#2f5fa8', cabelo: 'curto', corCabelo: '#f7f7f7', rosto: 'feliz', braco: 'baixo' };
+export const FILHO = { tipo: 'crianca', pele: '#f6e3d3', roupa: '#f2c94c', calca: '#e5484d', short: true, cabelo: 'franja', corCabelo: '#2a1a12', rosto: 'neutro', braco: 'baixo' };
+export const VIZINHO = { tipo: 'adulto', corpo: 'gordo', pele: '#b9805a', roupa: '#d1495b', calca: '#4a4f3e', cabelo: 'curto', corCabelo: '#1a120c', bigode: true, rosto: 'neutro', braco: 'baixo' };
+export const COLEGAS = [
   { tipo: 'crianca', pele: '#7a4b30', roupa: '#7b5aa6', calca: '#2c3346', cabelo: 'crespo', corCabelo: '#120c08', rosto: 'feliz', braco: 'palma' },
   { tipo: 'crianca', pele: '#f6e3d3', roupa: '#e5484d', saia: '#e5484d', cabelo: 'trancas', corCabelo: '#e8c240', rosto: 'feliz', braco: 'cintura' },
   { tipo: 'crianca', pele: '#e2b48c', roupa: '#f2c94c', calca: '#2f5fa8', cabelo: 'curto', corCabelo: '#3a2416', chapeu: 'bone', corChapeu: '#3d8bfd', rosto: 'feliz', braco: 'palma' },
 ];
 
 // ---------- Utilitários de animação ----------
-const clamp = (x: number) => Math.min(1, Math.max(0, x));
+export const clamp = (x: number) => Math.min(1, Math.max(0, x));
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-const seg = (t: number, a: number, b: number) => ease(clamp((t - a) / (b - a)));
-const pop = (t: number, at: number, d = 0.28) => {
+export const seg = (t: number, a: number, b: number) => ease(clamp((t - a) / (b - a)));
+export const pop = (t: number, at: number, d = 0.28) => {
   const x = clamp((t - at + 4 * F) / d);
   return x <= 0 ? 0 : 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);
 };
 const resp = (t: number, s = 0) => Math.sin(t * 2.4 + s) * 3; // respiração leve
 const face = (t: number, keys: [number, string][]) => keys.filter(([at]) => t >= at - 2 * F).pop()?.[1] ?? keys[0][1];
 
-type P = { t: number; t0: number; t1: number };
+export type P = { t: number; t0: number; t1: number };
 // Câmera: aproxima devagar e centraliza em (cx, cy).
-const Cam = ({ t, t0, t1, z0 = 1, z1 = 1.08, cx = 540, cy = 1000, children }: P & { z0?: number; z1?: number; cx?: number; cy?: number; children: ReactNode }) => {
+export const Cam = ({ t, t0, t1, z0 = 1, z1 = 1.08, cx = 540, cy = 1000, children }: P & { z0?: number; z1?: number; cx?: number; cy?: number; children: ReactNode }) => {
   const z = z0 + (z1 - z0) * clamp((t - t0) / Math.max(0.1, t1 - t0));
   return <AbsoluteFill style={{ transform: `scale(${z})`, transformOrigin: `${cx}px ${cy}px` }}>{children}</AbsoluteFill>;
 };
-const Pop = ({ t, at, x, y, children, d }: { t: number; at: number; x: number; y: number; children: ReactNode; d?: number }) => {
+export const Pop = ({ t, at, x, y, children, d }: { t: number; at: number; x: number; y: number; children: ReactNode; d?: number }) => {
   const s = pop(t, at, d);
   if (s <= 0.001) return null;
   return <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%, -50%) scale(${s})` }}>{children}</div>;
 };
-const Brilho = ({ t, at, x, y, n = 8, r = 90 }: { t: number; at: number; x: number; y: number; n?: number; r?: number }) => {
+export const Brilho = ({ t, at, x, y, n = 8, r = 90 }: { t: number; at: number; x: number; y: number; n?: number; r?: number }) => {
   const k = clamp((t - at) / 0.6);
   if (k <= 0 || k >= 1) return null;
   return (
@@ -52,10 +52,10 @@ const Brilho = ({ t, at, x, y, n = 8, r = 90 }: { t: number; at: number; x: numb
     </Svg>
   );
 };
-const Balao = ({ texto, cor = '#fff' }: { texto: string; cor?: string }) => (
+export const Balao = ({ texto, cor = '#fff' }: { texto: string; cor?: string }) => (
   <div style={{ background: cor, border: `6px solid ${L}`, borderRadius: 40, padding: '18px 34px', fontFamily: '"Arial Black", Arial', fontSize: 64, color: L, whiteSpace: 'nowrap' }}>{texto}</div>
 );
-const Placa = ({ texto, bg = '#fff', fg = L, size = 52 }: { texto: string; bg?: string; fg?: string; size?: number }) => (
+export const Placa = ({ texto, bg = '#fff', fg = L, size = 52 }: { texto: string; bg?: string; fg?: string; size?: number }) => (
   <div style={{ background: bg, border: `6px solid ${L}`, borderRadius: 16, padding: '14px 28px', fontFamily: '"Arial Black", Arial', fontSize: size, color: fg, whiteSpace: 'pre', textAlign: 'center', lineHeight: 1.1 }}>{texto}</div>
 );
 
@@ -210,7 +210,7 @@ const C09 = ({ t, t0, t1 }: P) => {
   );
 };
 // 10 — Vendeu a moto pra pagar a escola.
-const Moto = () => (
+export const Moto = () => (
   <svg width={420} height={260} viewBox="0 0 420 260">
     <circle cx={80} cy={190} r={60} fill="#3a3a44" stroke={L} strokeWidth={8} /><circle cx={80} cy={190} r={22} fill="#c9ccd4" />
     <circle cx={330} cy={190} r={60} fill="#3a3a44" stroke={L} strokeWidth={8} /><circle cx={330} cy={190} r={22} fill="#c9ccd4" />
@@ -342,7 +342,7 @@ const C18 = ({ t, t0, t1 }: P) => {
 const CENAS: ((p: P) => JSX.Element)[] = [C00, C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14, C15, C16, C17, C18];
 
 // ---------- Legenda: até 3 palavras, destaque amarelo ----------
-const Legenda = () => {
+export const Legenda = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
@@ -364,7 +364,7 @@ const Legenda = () => {
   );
 };
 
-const FADE = 6;
+export const FADE = 6;
 export const FiosBrancos = () => {
   const { fps } = useVideoConfig();
   const inicio = LINES.map((_, i) => (i === 0 ? 0 : W(i, 0)));

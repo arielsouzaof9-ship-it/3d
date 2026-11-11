@@ -4,7 +4,7 @@ import { JSX } from 'react';
 // boca que fala e extras (lágrima, suor, "?"). Os movimentos ficam em ./movimentos.ts.
 import { useMemo } from 'react';
 // @ts-expect-error módulo JS puro, sem tipos
-import { cabelo, chapeu, LINHA } from '../../../mad/stick.mjs';
+import { cabelo, chapeu, item, LINHA } from '../../../mad/stick.mjs';
 
 const L = LINHA as string;
 type V = [number, number];
@@ -161,6 +161,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {!p.frenteD && braco(sD, cD, mD)}
       {/* tronco */}
       <path d={tronco} fill={k.roupa} stroke={L} strokeWidth={5} />
+      {k.colete && <path d={`M${-a * 0.5} ${o + 30} h${a} M${-a * 0.52} ${o + 70} h${a * 1.04}`} stroke={k.colete} strokeWidth={10} />}
+      {k.peito && <text x={0} y={o + hh * 0.62} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.42} fill="#fff" stroke={L} strokeWidth={2}>{k.peito}</text>}
       {k.gravata && <path d={`M0 ${o + 2} l-9 12 l9 50 l9 -50 z`} fill={k.gravata} stroke={L} strokeWidth={3} />}
       {/* cabeça */}
       <g transform={`translate(${cab[0]} ${cab[1]}) rotate(${p.cabRot} 0 ${r * 0.8})`}>
@@ -171,6 +173,12 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
         </g>
         {hair.frente && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
         {hat && <g dangerouslySetInnerHTML={{ __html: hat }} />}
+        {Array.from({ length: k.fios ?? 0 }, (_, i) => {
+          const ang = -Math.PI / 2 + (i - ((k.fios ?? 1) - 1) / 2) * 0.32 + 0.12;
+          const x0 = Math.cos(ang) * r * 0.9, y0 = Math.sin(ang) * r * 0.9;
+          const d = `M${x0} ${y0} q${Math.cos(ang) * r * 0.25 + r * 0.12} ${Math.sin(ang) * r * 0.35} ${Math.cos(ang) * r * 0.1 + r * 0.25} ${Math.sin(ang) * r * 0.55}`;
+          return <g key={i}><path d={d} stroke={L} strokeWidth={r * 0.11} fill="none" strokeLinecap="round" /><path d={d} stroke="#fff" strokeWidth={r * 0.06} fill="none" strokeLinecap="round" /></g>;
+        })}
         {p.pergunta > 0 && (
           <text x={r * 0.9} y={-r * 1.1} fontFamily="Arial Black, Arial" fontWeight={900} fontSize={r * 0.9 * p.pergunta} fill="#fff" stroke={L} strokeWidth={6} paintOrder="stroke">?</text>
         )}
@@ -178,6 +186,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {/* braços na frente (boca, olhos, queixo) */}
       {p.frenteE && braco(sE, cE, mE)}
       {p.frenteD && braco(sD, cD, mD)}
+      {k.item && <g dangerouslySetInnerHTML={{ __html: item(k.item, mD[0], mD[1], k, 0) as string }} />}
+      {k.item2 && <g dangerouslySetInnerHTML={{ __html: item(k.item2, mE[0], mE[1], k, 0) as string }} />}
     </g>
   );
 };

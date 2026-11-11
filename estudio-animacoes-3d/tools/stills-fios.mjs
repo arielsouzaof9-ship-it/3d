@@ -15,7 +15,7 @@ const out = path.join(root, 'out', 'stills-fios');
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 const serveUrl = await bundle({ entryPoint: path.join(root, 'src', 'index.ts') });
-const composition = await selectComposition({ serveUrl, id: 'FiosBrancos' });
+const composition = await selectComposition({ serveUrl, id: process.env.COMP || 'FiosBrancos' });
 for (const f of frames) {
   const o = path.join(out, `f${String(f).padStart(5, '0')}.jpg`);
   await renderStill({ composition, serveUrl, frame: f, output: o, scale, imageFormat: 'jpeg', jpegQuality: 80 });

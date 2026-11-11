@@ -104,7 +104,7 @@ export const chapeu = (tipo, cor, cx, cy, r) => {
 
 let UID = 0;
 // ---------- Objetos de mão ----------
-const item = (tipo, x, y, k, chao) => {
+export const item = (tipo, x, y, k, chao) => {
   const L = `stroke="${LINHA}" stroke-width="3.5" stroke-linejoin="round"`;
   switch (tipo) {
     case 'livro': return `<g transform="translate(${x} ${y}) rotate(-10)"><rect x="-26" y="-34" width="52" height="40" rx="4" fill="#c8452e" ${L}/><rect x="-22" y="-30" width="44" height="6" fill="#fff" opacity="0.7"/></g>`;
