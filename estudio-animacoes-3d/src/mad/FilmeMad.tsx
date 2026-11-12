@@ -6,7 +6,7 @@ import type { Timeline } from './timeline-base';
 
 export type P = { t: number; t0: number; t1: number };
 export type Cena = (p: P) => JSX.Element;
-export type Sfx = [string, number, number, number?]; // arquivo (em public/), início, volume, duração máx.
+export type Sfx = [string, number, number, number?, boolean?]; // arquivo (em public/), início, volume, duração máx., repetir em loop.
 const FADE = 6;
 
 const Legenda = ({ tl, topo = 1560 }: { tl: Timeline; topo?: number }) => {
@@ -58,13 +58,13 @@ export const FilmeMad = ({ tl, cenas, voz, sfx = [], ganhoSfx = 0.6, granulado =
       <Granulado forca={granulado} />
       <Legenda tl={tl} />
       {tl.COM_VOZ && voz && <Audio src={staticFile(voz)} />}
-      {sfx.map(([f, at, vol, max], i) => {
+      {sfx.map(([f, at, vol, max, loop], i) => {
         const from = Math.max(0, Math.round(at * fps));
         const dur = Math.max(1, Math.round((max ?? 8) * fps));
         const fade = Math.round(0.4 * fps);
         return (
           <Sequence key={`s${i}`} from={from} durationInFrames={dur} layout="none" name={`sfx ${f}`}>
-            <Audio src={staticFile(f)} volume={(fr) => g * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
+            <Audio src={staticFile(f)} loop={loop} volume={(fr) => g * vol * Math.min(1, (fr + 1) / 6, max ? (dur - fr) / fade : 1)} />
           </Sequence>
         );
       })}

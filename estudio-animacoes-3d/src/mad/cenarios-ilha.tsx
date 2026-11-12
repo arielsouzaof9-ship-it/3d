@@ -87,10 +87,14 @@ export const Barco = ({ x, y, rot = 0, s = 1, limo = false, placa = false, lampi
 );
 
 // ---------- Hotel ----------
-export const HotelFora = ({ t, janela9 = true, dia = false }: { t: number; janela9?: boolean; dia?: boolean }) => (
+export const HotelFora = ({ t, janela9 = true, dia = false, vulto = 0 }: { t: number; janela9?: boolean; dia?: boolean; vulto?: number }) => (
   <Svg>
     {dia ? <rect width={1080} height={1200} fill="#f5d9a8" /> : <CeuTempestade t={t} horizonte={1200} />}
     <path d="M0 1200 Q200 1080 420 1120 T1080 1100 V1920 H0 z" fill={dia ? '#8a7a5a' : '#1a1e30'} />
+    {!dia && <g transform={`rotate(${-5 + 4 * Math.sin(t * 1.7) + 2 * Math.sin(t * 4.1)} 70 1180)`}>
+      <path d="M70 1180 Q60 900 90 640" stroke="#120e16" strokeWidth={34} fill="none" strokeLinecap="round" />
+      {[[90, 700, -60, -80], [84, 820, 70, -70], [76, 940, -80, -40], [88, 760, 40, -110]].map(([x, y, dx, dy], i) => <path key={i} d={`M${x} ${y} q${dx / 2} ${dy} ${dx} ${dy - 10 * Math.sin(t * 3 + i)}`} stroke="#120e16" strokeWidth={14} fill="none" strokeLinecap="round" />)}
+    </g>}
     <g>
       <rect x={180} y={620} width={720} height={540} fill={dia ? '#c99a6a' : '#5a3e2a'} stroke={L} strokeWidth={6} />
       {Array.from({ length: 20 }, (_, i) => <path key={i} d={`M184 ${646 + i * 26} h712`} stroke={L} strokeWidth={2} opacity={0.3} />)}
@@ -100,10 +104,15 @@ export const HotelFora = ({ t, janela9 = true, dia = false }: { t: number; janel
         <g key={i}>
           <rect x={x} y={y} width={90} height={110} fill={n === 9 ? (janela9 ? '#ffcf6a' : '#2a2f45') : dia ? '#bfe6ff' : i % 2 ? '#3a4060' : '#e8b860'} stroke={L} strokeWidth={4} opacity={n === 9 && janela9 ? 0.7 + 0.3 * Math.abs(Math.sin(t * 2.3)) : 1} />
           <path d={`M${x + 45} ${y} v110 M${x} ${y + 55} h90`} stroke={L} strokeWidth={3} />
+          {n === 9 && vulto > 0 && <g opacity={vulto}><circle cx={x + 45} cy={y + 50} r={17} fill="#140c08" /><path d={`M${x + 22} ${y + 110} q4 -42 23 -42 q19 0 23 42 z`} fill="#140c08" /><path d={`M${x + 30} ${y + 40} q-14 10 -8 30 M${x + 60} ${y + 40} q14 10 8 30`} stroke="#140c08" strokeWidth={6} fill="none" /></g>}
           {n === 9 && [0, 1, 2].map((k) => <path key={k} d={`M${x - 6} ${y + 20 + k * 36} l102 ${8 - k * 6}`} stroke="#6b4a2e" strokeWidth={10} />)}
         </g>
       ))}
       <rect x={470} y={960} width={140} height={200} rx={8} fill="#3a2418" stroke={L} strokeWidth={5} />
+      {!dia && <rect x={480} y={970} width={120} height={14} fill="#ffcf6a" opacity={0.35 + 0.25 * Math.sin(t * 11) * Math.sin(t * 3)} />}
+      <path d="M150 1160 h780" stroke={L} strokeWidth={6} />
+      {[200, 300, 400, 680, 780, 880].map((x) => <path key={x} d={`M${x} 1160 v-60`} stroke="#4a2e1e" strokeWidth={8} />)}
+      <path d="M180 1100 h720" stroke="#4a2e1e" strokeWidth={8} />
       <g transform={`rotate(${dia ? 0 : 6 * Math.sin(t * 2.4)} 540 905)`}>
         <path d="M480 905 V925 M600 905 V925" stroke={L} strokeWidth={4} />
         <rect x={430} y={925} width={220} height={56} rx={6} fill="#c9a86a" stroke={L} strokeWidth={4} />
@@ -114,7 +123,7 @@ export const HotelFora = ({ t, janela9 = true, dia = false }: { t: number; janel
 );
 // Recepção: madeira, balcão, quadro de chaves (gancho 9 vazio), relógio, luminária.
 export const CHAO_I = 1450;
-export const Recepcao = ({ t, vazio = false }: { t: number; vazio?: boolean }) => (
+export const Recepcao = ({ t, vazio = false, caneta = false }: { t: number; vazio?: boolean; caneta?: boolean }) => (
   <Svg>
     <rect width={1080} height={1920} fill="#4a3426" />
     {Array.from({ length: 14 }, (_, i) => <path key={i} d={`M${i * 80} 0 V1450`} stroke="#3a2618" strokeWidth={4} />)}
@@ -129,6 +138,8 @@ export const Recepcao = ({ t, vazio = false }: { t: number; vazio?: boolean }) =
     {/* relógio */}
     <circle cx={260} cy={560} r={70} fill="#e8d6b0" stroke={L} strokeWidth={6} />
     <path d={`M260 560 l0 -46 M260 560 l${34 * Math.cos(t * 0.5)} ${34 * Math.sin(t * 0.5)}`} stroke={L} strokeWidth={6} strokeLinecap="round" />
+    <rect x={225} y={630} width={70} height={70} fill="#3a2418" stroke={L} strokeWidth={4} />
+    <g transform={`rotate(${18 * Math.sin(t * Math.PI)} 260 632)`}><path d="M260 632 v52" stroke="#c9a14a" strokeWidth={4} /><circle cx={260} cy={688} r={10} fill="#c9a14a" stroke={L} strokeWidth={3} /></g>
     {/* quadro na parede */}
     <rect x={160} y={720} width={200} height={150} fill="#2a3a4a" stroke="#c9a14a" strokeWidth={8} />
     <path d="M170 850 Q230 760 300 830 T350 820 V860 H170 z" fill="#3a5a6a" />
@@ -137,9 +148,14 @@ export const Recepcao = ({ t, vazio = false }: { t: number; vazio?: boolean }) =
     <rect x={100} y={1060} width={880} height={36} fill="#7a4f2c" stroke={L} strokeWidth={5} />
     {[0, 1, 2].map((i) => <rect key={i} x={160 + i * 270} y={1130} width={220} height={270} fill="none" stroke={L} strokeWidth={4} opacity={0.4} />)}
     {!vazio && <g><rect x={430} y={1028} width={160} height={36} rx={4} fill="#1a1a1e" stroke={L} strokeWidth={3} /><path d="M510 1030 v32" stroke="#e8d6b0" strokeWidth={3} /></g>}
+    {caneta && <g transform={`translate(${550 + 18 * Math.sin(t * 2.2)} ${1030 + 3 * Math.sin(t * 17)}) rotate(${30 + 8 * Math.sin(t * 13)})`}><path d="M0 0 L-10 -70" stroke="#1a1a1e" strokeWidth={8} strokeLinecap="round" /><path d="M0 0 l-3 -12" stroke="#c9a14a" strokeWidth={4} /></g>}
+    <rect x={200} y={1000} width={50} height={60} rx={6} fill="#e8d6b0" stroke={L} strokeWidth={4} />
+    <path d={`M225 1000 q${-6 + 4 * Math.sin(t * 9)} -20 0 -34 q${6 + 3 * Math.sin(t * 7)} 14 0 34`} fill="#ffcf6a" />
+    <circle cx={225} cy={975} r={70} fill="#ffcf6a" opacity={0.12 + 0.05 * Math.sin(t * 9)} />
     <path d="M820 1060 v-140" stroke={L} strokeWidth={6} />
     <path d="M770 920 h100 l-20 -60 h-60 z" fill="#2f6b4a" stroke={L} strokeWidth={4} />
-    <circle cx={820} cy={940} r={vazio ? 0 : 160} fill="#ffcf6a" opacity={0.15} />
+    <circle cx={820} cy={940} r={vazio ? 0 : 160} fill="#ffcf6a" opacity={0.12 + 0.06 * Math.abs(Math.sin(t * 13) * Math.sin(t * 2.1))} />
+    {!vazio && <Poeira t={t} n={18} area={[640, 760, 360, 400]} op={0.6} />}
     {vazio && Array.from({ length: 30 }, (_, i) => <circle key={i} cx={rnd(i) * 1080} cy={rnd(i + 4) * 1400} r={2 + rnd(i + 8) * 3} fill="#e8d6b0" opacity={0.2 + 0.2 * Math.sin(t * 2 + i)} />)}
   </Svg>
 );
@@ -194,6 +210,8 @@ export const Corredor = ({ t, aberta = 0, pegadas = 0, escuro = 0.3 }: { t: numb
       const x = 840 - i * 85, y = 1500 + (i % 2) * 50;
       return <g key={i} opacity={0.85 * k}><ellipse cx={x} cy={y} rx={18} ry={30} fill="#7fa6d8" /><circle cx={x - 10} cy={y - 34} r={6} fill="#7fa6d8" /><circle cx={x + 2} cy={y - 38} r={6} fill="#7fa6d8" /><circle cx={x + 13} cy={y - 34} r={5} fill="#7fa6d8" /><ellipse cx={x - 4} cy={y - 8} rx={5} ry={9} fill="#e8f2ff" opacity={0.8} /></g>;
     })}
+    {pegadas > 0.3 && <Goteira t={t} x={900} y0={850} y1={1480} />}
+    <Poeira t={t} n={22} op={0.35} area={[150, 450, 800, 700]} />
     <rect width={1080} height={1920} fill="#000" opacity={escuro} />
   </Svg>
 );
@@ -207,6 +225,8 @@ export const Quarto9 = ({ t, desenho = true, sapato = true, fumaca = true, dia =
     <rect x={620} y={420} width={300} height={320} fill={dia || janelaAberta ? '#bfe6ff' : '#0f1428'} stroke={L} strokeWidth={8} />
     {!janelaAberta && [0, 1, 2].map((k) => <g key={k}><path d={`M600 ${470 + k * 110} L940 ${500 + k * 100}`} stroke="#6b4a2e" strokeWidth={32} /><circle cx={618} cy={471 + k * 110} r={6} fill="#9aa0aa" /><circle cx={922} cy={498 + k * 100} r={6} fill="#9aa0aa" /></g>)}
     {dia && <path d="M620 740 L380 1400 H900 L920 740 z" fill="#fff6c8" opacity={0.25} />}
+    {!dia && !janelaAberta && [0, 1].map((k) => <path key={k} d={`M630 ${520 + k * 105} L910 ${535 + k * 100} L${860 - k * 80} 1420 L${320 - k * 60} 1420 z`} fill="#9fb6e8" opacity={0.07 + 0.03 * Math.sin(t * 0.8 + k)} />)}
+    {!dia && <Poeira t={t} n={30} cor="#cfe0ff" op={0.45} area={[300, 500, 650, 900]} />}
     {/* cama */}
     <rect x={120} y={1060} width={520} height={240} rx={20} fill={dia ? '#f6b8c8' : '#7a4a6a'} stroke={L} strokeWidth={6} />
     <rect x={100} y={940} width={40} height={460} rx={10} fill="#6b4a2e" stroke={L} strokeWidth={5} />
@@ -380,4 +400,87 @@ export const Lembranca = ({ children }: { children: ReactNode }) => (
     {children}
     <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,0) 55%, rgba(60,30,10,0.55) 100%)' }} />
   </div>
+);
+
+// ---------- Detalhes extras (Parte 1 mais detalhada) ----------
+// Parede interna do barco (atrás de quem está sentado) e bancos: dá profundidade e esconde as pernas.
+export const BarcoFundo = ({ x, y, s = 1 }: { x: number; y: number; s?: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <path d="M-222 -40 L-215 -72 L215 -72 L222 -40 z" fill="#4a2e1a" stroke={L} strokeWidth={5} strokeLinejoin="round" />
+    {[-150, 110].map((bx) => <rect key={bx} x={bx - 50} y={-62} width={100} height={14} rx={4} fill="#6b4224" stroke={L} strokeWidth={3} />)}
+  </g>
+);
+// Remo que gira no tolete (px, py): cabo para dentro do barco, pá na água.
+export const Remo = ({ px, py, ang, s = 1 }: { px: number; py: number; ang: number; s?: number }) => (
+  <g transform={`translate(${px} ${py}) rotate(${ang}) scale(${s})`}>
+    <path d="M-150 0 L260 0" stroke="#8a5a32" strokeWidth={14} strokeLinecap="round" />
+    <path d="M-150 0 L260 0" stroke={L} strokeWidth={18} strokeLinecap="round" opacity={0.35} />
+    <path d="M-150 0 L-100 0" stroke="#5a3a22" strokeWidth={18} strokeLinecap="round" />
+    <path d="M230 -6 Q300 -26 340 -4 Q300 22 230 8 z" fill="#a06a3a" stroke={L} strokeWidth={5} strokeLinejoin="round" />
+    <circle cx={0} cy={0} r={9} fill="#9aa0aa" stroke={L} strokeWidth={3} />
+  </g>
+);
+// Onda em primeiro plano (cobre o fundo do casco) com espuma e respingos.
+export const OndaFrente = ({ t, y, cor = '#24427a' }: { t: number; y: number; cor?: string }) => {
+  const pts = Array.from({ length: 30 }, (_, i) => { const x = -40 + i * 40; return `${x} ${y + Math.sin(x * 0.012 + t * 2.6) * 22 + Math.sin(x * 0.03 - t * 4) * 6}`; }).join(' L');
+  return (
+    <g>
+      <path d={`M${pts} L1120 1920 L-40 1920 z`} fill={cor} />
+      <path d={`M${pts}`} stroke="#d8e6ff" strokeWidth={7} fill="none" opacity={0.55} strokeDasharray="60 30" strokeDashoffset={-t * 80} />
+      {Array.from({ length: 14 }, (_, i) => {
+        const k = (t * 0.9 + rnd(i) ) % 1;
+        const x = 120 + rnd(i + 2) * 840, yy = y - 10 - Math.sin(k * Math.PI) * (60 + rnd(i + 7) * 70);
+        return <circle key={i} cx={x + k * 40} cy={yy} r={4 + rnd(i + 5) * 6} fill="#e8f2ff" opacity={0.7 * (1 - k)} />;
+      })}
+    </g>
+  );
+};
+// Faixas de névoa passando devagar.
+export const Nevoa = ({ t, y = 1100, op = 0.35, cor = '#aab6d8', n = 6, faixa = 260 }: { t: number; y?: number; op?: number; cor?: string; n?: number; faixa?: number }) => {
+  const id = uid();
+  return (
+    <>
+      <defs><radialGradient id={`n${id}`}><stop offset="0" stopColor={cor} stopOpacity={1} /><stop offset="1" stopColor={cor} stopOpacity={0} /></radialGradient></defs>
+      {Array.from({ length: n }, (_, i) => {
+        const x = ((i * 420 + t * (25 + i * 9)) % 1800) - 360;
+        return <ellipse key={i} cx={x} cy={y + (rnd(i) - 0.5) * faixa} rx={360 + rnd(i + 1) * 200} ry={70 + rnd(i + 3) * 50} fill={`url(#n${id})`} opacity={op * (0.6 + 0.4 * Math.sin(t * 0.7 + i))} />;
+      })}
+    </>
+  );
+};
+// Poeira flutuando na luz.
+export const Poeira = ({ t, n = 40, cor = '#f4e3b8', op = 0.5, area = [0, 0, 1080, 1500] as number[] }: { t: number; n?: number; cor?: string; op?: number; area?: number[] }) => (
+  <>
+    {Array.from({ length: n }, (_, i) => {
+      const x = area[0] + ((rnd(i) * area[2] + Math.sin(t * 0.4 + i) * 40 + t * 6) % area[2]);
+      const y = area[1] + ((rnd(i + 9) * area[3] - t * (8 + rnd(i + 4) * 14) + area[3] * 4) % area[3]);
+      return <circle key={i} cx={x} cy={y} r={2 + rnd(i + 2) * 3.5} fill={cor} opacity={op * (0.4 + 0.6 * Math.abs(Math.sin(t * 1.3 + i)))} />;
+    })}
+  </>
+);
+// Pingos caindo de um ponto (goteira) com anel na poça.
+export const Goteira = ({ t, x, y0, y1, fase = 0 }: { t: number; x: number; y0: number; y1: number; fase?: number }) => {
+  const k = (t * 0.8 + fase) % 1;
+  const cai = clamp(k / 0.5), anel = clamp((k - 0.5) / 0.5);
+  return (
+    <g>
+      {k < 0.5 && <ellipse cx={x} cy={y0 + (y1 - y0) * cai * cai} rx={5} ry={9} fill="#9cc0ee" opacity={0.85} />}
+      {k >= 0.5 && <ellipse cx={x} cy={y1} rx={10 + anel * 50} ry={3 + anel * 12} fill="none" stroke="#9cc0ee" strokeWidth={3} opacity={0.8 * (1 - anel)} />}
+      <ellipse cx={x} cy={y1} rx={70} ry={14} fill="#7fa6d8" opacity={0.25} />
+    </g>
+  );
+};
+// Escurece as bordas do quadro.
+export const Vinheta = ({ forca = 0.6 }: { forca?: number }) => (
+  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,${forca}) 100%)` }} />
+);
+// Parede de tábuas molhada (para o cartaz), com prego, pingos escorrendo e papéis velhos.
+export const ParedeTabuas = ({ t }: { t: number }) => (
+  <Svg>
+    <rect width={1080} height={1920} fill="#3a2a20" />
+    {Array.from({ length: 9 }, (_, i) => <g key={i}><rect x={i * 124} y={0} width={120} height={1920} fill={i % 2 ? '#43301f' : '#3b2a1c'} /><path d={`M${i * 124 + 60} ${200 + rnd(i) * 900} q10 30 0 60`} stroke="#2a1c12" strokeWidth={4} fill="none" /><circle cx={i * 124 + 20} cy={300 + rnd(i + 3) * 1200} r={6} fill="#2a1c12" /></g>)}
+    <g transform="rotate(8 200 500)" opacity={0.55}><rect x={90} y={380} width={240} height={300} fill="#c9bfa6" /><path d="M110 420 h200 M110 460 h170 M110 500 h190" stroke="#6a5a4a" strokeWidth={6} /></g>
+    <g transform="rotate(-10 880 1260)" opacity={0.5}><rect x={760} y={1120} width={240} height={280} fill="#b9b096" /><path d="M780 1170 h190 M780 1210 h150" stroke="#6a5a4a" strokeWidth={6} /></g>
+    {Array.from({ length: 10 }, (_, i) => { const x = 60 + i * 110 + rnd(i) * 40, k = (t * (0.15 + rnd(i + 1) * 0.1) + rnd(i + 2)) % 1; return <path key={i} d={`M${x} 0 V${k * 1920}`} stroke="#6a7a9a" strokeWidth={3 + rnd(i + 3) * 3} opacity={0.35} />; })}
+  </Svg>
 );

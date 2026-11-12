@@ -5,6 +5,7 @@ import { Svg } from './cenarios';
 import {
   Amanhecer, Barco, CeuTempestade, CHAO_I, CHAO_P, Chuva, clamp, Corredor, Cozinha, Desenho, Fogo, HotelFora, IlhaLonge, Jornal, Lanterna,
   Lembranca, Livro, Mar, Pier, Porao, Quarto9, raiosDe, Recepcao, Relampago,
+  BarcoFundo, Goteira, Nevoa, OndaFrente, ParedeTabuas, Poeira, Remo, Vinheta,
 } from './cenarios-ilha';
 import { Balao, Cam, Placa, Pop } from './FiosBrancos';
 import { Ator, Mov } from './FiosBrancosArticulado';
@@ -31,18 +32,28 @@ const MarTempestade = ({ t, ilha = true, forte = 1 }: { t: number; ilha?: boolea
     <Mar t={t} y0={1110} forte={forte} />
   </Svg>
 );
-// Barco do Tião no mar, com Tião remando e a Helena sentada.
+// Barco do Tião no mar (grande): parede interna atrás, os dois sentados (pernas escondidas pelo casco),
+// remos girando no tolete, lampião, onda na frente cobrindo o fundo do casco e respingos.
+const SB = 1.6;
 const BarcoCena = ({ t, tiaoOver, helOver, tiaoMov = 'parado' as string, helMov = 'parado' as string, t0, op = 1 }: { t: number; t0: number; tiaoOver?: Partial<Pose>; helOver?: Partial<Pose>; tiaoMov?: string; helMov?: string; op?: number }) => {
-  const by = 1480 + 18 * Math.sin(t * 1.6), rot = 4 * Math.sin(t * 1.3);
-  const rema = 26 * Math.sin(t * 3);
+  const by = 1450 + 18 * Math.sin(t * 1.6), rot = 4 * Math.sin(t * 1.3);
+  const fase = Math.sin(t * 3), rema = 26 * fase;
   return (
     <>
       <MarTempestade t={t} />
+      <Svg><Nevoa t={t} y={1120} op={0.3} /></Svg>
       <div style={{ position: 'absolute', inset: 0, transform: `rotate(${rot}deg)`, transformOrigin: `540px ${by}px` }}>
-        <Pers k={TIAO} t={t} x={720} y={by + 60} h={560} movs={[[tiaoMov, t0]]} over={{ maoE: [-90, -230 + rema], maoD: [90, -230 - rema], ...tiaoOver }} seed={3} flip op={op} />
-        <Pers k={HELENA} t={t} x={360} y={by + 60} h={560} movs={[[helMov, t0]]} over={{ maoE: [-60, -200], maoD: [60, -200], ...helOver }} seed={1} />
-        <Svg><Barco x={540} y={by} t={t} /></Svg>
+        <Svg>
+          <BarcoFundo x={540} y={by} s={SB} />
+        </Svg>
+        <Pers k={TIAO} t={t} x={735} y={by + 20} h={560} movs={[[tiaoMov, t0]]} over={{ maoE: [-90, -230 + rema], maoD: [90, -230 - rema], ...tiaoOver }} seed={3} flip op={op} />
+        <Pers k={HELENA} t={t} x={350} y={by + 20} h={560} movs={[[helMov, t0]]} over={{ maoE: [-60, -200], maoD: [60, -200], ...helOver }} seed={1} />
+        <Svg>
+          <Barco x={540} y={by} t={t} s={SB} />
+          <Remo px={840} py={by - 70} ang={28 + 14 * fase} s={1.1} />
+        </Svg>
       </div>
+      <Svg><OndaFrente t={t} y={by + 90} /></Svg>
       <Chuva t={t} />
     </>
   );
@@ -74,6 +85,7 @@ const P1: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.15} cx={760} cy={1000}>
       <MarTempestade t={t} />
+      <Svg><Nevoa t={t} y={1130} op={0.45} n={8} /><OndaFrente t={t} y={1700} cor="#2a4a86" /></Svg>
       <Chuva t={t} />
       <Raios t={t} t0={t0 - 0.4} t1={t1} x={500} />
       <Titulo t={t} at={W1(0, 'nevoa')} texto="ILHA DA NÉVOA" />
@@ -82,8 +94,9 @@ const P1: Cena[] = [
   // 1 menina sumida
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={800}>
-      <Svg><rect width={1080} height={1920} fill="#2a2420" /></Svg>
-      <Cartaz t={t} at={W1(1, 'clara') - 0.2} />
+      <ParedeTabuas t={t} />
+      <div style={{ position: 'absolute', inset: 0, transform: `rotate(${1.5 * Math.sin(t * 2.3) + 0.8 * Math.sin(t * 5.1)}deg)`, transformOrigin: '540px 480px' }}><Cartaz t={t} at={W1(1, 'clara') - 0.2} /></div>
+      <Svg><circle cx={540} cy={480} r={12} fill="#9aa0aa" stroke="#1a1520" strokeWidth={4} /></Svg>
       <Chuva t={t} op={0.3} />
     </Cam>
   ),
@@ -99,11 +112,11 @@ const P1: Cena[] = [
     </Cam>
   ),
   // 5 hotel rangia
-  ({ t, t0, t1 }) => <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={850}><HotelFora t={t} /><Chuva t={t} /><Raios t={t} t0={t0 - 1.5} t1={t1} seed={5} x={300} /></Cam>,
+  ({ t, t0, t1 }) => <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={850}><HotelFora t={t} vulto={clamp((t - W1(5, 'rangia')) / 0.3) * (1 - clamp((t - W1(5, 'vento')) / 0.4))} /><Svg><Nevoa t={t} y={1250} op={0.4} /></Svg><Chuva t={t} /><Raios t={t} t0={t0 - 1.5} t1={t1} seed={5} x={300} /></Cam>,
   // 6 gerente escrevendo
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={1000}>
-      <Recepcao t={t} />
+      <Recepcao t={t} caneta />
       <Pers k={GERENTE} t={t} x={510} y={1180} h={580} movs={[['parado', t0]]} over={{ pupila: [0, 1], cabRot: 12, maoD: [40, -170], maoE: [-40, -175] }} seed={2} />
       <Svg><rect x={120} y={1080} width={840} height={370} fill="#5a3a22" stroke="#2a2230" strokeWidth={6} /><rect x={100} y={1060} width={880} height={36} fill="#7a4f2c" stroke="#2a2230" strokeWidth={5} /></Svg>
     </Cam>
@@ -127,7 +140,7 @@ const P1: Cena[] = [
     </Cam>
   ),
   // 9 página arrancada
-  ({ t, t0, t1 }) => <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.12} cx={560} cy={900}><Livro t={t} linhas={['Sr. Almeida — 3', 'Família Souza — 5', 'Dna. Lurdes — 7']} /></Cam>,
+  ({ t, t0, t1 }) => <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.12} cx={560} cy={900}><Livro t={t} linhas={['Sr. Almeida — 3', 'Família Souza — 5', 'Dna. Lurdes — 7']} /><Svg><Poeira t={t} n={30} op={0.5} /><circle cx={940} cy={420} r={380} fill="#ffcf6a" opacity={0.08 + 0.04 * Math.sin(t * 9)} /></Svg></Cam>,
   // 10 a do quarto nove (quadro de chaves sem a 9)
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1.7} z1={1.9} cx={800} cy={680}>
@@ -583,12 +596,14 @@ const P3: Cena[] = [
   ),
 ];
 
+const comVinheta = (cs: Cena[], forca = 0.55): Cena[] => cs.map((C) => (p) => <>{C(p)}<Vinheta forca={forca} /></>);
+
 // ---------- Efeitos sonoros (reaproveitados de public/sfx-eleven quando servirem) ----------
 const sfx1 = (): Sfx[] => [['sfx-eleven/rio.mp3', 0, 0.14, TL1.W(5, 0)], ['sfx-eleven/drone.mp3', TL1.W(11, 0), 0.14, TL1.END - TL1.W(11, 0)], ['sfx-eleven/boom.mp3', TL1.W(19, 'minha'), 0.4], ['sfx-eleven/susto.mp3', TL1.W(20, 'aberta'), 0.4], ['sfx-eleven/coracao.mp3', TL1.W(21, 0), 0.3]];
 const sfx2 = (): Sfx[] => [['sfx-eleven/rio.mp3', 0, 0.14, TL2.W(2, 0)], ['sfx-eleven/drone.mp3', TL2.W(12, 0), 0.14, TL2.END - TL2.W(12, 0)], ['sfx-eleven/boom.mp3', TL2.W(15, 'nome'), 0.4], ['sfx-eleven/coracao.mp3', TL2.W(18, 0), 0.3, 6], ['sfx-eleven/susto.mp3', TL2.W(21, 'mae'), 0.45]];
 const sfx3 = (): Sfx[] => [['sfx-eleven/drone.mp3', 0, 0.12, TL3.W(3, 0)], ['sfx-eleven/whoosh.mp3', TL3.W(2, 'lembrei'), 0.4], ['sfx-eleven/boom.mp3', TL3.W(6, 'virou'), 0.4], ['sfx-eleven/rio.mp3', TL3.W(6, 0), 0.16, TL3.W(9, 0) - TL3.W(6, 0)], ['sfx-eleven/brilho.mp3', TL3.W(18, 'tocou'), 0.35], ['sfx-eleven/desliga.mp3', TL3.W(20, 'parou'), 0.3]];
 
-export const QuartoNove1 = () => <FilmeMad tl={TL1} cenas={P1} voz="voz-q9-1.mp3" sfx={sfx1()} />;
+export const QuartoNove1 = () => <FilmeMad tl={TL1} cenas={comVinheta(P1)} voz="voz-q9-1.mp3" sfx={sfx1()} />;
 export const QuartoNove2 = () => <FilmeMad tl={TL2} cenas={P2} voz="voz-q9-2.mp3" sfx={sfx2()} />;
 export const QuartoNove3 = () => <FilmeMad tl={TL3} cenas={P3} voz="voz-q9-3.mp3" sfx={sfx3()} />;
 export const DUR_Q9 = { 1: TL1.END, 2: TL2.END, 3: TL3.END };
