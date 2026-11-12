@@ -83,7 +83,7 @@ export type Look = {
   backpack?: string; // mochila / tanque
   iris?: string; // cor da íris (olhos grandes com brilho); sem isso, olho preto padrão
   cheeks?: boolean; // bochechas rosadas sempre
-  traco?: boolean; // estilo desenho 2D: cor chapada + contorno escuro grosso
+  traco?: boolean; // visual 2D: cor chapada sem sombra, contorno grosso, membros de boneco articulado
 };
 
 export const VOCE: Look = {
@@ -108,17 +108,8 @@ const HEAD_R = 0.5;
 const HEAD_Y = 1.62;
 
 // ---------- Traço desenhado (Look.traco) ----------
-// Cor chapada em 2 tons (sem degradê) + contorno escuro grosso, como num desenho 2D.
+// Visual 2D: cor chapada pura (sem luz/sombra) + contorno escuro grosso.
 const TracoCtx = createContext(false);
-let toonGrad: THREE.DataTexture | null = null;
-const gradiente = () => {
-  if (!toonGrad) {
-    toonGrad = new THREE.DataTexture(new Uint8Array([200, 200, 200, 255, 255, 255, 255, 255]), 2, 1, THREE.RGBAFormat);
-    toonGrad.minFilter = toonGrad.magFilter = THREE.NearestFilter;
-    toonGrad.needsUpdate = true;
-  }
-  return toonGrad;
-};
 const INK = '#2a2530';
 let inkMat: THREE.ShaderMaterial | null = null;
 // Contorno por "casca invertida": empurra a malha pela normal em espaço de câmera (espessura igual em tudo).
@@ -163,11 +154,13 @@ const Contorno = ({ children }: { children: ReactNode }) => {
 
 const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THREE.Texture; side?: THREE.Side; roughness?: number; transparent?: boolean; opacity?: number }) => {
   const traco = useContext(TracoCtx);
-  if (traco && !p.transparent) return <meshToonMaterial color={color} gradientMap={gradiente()} map={p.map} side={p.side} />;
+  // 2D: cor pura, sem luz nem sombra — só o contorno separa as formas
+  if (traco && !p.transparent) return <meshBasicMaterial color={color} map={p.map} side={p.side} toneMapped={false} />;
   return <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />;
 };
 
 const FaceDecal = ({ face, skin, iris, cheeks }: { face: FaceState; skin: string; iris?: string; cheeks?: boolean }) => {
+  const flat = useContext(TracoCtx);
   const canvas = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = c.height = 512;
@@ -188,7 +181,11 @@ const FaceDecal = ({ face, skin, iris, cheeks }: { face: FaceState; skin: string
   return (
     <mesh renderOrder={2}>
       <sphereGeometry args={[HEAD_R * 1.006, 48, 32, Math.PI / 2 - L / 2, L, Math.PI / 2 + 0.1 - L / 2, L]} />
-      <meshStandardMaterial map={tex} transparent depthWrite={false} roughness={0.55} polygonOffset polygonOffsetFactor={-2} />
+      {flat ? (
+        <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} polygonOffset polygonOffsetFactor={-2} />
+      ) : (
+        <meshStandardMaterial map={tex} transparent depthWrite={false} roughness={0.55} polygonOffset polygonOffsetFactor={-2} />
+      )}
     </mesh>
   );
 };
