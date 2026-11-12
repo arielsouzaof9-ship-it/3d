@@ -92,6 +92,22 @@ const MascaraBigode = ({ r, p }: { r: number; p: Pose }) => {
   );
 };
 
+// Máscara de herói: capuz que cobre a cabeça toda, com dois olhos grandes de borda branca (o olhar continua aparecendo).
+const MascaraHeroi = ({ r, p, cor, detalhe }: { r: number; p: Pose; cor: string; detalhe: string }) => {
+  const dx = p.cabX * 0.6, dy = p.cabY * 0.3, ex = r * 0.37, rx = r * 0.33, ry = r * 0.36;
+  const furo = (s: number) => `M${s * ex + dx - rx} ${dy} a${rx} ${ry} 0 1 0 ${rx * 2} 0 a${rx} ${ry} 0 1 0 ${-rx * 2} 0 z`;
+  const cabeca = `M${-r * 1.04} 0 a${r * 1.04} ${r * 1.04} 0 1 0 ${r * 2.08} 0 a${r * 1.04} ${r * 1.04} 0 1 0 ${-r * 2.08} 0 z`;
+  return (
+    <g>
+      <path d={`${cabeca} ${furo(-1)} ${furo(1)}`} fill={cor} fillRule="evenodd" stroke={L} strokeWidth={5} />
+      {[-1, 1].map((s) => <ellipse key={s} cx={s * ex + dx} cy={dy} rx={rx} ry={ry} fill="none" stroke="#fff" strokeWidth={r * 0.09} />)}
+      {[-1, 1].map((s) => <ellipse key={`l${s}`} cx={s * ex + dx} cy={dy} rx={rx + r * 0.05} ry={ry + r * 0.05} fill="none" stroke={L} strokeWidth={3} />)}
+      <path d={`M${-r * 0.6} ${-r * 0.75} Q0 ${-r * 1.05} ${r * 0.6} ${-r * 0.75} M0 ${-r * 1.04} V${-r * 0.52} M${-r * 0.3} ${r * 0.55} Q0 ${r * 0.7} ${r * 0.3} ${r * 0.55}`} stroke={detalhe} strokeWidth={r * 0.06} fill="none" strokeLinecap="round" />
+      {[[-0.75, 0.45], [0.75, 0.45], [-0.5, -0.6], [0.5, -0.6], [0, 0.85]].map(([fx, fy], i) => <circle key={i} cx={r * fx + dx * 0.3} cy={r * fy} r={r * 0.07} fill={detalhe} />)}
+    </g>
+  );
+};
+
 const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L, cicatriz = false }: { p: Pose; r: number; pele: string; iris?: string; corSobr?: string; cicatriz?: boolean }) => {
   const ex = r * 0.37, ey = r * 0.0, rx = r * 0.27, ry = r * 0.31 * Math.max(0.05, p.olho);
   const px = p.pupila[0] * rx * 0.45, py = p.pupila[1] * ry * 0.4;
@@ -220,9 +236,9 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {k.gravata && <path d={`M0 ${o + 2} l-9 12 l9 50 l9 -50 z`} fill={k.gravata} stroke={L} strokeWidth={3} />}
       {/* cabeça */}
       <g transform={`translate(${cab[0]} ${cab[1]}) rotate(${p.cabRot} 0 ${r * 0.8})`}>
-        {hair.atras && <g dangerouslySetInnerHTML={{ __html: hair.atras }} />}
+        {hair.atras && k.mascara !== 'heroi' && <g dangerouslySetInnerHTML={{ __html: hair.atras }} />}
         {k.brinco && [-1, 1].map((s2) => <circle key={`b${s2}`} cx={s2 * r * 1.0} cy={r * 0.34} r={r * 0.09} fill={k.brinco} stroke={L} strokeWidth={3} />)}
-        {[-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
+        {k.mascara !== 'heroi' && [-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
         <circle r={r} fill={pele} stroke={L} strokeWidth={5} />
         <g transform={`translate(${p.cabX * 0.6} ${p.cabY * 0.3})`}>
           {k.mascara && k.mascara !== 'bigode' && (
@@ -242,7 +258,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
           {k.mascara && k.mascara !== 'bigode' && <path d={`M${-r * 0.13} ${r * 0.1} L${r * 0.13} ${r * 0.1} L0 ${r * 0.34} z`} fill={k.bico ?? '#f2a93b'} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
         </g>
         {k.mascara === 'bigode' && <MascaraBigode r={r} p={p} />}
-        {hair.frente && k.mascara !== 'bigode' && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
+        {k.mascara === 'heroi' && <MascaraHeroi r={r} p={p} cor={k.corMascara ?? '#3ac06a'} detalhe={k.detalheMascara ?? '#1a6a3a'} />}
+        {hair.frente && k.mascara !== 'bigode' && k.mascara !== 'heroi' && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
         {hat && <g dangerouslySetInnerHTML={{ __html: hat }} />}
         {Array.from({ length: k.fios ?? 0 }, (_, i) => {
           const ang = -Math.PI / 2 + (i - ((k.fios ?? 1) - 1) / 2) * 0.32 + 0.12;
