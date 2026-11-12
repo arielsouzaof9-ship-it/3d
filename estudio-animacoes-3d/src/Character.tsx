@@ -46,10 +46,10 @@ export function faceAt(t: number, keys: FaceKey[], seed = 0): FaceState {
 // ---------- Visual ----------
 // Corpo: 6 tipos, todos da mesma base (cabeça grande, membros finos).
 export type Body = 'adulto' | 'magro' | 'forte' | 'crianca' | 'idoso' | 'baixo';
-export type HairStyle = 'curto' | 'liso' | 'longo' | 'coque' | 'crespo' | 'careca' | 'chanel' | 'rabo' | 'nenhum';
+export type HairStyle = 'curto' | 'liso' | 'longo' | 'coque' | 'crespo' | 'careca' | 'chanel' | 'rabo' | 'topete' | 'nenhum';
 export type Hat =
   | 'bone' | 'gorro' | 'policia' | 'chef' | 'capacete' | 'explorador' | 'astronauta' | 'cavaleiro'
-  | 'farao' | 'marinheiro' | 'piloto' | 'capuz' | 'boina' | 'touca';
+  | 'farao' | 'marinheiro' | 'piloto' | 'capuz' | 'boina' | 'touca' | 'feltro';
 export type Pattern = 'liso' | 'listras' | 'xadrez' | 'florido' | 'acolchoado';
 
 export type Look = {
@@ -77,7 +77,8 @@ export type Look = {
   cap?: boolean; // atalho antigo para hat: 'bone'
   glasses?: boolean; // atalho antigo para eyewear: 'grau'
   eyewear?: 'grau' | 'escuro' | 'mergulho' | 'aviador';
-  beard?: 'bigode' | 'barba';
+  beard?: 'bigode' | 'barba' | 'bigodao'; // bigodao = bigode grande e cheio
+  beardColor?: string; // cor da barba/bigode (padrão: cor do cabelo)
   metal?: boolean; // armadura
   backpack?: string; // mochila / tanque
   iris?: string; // cor da íris (olhos grandes com brilho); sem isso, olho preto padrão
@@ -249,6 +250,24 @@ const Hair = ({ look }: { look: Look }) => {
           </mesh>
         </>
       );
+    case 'topete':
+      // Cabelo curto com mechas espetadas para cima
+      return (
+        <>
+          {sides(0.75)}
+          {back}
+          <mesh position={[0, 0.18, -0.03]} scale={[1.04, 0.72, 1.02]}>
+            <sphereGeometry args={[0.49, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <Mat color={c} roughness={0.6} />
+          </mesh>
+          {([[-0.1, 0.58, 0.16, -0.4, 0.3], [0.08, 0.62, 0.1, 0.2, 0.34], [0.0, 0.58, -0.06, -0.05, 0.26]] as const).map(([x, y, z, rz, h], i) => (
+            <mesh key={i} position={[x, y, z]} rotation={[-0.25, 0, rz]} castShadow>
+              <coneGeometry args={[0.075, h, 12]} />
+              {m}
+            </mesh>
+          ))}
+        </>
+      );
     case 'crespo':
       return (
         <mesh position={[0, 0.16, -0.06]} scale={[1.16, 1.0, 1.08]} castShadow>
@@ -414,6 +433,28 @@ const HatMesh = ({ look }: { look: Look }) => {
           ))}
         </>
       );
+    case 'feltro':
+      // Chapéu de feltro: copa com vinco, aba e fita escura
+      return (
+        <>
+          <mesh position={[0, 0.42, -0.02]} scale={[1, 1, 0.92]} castShadow>
+            <cylinderGeometry args={[0.4, 0.5, 0.36, 32]} />
+            <Mat color={c} />
+          </mesh>
+          <mesh position={[0, 0.6, -0.02]} scale={[1, 0.28, 0.92]}>
+            <sphereGeometry args={[0.4, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <Mat color={c} />
+          </mesh>
+          <mesh position={[0, 0.3, -0.02]} scale={[1, 1, 0.92]}>
+            <cylinderGeometry args={[0.505, 0.51, 0.08, 32, 1, true]} />
+            <Mat color="#26282e" side={THREE.DoubleSide} />
+          </mesh>
+          <mesh position={[0, 0.25, 0]} rotation={[0.06, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.7, 0.72, 0.03, 40]} />
+            <Mat color={c} />
+          </mesh>
+        </>
+      );
     case 'capuz':
       return (
         <mesh position={[0, 0.02, -0.06]} scale={[1.12, 1.1, 1.08]} castShadow>
@@ -482,15 +523,27 @@ const Eyewear = ({ look }: { look: Look }) => {
 
 const Beard = ({ look }: { look: Look }) => {
   if (!look.beard) return null;
+  const bc = look.beardColor ?? look.hair;
+  if (look.beard === 'bigodao')
+    return (
+      <>
+        {[1, -1].map((s) => (
+          <mesh key={s} position={[s * 0.15, -0.15, 0.45]} rotation={[0.3, s * 0.35, s * -0.35]} scale={[1.25, 0.5, 0.55]} castShadow>
+            <sphereGeometry args={[0.16, 20, 12]} />
+            <Mat color={bc} roughness={0.9} />
+          </mesh>
+        ))}
+      </>
+    );
   return look.beard === 'bigode' ? (
     <mesh position={[0, -0.13, 0.47]} rotation={[0.25, 0, 0]} scale={[1, 0.38, 0.5]}>
       <sphereGeometry args={[0.14, 16, 10]} />
-      <Mat color={look.hair} roughness={0.9} />
+      <Mat color={bc} roughness={0.9} />
     </mesh>
   ) : (
     <mesh position={[0, -0.2, 0.12]} scale={[1.0, 0.75, 0.95]} castShadow>
       <sphereGeometry args={[0.44, 32, 16, Math.PI / 2 - 1.2, 2.4, Math.PI * 0.55, Math.PI * 0.45]} />
-      <Mat color={look.hair} roughness={0.9} side={THREE.DoubleSide} />
+      <Mat color={bc} roughness={0.9} side={THREE.DoubleSide} />
     </mesh>
   );
 };
