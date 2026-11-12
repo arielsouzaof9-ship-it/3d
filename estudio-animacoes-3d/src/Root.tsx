@@ -8,7 +8,7 @@ import { DURACAO_FAROL, Farol } from './mad/Farol';
 import { DURACAO_FLUTUA, Flutua } from './mad/Flutua';
 import { DUR_Q9, QuartoNove1, QuartoNove2, QuartoNove3 } from './mad/QuartoNove';
 import { DURACAO_QUATRO, QuatroMinutos } from './mad/QuatroMinutos';
-import { DURACAO_ELENCO_ART, ElencoArticulado } from './mad/ElencoArticulado';
+import { DURACAO_ELENCO_ART, ElencoArticulado, ElencoArticulado2 } from './mad/ElencoArticulado';
 import { END, FPS } from './timeline';
 import { VOZ } from './voz';
 
@@ -37,6 +37,7 @@ export const Root = () => (
     <Composition id="QuartoNove3" component={QuartoNove3} durationInFrames={Math.round(DUR_Q9[3] * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="QuatroMinutos" component={QuatroMinutos} durationInFrames={Math.round(DURACAO_QUATRO * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="ElencoArticulado" component={ElencoArticulado} durationInFrames={Math.round(DURACAO_ELENCO_ART * FPS)} fps={FPS} width={1080} height={1920} />
+    <Composition id="ElencoArticulado2" component={ElencoArticulado2} durationInFrames={Math.round(DURACAO_ELENCO_ART * FPS)} fps={FPS} width={1080} height={1920} />
     {/* Demonstração dos movimentos dos personagens mad articulados */}
     <Composition id="MovimentosMad" component={Movimentos} durationInFrames={Math.round(DURACAO_MOV * FPS)} fps={FPS} width={1080} height={1920} />
     {/* Folha com todo o elenco disponível (node tools/elenco.mjs) */}

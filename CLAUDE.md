@@ -19,7 +19,8 @@ Para animar com o padrão de movimentos dos vídeos de referência, use o boneco
   sentar, sentarFalar, cochilar (Zzz), deitar, telefone (use item 'celular'), aplaudir, dirigir (desenhe o volante), segurar (papel/placa),
   olharLados, andarNoLugar (cenário passando atrás), correr, aflito (mãos no rosto), espiar, pular.
   Campos extras da pose: `sentado` (0..1), `zzz` (0..1), `pisca` (piscadela). Máscaras: `k.mascara` = 'bigode' ou uma cor (pássaro).
-- Elenco articulado pronto (20 personagens com nome, papel e movimento característico): `estudio-animacoes-3d/src/mad/elenco-articulado.ts`
-  (`ELENCO_ARTICULADO`), folha em `mad/elenco-articulado.png`, apresentação na composição `ElencoArticulado` (`elenco-articulado.mp4`).
+- Elenco articulado pronto (40 personagens com nome, papel e movimento característico): `estudio-animacoes-3d/src/mad/elenco-articulado.ts`
+  (`ELENCO_ARTICULADO` e `ELENCO_ARTICULADO_2`), folhas em `mad/elenco-articulado.png` e `mad/elenco-articulado-2.png`,
+  apresentações nas composições `ElencoArticulado` e `ElencoArticulado2` (`elenco-articulado.mp4`, `elenco-articulado-2.mp4`).
   Rosto aceita também: `oculos`, `oculosEscuros`, `bigode` (`corBigode`), `barba` (`corBarba`), `sardas`, `brinco` (cor).
 - Demonstração: composição `MovimentosMad` (vídeo `movimentos-mad.mp4`). Exemplo de cena 2D completa: `src/mad/FiosBrancos.tsx`.
