@@ -1,0 +1,4 @@
+build/
+*.jks
+*.idsig
+app/assets/index.html
