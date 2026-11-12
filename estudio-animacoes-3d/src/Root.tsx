@@ -10,6 +10,7 @@ import { DUR_Q9, QuartoNove1, QuartoNove2, QuartoNove3 } from './mad/QuartoNove'
 import { DURACAO_QUATRO, QuatroMinutos } from './mad/QuatroMinutos';
 import { DURACAO_ESPELHOS, OsEspelhos } from './mad/Espelhos';
 import { DURACAO_LAGARTIXA, GarotoLagartixa } from './mad/Lagartixa';
+import { DURACAO_LATA, HomemDeLata } from './mad/HomemDeLata';
 import { DURACAO_ELENCO_ART, ElencoArticulado, ElencoArticulado2 } from './mad/ElencoArticulado';
 import { END, FPS } from './timeline';
 import { VOZ } from './voz';
@@ -40,6 +41,7 @@ export const Root = () => (
     <Composition id="QuatroMinutos" component={QuatroMinutos} durationInFrames={Math.round(DURACAO_QUATRO * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="OsEspelhos" component={OsEspelhos} durationInFrames={Math.round(DURACAO_ESPELHOS * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="GarotoLagartixa" component={GarotoLagartixa} durationInFrames={Math.round(DURACAO_LAGARTIXA * FPS)} fps={FPS} width={1080} height={1920} />
+    <Composition id="HomemDeLata" component={HomemDeLata} durationInFrames={Math.round(DURACAO_LATA * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="ElencoArticulado" component={ElencoArticulado} durationInFrames={Math.round(DURACAO_ELENCO_ART * FPS)} fps={FPS} width={1080} height={1920} />
     <Composition id="ElencoArticulado2" component={ElencoArticulado2} durationInFrames={Math.round(DURACAO_ELENCO_ART * FPS)} fps={FPS} width={1080} height={1920} />
     {/* Demonstração dos movimentos dos personagens mad articulados */}

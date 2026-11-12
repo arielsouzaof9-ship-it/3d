@@ -232,6 +232,16 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {k.colete && <path d={`M${-a * 0.5} ${o + 30} h${a} M${-a * 0.52} ${o + 70} h${a * 1.04}`} stroke={k.colete} strokeWidth={10} />}
       {k.avental && <g><path d={`M${-a * 0.3} ${o + 0.2 * hh} h${a * 0.6} l${a * 0.04} ${hh * 0.95} h${-a * 0.68} z`} fill={k.avental} stroke={L} strokeWidth={3.5} />{k.bordado && <text x={0} y={o + 0.5 * hh} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.13} fill="#d1495b">{k.bordado}</text>}</g>}
       {k.distintivo && <path d={`M${a * 0.18} ${o + 0.28 * hh} l9 -6 l9 6 v12 q-9 9 -18 0 z`} fill="#f2c94c" stroke={L} strokeWidth={3} />}
+      {k.bobina && (
+        // bobina de cobre brilhando no peito (cor = k.bobina; k.bobinaForca 0..1 apaga)
+        <g transform={`translate(0 ${o + hh * 0.36})`} opacity={k.bobinaForca ?? 1}>
+          <circle r={34} fill={k.bobina} opacity={0.25} />
+          <circle r={20} fill="#f4f4f4" stroke={L} strokeWidth={4} />
+          <circle r={14} fill={k.bobina} />
+          <circle r={14} fill="none" stroke="#c87a3a" strokeWidth={4} strokeDasharray="5 4" />
+          <circle r={6} fill="#ffffff" />
+        </g>
+      )}
       {k.peito && <text x={0} y={o + hh * 0.62} textAnchor="middle" fontFamily="Arial Black, Arial" fontWeight={900} fontSize={hh * 0.42} fill="#fff" stroke={L} strokeWidth={2}>{k.peito}</text>}
       {k.gravata && <path d={`M0 ${o + 2} l-9 12 l9 50 l9 -50 z`} fill={k.gravata} stroke={L} strokeWidth={3} />}
       {/* cabeça */}
