@@ -353,21 +353,43 @@ const CENAS: Cena[] = [
 ];
 
 const comVinheta = (cs: Cena[]): Cena[] => cs.map((C) => (p: P) => <>{C(p)}<Vinheta forca={0.35} /></>);
-// Efeitos (biblioteca do projeto): sinos em cada "DONG", broca/tensão no cofre, alarme, impacto no vazio, brilhos.
-const sfx = (): Sfx[] => [
-  ...[W(1, 'sinos'), W(1, 'meio'), W(10, 'meio'), W(10, 'sino'), W(11, 'badalada'), W(11, 'barulho'), W(11, 'metal'), W(16, 'sino')].map((at): Sfx => ['sfx-farol/sino.mp3', at, 0.5, 2.5]),
-  ['sfx-eleven/whoosh.mp3', W(3, 'andorinha') - 0.2, 0.5],
-  ['sfx-flutua/crac.mp3', W(4, 'coruja') + 0.6, 0.5],
-  ['sfx-eleven/desliga.mp3', W(9, 'apagou'), 0.5],
-  ['sfx-eleven/drone.mp3', ini(10), 0.25, ini(13) - ini(10)],
-  ['sfx-eleven/susto.mp3', W(12, 'alarme'), 0.5],
-  ['sfx-eleven/coracao.mp3', ini(13), 0.35, ini(16) - ini(13)],
-  ['sfx-eleven/brilho.mp3', W(16, 'abriu'), 0.45],
-  ['sfx-eleven/boom.mp3', W(17, 'nada'), 0.5],
-  ['sfx-eleven/brilho.mp3', W(19, 'prova'), 0.4],
-  ['sfx-eleven/brilho.mp3', W(20, 'verdade'), 0.4],
-  ['sfx-eleven/boom.mp3', W(25, 'seis'), 0.5],
-];
+// Efeitos: ElevenLabs (public/sfx-q4) + biblioteca do projeto. Ambientes em loop por cena e efeitos pontuais na palavra.
+const sfx = (): Sfx[] => {
+  const cena = (i: number) => [ini(i), ini(i + 1) - ini(i) + 0.3] as const;
+  const amb = (f: string, de: number, ate: number, vol: number): Sfx => [f, ini(de), vol, ini(ate + 1) - ini(de) + 0.3, true];
+  return [
+    // ambientes
+    amb('sfx-q4/relogios.mp3', 0, 0, 0.35),
+    amb('sfx-q4/praca.mp3', 1, 1, 0.35),
+    amb('sfx-q4/relogios.mp3', 2, 3, 0.3),
+    amb('sfx-q4/praca.mp3', 6, 6, 0.3),
+    amb('sfx-q4/relogios.mp3', 7, 7, 0.3),
+    ['sfx-q4/saguao.mp3', ini(8), 0.45, cena(8)[1]],
+    ['sfx-q4/broca.mp3', W(10, 'broca') - 0.2, 0.4, ini(12) - W(10, 'broca') + 0.4, true],
+    amb('sfx-q4/praca.mp3', 11, 11, 0.25),
+    ['sfx-q4/alarme.mp3', W(12, 'alarme'), 0.35, ini(13) - W(12, 'alarme') + 0.3, true],
+    ['sfx-q4/esgoto.mp3', W(22, 'gente') - 0.15, 0.4, ini(23) - W(22, 'gente') + 0.4, true],
+    amb('sfx-q4/relogios.mp3', 25, 25, 0.3),
+    // sinos em cada "DONG"
+    ...[W(1, 'sinos'), W(1, 'meio'), W(10, 'meio'), W(10, 'sino'), W(11, 'badalada'), W(11, 'barulho'), W(11, 'metal'), W(16, 'sino')].map((at): Sfx => ['sfx-q4/sino.mp3', at - 0.05, 0.55, 3.5]),
+    // pontuais
+    ['sfx-eleven/whoosh.mp3', W(3, 'andorinha') - 0.2, 0.5],
+    ['sfx-flutua/crac.mp3', W(4, 'coruja') + 0.6, 0.5],
+    ['sfx-q4/teclado.mp3', W(9, 'apagou') - 1.2, 0.5, 3],
+    ['sfx-eleven/susto.mp3', W(12, 'alarme'), 0.4],
+    ['sfx-q4/sirenes.mp3', ini(13), 0.45, cena(13)[1]],
+    ['sfx-eleven/coracao.mp3', ini(14), 0.3, ini(16) - ini(14)],
+    ['sfx-q4/telefone.mp3', ini(14), 0.5, 3],
+    ['sfx-q4/radio.mp3', W(15, 'radio') - 0.1, 0.5, 1.5],
+    ['sfx-q4/radio.mp3', W(15, 'plano') + 0.4, 0.4, 1.5],
+    ['sfx-q4/cofre.mp3', W(16, 'abriu') - 0.6, 0.55, 5],
+    ['sfx-eleven/boom.mp3', W(17, 'nada'), 0.5],
+    ['sfx-eleven/brilho.mp3', W(19, 'prova'), 0.4],
+    ['sfx-eleven/brilho.mp3', W(20, 'verdade'), 0.4],
+    ['sfx-q4/algemas.mp3', W(22, 'algemado') - 0.1, 0.6, 1.5],
+    ['sfx-q4/revelacao.mp3', W(25, 'seis') - 1.2, 0.6, 3.5],
+  ];
+};
 export const QuatroMinutos = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz-quatro.mp3" sfx={sfx()} ganhoSfx={0.5} />;
 export const DURACAO_QUATRO = TL.END;
 
