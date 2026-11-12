@@ -31,6 +31,7 @@ export type Pose = {
   boca: 'neutra' | 'sorriso' | 'riso' | 'aberta' | 'o' | 'triste' | 'dentes' | 'onda';
   fala: number; // 0..1 abertura extra da boca ao falar
   lagrima: number; suor: number; vermelho: number; pergunta: number; // extras (0..1)
+  pisca?: number; // piscadela: fecha só o olho da direita da tela (0..1)
 };
 
 export const BASE: Pose = {
@@ -65,13 +66,39 @@ const membro = (pts: V[], cor: string, w: number) => {
 };
 
 // ---------- Rosto de olhos grandes ----------
+// Máscara de rosto inteiro (bege) com cabelo penteado, sobrancelhas arqueadas, nariz e bigode longo de pontas viradas.
+// Os olhos têm furos: o olhar e a piscada do personagem continuam visíveis.
+const MascaraBigode = ({ r, p }: { r: number; p: Pose }) => {
+  const ex = r * 0.37, rx = r * 0.3, ry = r * 0.33, dx = p.cabX * 0.6, dy = p.cabY * 0.3;
+  const furo = (s: number) => `M${s * ex + dx - rx} ${dy} a${rx} ${ry} 0 1 0 ${rx * 2} 0 a${rx} ${ry} 0 1 0 ${-rx * 2} 0 z`;
+  const rosto = `M${dx} ${-r * 1.02 + dy} C${r * 0.78 + dx} ${-r * 1.02 + dy}, ${r * 1.02 + dx} ${-r * 0.5 + dy}, ${r * 0.98 + dx} ${r * 0.1 + dy} C${r * 0.95 + dx} ${r * 0.7 + dy}, ${r * 0.55 + dx} ${r * 1.06 + dy}, ${dx} ${r * 1.08 + dy} C${-r * 0.55 + dx} ${r * 1.06 + dy}, ${-r * 0.95 + dx} ${r * 0.7 + dy}, ${-r * 0.98 + dx} ${r * 0.1 + dy} C${-r * 1.02 + dx} ${-r * 0.5 + dy}, ${-r * 0.78 + dx} ${-r * 1.02 + dy}, ${dx} ${-r * 1.02 + dy} z`;
+  return (
+    <g>
+      <path d={`${rosto} ${furo(-1)} ${furo(1)}`} fill="#eecfa8" fillRule="evenodd" stroke={L} strokeWidth={5} />
+      {[-1, 1].map((s) => <ellipse key={s} cx={s * ex + dx} cy={dy} rx={rx} ry={ry} fill="none" stroke="#c9a47a" strokeWidth={r * 0.06} />)}
+      {/* cabelo preto penteado para trás */}
+      <path d={`M${-r * 0.8 + dx} ${-r * 0.62 + dy} C${-r * 0.7 + dx} ${-r * 1.1 + dy}, ${r * 0.7 + dx} ${-r * 1.1 + dy}, ${r * 0.8 + dx} ${-r * 0.62 + dy} C${r * 0.4 + dx} ${-r * 0.82 + dy}, ${-r * 0.4 + dx} ${-r * 0.82 + dy}, ${-r * 0.8 + dx} ${-r * 0.62 + dy} z`} fill="#1a1a1e" stroke={L} strokeWidth={4} />
+      {/* sobrancelhas grossas e arqueadas */}
+      {[-1, 1].map((s) => <path key={s} d={`M${s * r * 0.12 + dx} ${-r * 0.36 + dy} Q${s * r * 0.4 + dx} ${-r * 0.62 + dy} ${s * r * 0.72 + dx} ${-r * 0.36 + dy}`} stroke="#1a1a1e" strokeWidth={r * 0.1} fill="none" strokeLinecap="round" />)}
+      {/* nariz */}
+      <path d={`M${-r * 0.06 + dx} ${-r * 0.2 + dy} Q${-r * 0.1 + dx} ${r * 0.2 + dy} ${-r * 0.18 + dx} ${r * 0.32 + dy} Q${dx} ${r * 0.44 + dy} ${r * 0.18 + dx} ${r * 0.32 + dy} Q${r * 0.1 + dx} ${r * 0.2 + dy} ${r * 0.06 + dx} ${-r * 0.2 + dy}`} stroke="#b88a5c" strokeWidth={r * 0.04} fill="none" />
+      {/* bigode longo com as pontas viradas para cima */}
+      {[-1, 1].map((s) => <path key={s} d={`M${dx} ${r * 0.48 + dy} Q${s * r * 0.3 + dx} ${r * 0.42 + dy} ${s * r * 0.48 + dx} ${r * 0.5 + dy} Q${s * r * 0.62 + dx} ${r * 0.48 + dy} ${s * r * 0.58 + dx} ${r * 0.02 + dy} Q${s * r * 0.56 + dx} ${-r * 0.06 + dy} ${s * r * 0.64 + dx} ${-r * 0.1 + dy}`} stroke="#1a1a1e" strokeWidth={r * 0.07} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
+      {/* boca fechada da máscara */}
+      <path d={`M${-r * 0.16 + dx} ${r * 0.68 + dy} Q${dx} ${r * 0.74 + dy} ${r * 0.16 + dx} ${r * 0.68 + dy}`} stroke="#b88a5c" strokeWidth={r * 0.04} fill="none" strokeLinecap="round" />
+    </g>
+  );
+};
+
 const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L, cicatriz = false }: { p: Pose; r: number; pele: string; iris?: string; corSobr?: string; cicatriz?: boolean }) => {
   const ex = r * 0.37, ey = r * 0.0, rx = r * 0.27, ry = r * 0.31 * Math.max(0.05, p.olho);
   const px = p.pupila[0] * rx * 0.45, py = p.pupila[1] * ry * 0.4;
   const sb = p.sobr;
   const olhos = p.olhoFeliz
     ? [-1, 1].map((s) => <path key={s} d={`M${s * ex - rx} ${ey + 4} q${rx} ${-ry * 1.4} ${rx * 2} 0`} stroke={L} strokeWidth={r * 0.07} fill="none" strokeLinecap="round" />)
-    : [-1, 1].map((s) => (
+    : [-1, 1].map((s) => (s === 1 && (p.pisca ?? 0) > 0.5 ? (
+        <path key={s} d={`M${s * ex - rx} ${ey + 2} q${rx} ${ry * 0.5} ${rx * 2} 0`} stroke={L} strokeWidth={r * 0.08} fill="none" strokeLinecap="round" />
+      ) : (
         <g key={s}>
           <ellipse cx={s * ex} cy={ey} rx={rx} ry={ry} fill="#fff" stroke={L} strokeWidth={r * 0.04} />
           <path d={`M${s * ex - rx} ${ey} a${rx} ${ry} 0 0 1 ${rx * 2} 0`} stroke={L} strokeWidth={r * 0.07} fill="none" />
@@ -84,7 +111,7 @@ const Rosto = ({ p, r, pele, iris = '#6c9bd2', corSobr = L, cicatriz = false }: 
             </>
           )}
         </g>
-      ));
+      )));
   const sobr = [-1, 1].map((s) => {
     const y = ey - r * 0.32 - (p.olho > 1 ? r * 0.06 : 0) - sb * r * 0.06;
     const inc = p.sobrTriste ? -s * r * 0.08 : sb < 0 ? s * r * 0.1 : 0;
@@ -186,9 +213,19 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
         {[-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
         <circle r={r} fill={pele} stroke={L} strokeWidth={5} />
         <g transform={`translate(${p.cabX * 0.6} ${p.cabY * 0.3})`}>
+          {k.mascara && k.mascara !== 'bigode' && (
+            // máscara de pássaro de papel: faixa nos olhos com penas nas pontas (o bico vem depois do rosto)
+            <g>
+              {[-1, 1].map((s2) => <path key={s2} d={`M${s2 * r * 0.8} ${-r * 0.22} q${s2 * r * 0.34} ${-r * 0.12} ${s2 * r * 0.62} ${-r * 0.3} q${-s2 * r * 0.06} ${r * 0.3} ${-s2 * r * 0.3} ${r * 0.52} z`} fill={k.mascara2 ?? k.mascara} stroke={L} strokeWidth={4} strokeLinejoin="round" />)}
+              <path d={`M${-r * 0.86} ${-r * 0.3} Q0 ${-r * 0.52} ${r * 0.86} ${-r * 0.3} L${r * 0.8} ${r * 0.22} Q${r * 0.4} ${r * 0.34} ${r * 0.08} ${r * 0.16} L0 ${r * 0.1} L${-r * 0.08} ${r * 0.16} Q${-r * 0.4} ${r * 0.34} ${-r * 0.8} ${r * 0.22} z`} fill={k.mascara} stroke={L} strokeWidth={5} strokeLinejoin="round" />
+              <path d={`M${-r * 0.7} ${-r * 0.28} Q0 ${-r * 0.44} ${r * 0.7} ${-r * 0.28}`} stroke="#fff" strokeWidth={r * 0.04} fill="none" opacity={0.45} />
+            </g>
+          )}
           <Rosto p={p} r={r} pele={pele} cicatriz={!!k.cicatriz} iris={k.iris ?? '#6c9bd2'} corSobr={k.corSobr ?? (k.corCabelo === '#f7f7f7' || k.corCabelo === '#d6d6d6' ? '#9a9aa6' : k.corCabelo ?? L)} />
+          {k.mascara && k.mascara !== 'bigode' && <path d={`M${-r * 0.13} ${r * 0.1} L${r * 0.13} ${r * 0.1} L0 ${r * 0.34} z`} fill={k.bico ?? '#f2a93b'} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
         </g>
-        {hair.frente && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
+        {k.mascara === 'bigode' && <MascaraBigode r={r} p={p} />}
+        {hair.frente && k.mascara !== 'bigode' && <g dangerouslySetInnerHTML={{ __html: hair.frente }} />}
         {hat && <g dangerouslySetInnerHTML={{ __html: hat }} />}
         {Array.from({ length: k.fios ?? 0 }, (_, i) => {
           const ang = -Math.PI / 2 + (i - ((k.fios ?? 1) - 1) / 2) * 0.32 + 0.12;
