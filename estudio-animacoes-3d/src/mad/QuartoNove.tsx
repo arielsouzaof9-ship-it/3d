@@ -599,11 +599,35 @@ const P3: Cena[] = [
 const comVinheta = (cs: Cena[], forca = 0.55): Cena[] => cs.map((C) => (p) => <>{C(p)}<Vinheta forca={forca} /></>);
 
 // ---------- Efeitos sonoros (reaproveitados de public/sfx-eleven quando servirem) ----------
-const sfx1 = (): Sfx[] => [['sfx-eleven/rio.mp3', 0, 0.14, TL1.W(5, 0)], ['sfx-eleven/drone.mp3', TL1.W(11, 0), 0.14, TL1.END - TL1.W(11, 0)], ['sfx-eleven/boom.mp3', TL1.W(19, 'minha'), 0.4], ['sfx-eleven/susto.mp3', TL1.W(20, 'aberta'), 0.4], ['sfx-eleven/coracao.mp3', TL1.W(21, 0), 0.3]];
+// Parte 1: chuva do mar (loop) até o hotel, remos/água no barco, trovão em cada relâmpago, chuva abafada + relógio
+// dentro do hotel, caneta, página rasgada, passos na escada, maçaneta, caixinha no desenho, pegadas molhadas.
+const sfx1 = (): Sfx[] => {
+  const W = TL1.W, ini = (i: number) => (i === 0 ? 0 : W(i, 0)), fim = TL1.END;
+  const raios: [number, number, number][] = [[0, -0.4, 0], [2, 0, 2], [4, -1, 4], [5, -1.5, 5]];
+  const trovoes: number[] = ([] as number[]).concat(...raios.map(([c, d, seed]) => raiosDe(ini(c) + d, ini(c + 1), seed).filter((v) => v >= ini(c) && v < ini(c + 1))));
+  return [
+    ['sfx-q9/chuva-mar.mp3', 0, 0.5, ini(6) + 0.3, true],
+    ['sfx-eleven/rio.mp3', ini(2), 0.3, ini(5) - ini(2)],
+    ...trovoes.map((v): Sfx => ['sfx-q9/trovao.mp3', v + 0.12, 0.55, 5]),
+    ['sfx-q9/trovao.mp3', W(21, 'mar') - 0.35, 0.5, 5],
+    ['sfx-q9/chuva-dentro.mp3', ini(6), 0.45, fim - ini(6), true],
+    ['sfx-q9/relogio.mp3', ini(6), 0.35, ini(11) - ini(6), true],
+    ['sfx-q9/caneta.mp3', ini(6) + 0.2, 0.45, 3],
+    ['sfx-q9/papel.mp3', W(9, 'arrancada'), 0.6, 1],
+    ['sfx-farol/passos.mp3', W(11, 'subi'), 0.5, 3.5],
+    ['sfx-flutua/crac.mp3', W(11, 'trancado'), 0.45, 1.5],
+    ['sfx-eleven/drone.mp3', ini(11), 0.18, fim - ini(11)],
+    ['sfx-farol/caixinha.mp3', ini(14), 0.35, ini(17) - ini(14), true],
+    ['sfx-eleven/boom.mp3', W(19, 'minha'), 0.5],
+    ['sfx-eleven/susto.mp3', W(20, 'aberta'), 0.5],
+    ['sfx-q9/passos-molhados.mp3', W(21, 'pegadas'), 0.45, 4],
+    ['sfx-eleven/coracao.mp3', ini(21), 0.35],
+  ];
+};
 const sfx2 = (): Sfx[] => [['sfx-eleven/rio.mp3', 0, 0.14, TL2.W(2, 0)], ['sfx-eleven/drone.mp3', TL2.W(12, 0), 0.14, TL2.END - TL2.W(12, 0)], ['sfx-eleven/boom.mp3', TL2.W(15, 'nome'), 0.4], ['sfx-eleven/coracao.mp3', TL2.W(18, 0), 0.3, 6], ['sfx-eleven/susto.mp3', TL2.W(21, 'mae'), 0.45]];
 const sfx3 = (): Sfx[] => [['sfx-eleven/drone.mp3', 0, 0.12, TL3.W(3, 0)], ['sfx-eleven/whoosh.mp3', TL3.W(2, 'lembrei'), 0.4], ['sfx-eleven/boom.mp3', TL3.W(6, 'virou'), 0.4], ['sfx-eleven/rio.mp3', TL3.W(6, 0), 0.16, TL3.W(9, 0) - TL3.W(6, 0)], ['sfx-eleven/brilho.mp3', TL3.W(18, 'tocou'), 0.35], ['sfx-eleven/desliga.mp3', TL3.W(20, 'parou'), 0.3]];
 
-export const QuartoNove1 = () => <FilmeMad tl={TL1} cenas={comVinheta(P1)} voz="voz-q9-1.mp3" sfx={sfx1()} />;
+export const QuartoNove1 = () => <FilmeMad tl={TL1} cenas={comVinheta(P1)} voz="voz-q9-1.mp3" sfx={sfx1()} ganhoSfx={0.34} />;
 export const QuartoNove2 = () => <FilmeMad tl={TL2} cenas={P2} voz="voz-q9-2.mp3" sfx={sfx2()} />;
 export const QuartoNove3 = () => <FilmeMad tl={TL3} cenas={P3} voz="voz-q9-3.mp3" sfx={sfx3()} />;
 export const DUR_Q9 = { 1: TL1.END, 2: TL2.END, 3: TL3.END };
