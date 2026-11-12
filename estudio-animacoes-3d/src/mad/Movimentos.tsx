@@ -17,6 +17,33 @@ export const SEG = 2.8;
 export const DURACAO_MOV = 1.5 + LISTA.length * SEG + 6;
 const CORES = ['#fde2c4', '#d8f0e3', '#e3e0fa', '#fbe0e6', '#dff1fb'];
 
+const L = '#2a2230';
+// Objetos de apoio da demonstração: poltrona (sentar), volante (dirigir), placa (segurar), rua passando (andar no lugar).
+const Apoio = ({ mov, t, fundo = false }: { mov: string; t: number; fundo?: boolean }) => {
+  const sentado = ['sentar', 'sentarFalar', 'cochilar', 'dirigir'].includes(mov);
+  if (fundo) {
+    if (mov === 'andarNoLugar') return (
+      <g>
+        {Array.from({ length: 6 }, (_, j) => { const x = ((j * 260 - t * 240) % 1560 + 1560) % 1560 - 260; return <g key={j}><rect x={x} y={760} width={220} height={660} fill={['#f2b8a0', '#a8d8b8', '#b8c8f0', '#f2e0a0'][j % 4]} stroke={L} strokeWidth={6} /><path d={`M${x - 10} 770 L${x + 110} 640 L${x + 230} 770 z`} fill="#c86a4a" stroke={L} strokeWidth={6} />{[0, 1].map((w) => <rect key={w} x={x + 34 + w * 90} y={860} width={60} height={70} fill="#dff1fb" stroke={L} strokeWidth={4} />)}</g>; })}
+        {Array.from({ length: 6 }, (_, j) => { const x = ((j * 300 - t * 520) % 1800 + 1800) % 1800 - 300; return <rect key={j} x={x} y={1500} width={140} height={18} fill="#fff" opacity={0.7} />; })}
+      </g>
+    );
+    if (sentado && mov !== 'dirigir') return (
+      <g>
+        <rect x={290} y={820} width={500} height={480} rx={60} fill="#5aa070" stroke={L} strokeWidth={8} />
+        <rect x={250} y={1180} width={580} height={200} rx={40} fill="#4a8a5e" stroke={L} strokeWidth={8} />
+        {[230, 770].map((x) => <rect key={x} x={x} y={1060} width={80} height={300} rx={36} fill="#5aa070" stroke={L} strokeWidth={8} />)}
+        {[290, 790].map((x) => <rect key={x} x={x - 14} y={1380} width={28} height={60} fill="#6b4224" stroke={L} strokeWidth={5} />)}
+      </g>
+    );
+    if (mov === 'dirigir') return <g><rect x={330} y={900} width={420} height={420} rx={40} fill="#3a7a8a" stroke={L} strokeWidth={8} /><rect x={300} y={1240} width={480} height={140} rx={30} fill="#2f6070" stroke={L} strokeWidth={8} /></g>;
+    return null;
+  }
+  if (mov === 'dirigir') { const a = 0.45 * Math.sin((t % 2.8) * 2.2) * 57.3; return <g transform={`translate(540 1170) rotate(${a})`}><circle r={130} fill="none" stroke={L} strokeWidth={46} /><circle r={130} fill="none" stroke="#3a3a3a" strokeWidth={32} /><path d="M-120 0 H120 M0 0 V120" stroke="#3a3a3a" strokeWidth={30} /><circle r={36} fill="#e5484d" stroke={L} strokeWidth={6} /></g>; }
+  if (mov === 'segurar') return <g transform={`translate(540 ${1075 - 8 * Math.abs(Math.sin(t * 3))})`}><rect x={-230} y={-120} width={460} height={240} rx={10} fill="#fffaf0" stroke={L} strokeWidth={8} /><text x={0} y={30} textAnchor="middle" fontFamily="Arial Black" fontSize={84} fill="#e5484d">OBA!</text></g>;
+  return null;
+};
+
 export const Movimentos = () => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -32,8 +59,9 @@ export const Movimentos = () => {
       <div style={{ position: 'absolute', top: 270, width: '100%', textAlign: 'center', fontFamily: 'Arial', fontWeight: 700, fontSize: 44, color: '#7a6a5a' }}>{sub}</div>
       <svg viewBox="0 0 1080 1920" width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
         <rect x={0} y={1420} width={1080} height={500} fill="#000" opacity={0.05} />
+        {!final && <Apoio mov={LISTA[i] ?? ''} t={t} fundo />}
         {!final ? (
-          <Rig k={TITO} p={t < 1.5 ? pose(t, 'entrar', 0, 1.5) : pose(t, LISTA[i], 1.5 + i * SEG, SEG)} x={540} y={1440} s={2.6} />
+          <Rig k={LISTA[i] === 'telefone' ? { ...TITO, item: 'celular' } : TITO} p={t < 1.5 ? pose(t, 'entrar', 0, 1.5) : pose(t, LISTA[i], 1.5 + i * SEG, SEG)} x={540} y={1440} s={2.6} />
         ) : (
           ELENCO.map((k, j) => {
             const movs = ['acenar', 'rir', 'comemorar', 'pensar', 'bravo'];
@@ -41,6 +69,7 @@ export const Movimentos = () => {
             return <Rig key={j} k={k} p={pose(t, t < t0 + 0.6 ? 'entrar' : movs[j], t < t0 + 0.6 ? t0 : t0 + 0.6, 5, j + 1)} x={140 + j * 200} y={1380 + (j % 2) * 60} s={j === 2 ? 1.2 : 1.05} />;
           })
         )}
+        {!final && <Apoio mov={LISTA[i] ?? ''} t={t} />}
       </svg>
       <Granulado />
     </AbsoluteFill>

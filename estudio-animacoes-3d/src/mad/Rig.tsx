@@ -32,13 +32,15 @@ export type Pose = {
   fala: number; // 0..1 abertura extra da boca ao falar
   lagrima: number; suor: number; vermelho: number; pergunta: number; // extras (0..1)
   pisca?: number; // piscadela: fecha só o olho da direita da tela (0..1)
+  sentado?: number; // 0..1: sentado de frente (coxas para a câmera, joelhos no colo)
+  zzz?: number; // 0..1: "Zzz" de quem dorme
 };
 
 export const BASE: Pose = {
   x: 0, y: 0, esc: 1, sq: 1, incl: 0, quadril: 0, ombro: 0, cabRot: 0, cabX: 0, cabY: 0,
   maoE: [-64, -150], maoD: [64, -150], frenteE: false, frenteD: false, peE: [-26, 0], peD: [26, 0],
   olho: 1, olhoFeliz: false, pupila: [0, 0], sobr: 0, sobrTriste: false, boca: 'sorriso', fala: 0,
-  lagrima: 0, suor: 0, vermelho: 0, pergunta: 0,
+  lagrima: 0, suor: 0, vermelho: 0, pergunta: 0, pisca: 0, sentado: 0, zzz: 0,
 };
 
 // ---------- Cinemática inversa de 2 ossos ----------
@@ -151,7 +153,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
   const perna = 128 * G, troncoH = 112 * G, troncoW = (kid ? 98 : 116) * (k.corpo === 'gordo' ? 1.3 : k.corpo === 'magro' ? 0.82 : 1);
   const r = kid ? 78 : 76;
   const LW = (kid ? 28 : 30);
-  const quadY = -perna + p.quadril;
+  const sent = p.sentado ?? 0;
+  const quadY = -perna + p.quadril + perna * 0.42 * sent;
   const ombY = quadY - troncoH - p.ombro;
   const pesc: V = [0, quadY - troncoH];
   const cab: V = [p.cabX, pesc[1] - r * 0.78 + p.cabY + p.ombro * 0.4];
@@ -173,7 +176,14 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
   const hE: V = [-troncoW * 0.22, quadY], hD: V = [troncoW * 0.22, quadY];
   const th = perna / 2;
   const pE = fim(hE, T(p.peE), th, th), pD = fim(hD, T(p.peD), th, th);
-  const jE = ik(hE, pE, th, th, 1), jD = ik(hD, pD, th, th, -1);
+  let jE = ik(hE, pE, th, th, 1), jD = ik(hD, pD, th, th, -1);
+  if (sent > 0) {
+    // sentado de frente: joelhos logo abaixo do quadril (coxa encurtada), canela até o chão
+    const jSE: V = [hE[0] * 1.35, quadY + 22], jSD: V = [hD[0] * 1.35, quadY + 22];
+    const lv = (a: V, b: V): V => [a[0] + (b[0] - a[0]) * sent, a[1] + (b[1] - a[1]) * sent];
+    jE = lv(jE, jSE); jD = lv(jD, jSD);
+    pE[0] += (hE[0] * 1.3 - pE[0]) * sent; pD[0] += (hD[0] * 1.3 - pD[0]) * sent;
+  }
   const pele = k.pele, manga = k.manga ?? k.roupa;
   const hair = useMemo(() => cabelo(k.cabelo, k.corCabelo, 0, 0, r) as { atras?: string; frente?: string }, [k.cabelo, k.corCabelo, r]);
   const hat = useMemo(() => (k.chapeu ? (chapeu(k.chapeu, k.corChapeu, 0, 0, r) as string) : ''), [k.chapeu, k.corChapeu, r]);
@@ -189,12 +199,13 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
   const corPerna = k.calca && !k.short && !k.saia ? k.calca : pele;
   return (
     <g transform={`translate(${x} ${y}) scale(${(flip ? -1 : 1) * s} ${s}) translate(${p.x} ${p.y}) rotate(${p.incl} 0 ${quadY}) scale(${p.esc * (2 - p.sq)} ${p.esc * p.sq})`}>
-      <ellipse cx={0} cy={6} rx={70} ry={9} fill="#000" opacity={0.12} transform={`translate(${-p.x} ${-p.y})`} />
+      <ellipse cx={0} cy={6} rx={70} ry={9} fill="#000" opacity={0.12 * Math.max(0, 1 - Math.abs(p.incl) / 40)} transform={`translate(${-p.x} ${-p.y})`} />
       {/* pernas e pés */}
       {membro([hE, jE, pE], corPerna, LW)}
       {membro([hD, jD, pD], corPerna, LW)}
       {k.short && k.calca && <>{membro([hE, [hE[0] + (jE[0] - hE[0]) * 0.7, hE[1] + (jE[1] - hE[1]) * 0.7]], k.calca, LW)}{membro([hD, [hD[0] + (jD[0] - hD[0]) * 0.7, hD[1] + (jD[1] - hD[1]) * 0.7]], k.calca, LW)}</>}
       {[pE, pD].map((f, i) => <ellipse key={i} cx={f[0] + (i ? 8 : -8)} cy={f[1]} rx={17} ry={9} fill={k.sapato ?? L} stroke={L} strokeWidth={3} />)}
+      {sent > 0.3 && [jE, jD].map((j, i) => <circle key={`j${i}`} cx={j[0]} cy={j[1] - 4} r={LW * 0.62} fill={corPerna} stroke={L} strokeWidth={4} opacity={Math.min(1, (sent - 0.3) * 3)} />)}
       {k.saia && <path d={`M${-a * 0.55} ${quadY - 12} L${-a * 0.85} ${quadY + 40} H${a * 0.85} L${a * 0.55} ${quadY - 12} z`} fill={k.saia} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
       {/* braços atrás */}
       {!p.frenteE && braco(sE, cE, mE)}
@@ -233,6 +244,9 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
           const d = `M${x0} ${y0} q${Math.cos(ang) * r * 0.25 + r * 0.12} ${Math.sin(ang) * r * 0.35} ${Math.cos(ang) * r * 0.1 + r * 0.25} ${Math.sin(ang) * r * 0.55}`;
           return <g key={i}><path d={d} stroke={L} strokeWidth={r * 0.11} fill="none" strokeLinecap="round" /><path d={d} stroke="#fff" strokeWidth={r * 0.06} fill="none" strokeLinecap="round" /></g>;
         })}
+        {(p.zzz ?? 0) > 0 && [0, 1, 2].map((i) => (
+          <text key={`z${i}`} x={r * (0.9 + i * 0.35)} y={-r * (1.0 + i * 0.45)} fontFamily="Arial Black, Arial" fontWeight={900} fontSize={r * (0.4 + i * 0.14)} fill="#fff" stroke={L} strokeWidth={5} paintOrder="stroke" opacity={p.zzz}>Z</text>
+        ))}
         {p.pergunta > 0 && (
           <text x={r * 0.9} y={-r * 1.1} fontFamily="Arial Black, Arial" fontWeight={900} fontSize={r * 0.9 * p.pergunta} fill="#fff" stroke={L} strokeWidth={6} paintOrder="stroke">?</text>
         )}

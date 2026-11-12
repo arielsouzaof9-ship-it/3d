@@ -115,6 +115,63 @@ export const MOVIMENTOS: Record<string, { nome: string; f: Mov }> = {
     nome: 'Nervoso',
     f: (u) => ({ maoE: [-14, -205], maoD: [14, -205], frenteE: true, frenteD: true, pupila: [Math.sin(u * 7) > 0 ? 0.9 : -0.9, 0], suor: 1, boca: 'onda', sobr: 0.8, sobrTriste: true, x: 1.5 * Math.sin(u * 40) }),
   },
+  // ---------- Movimentos novos (2ª análise dos vídeos de referência) ----------
+  sentar: {
+    nome: 'Sentar (poltrona, banco)',
+    f: (u) => ({ sentado: 1, maoE: [-62, -132], maoD: [62, -132], cabRot: 1.5 * Math.sin(u * 1.3), boca: 'sorriso' }),
+  },
+  sentarFalar: {
+    nome: 'Sentado conversando',
+    f: (u) => ({ sentado: 1, maoE: [-62, -132], maoD: [80 + 12 * Math.sin(u * 5), -215 + 10 * Math.sin(u * 3)], fala: clamp(0.5 + 0.6 * Math.sin(u * 15) * Math.sin(u * 3.7)), cabY: 2 * Math.sin(u * 7), cabRot: 3 * Math.sin(u * 2.3), boca: 'sorriso' }),
+  },
+  cochilar: {
+    nome: 'Cochilar (Zzz)',
+    f: (u) => ({ sentado: 1, maoE: [-40, -140], maoD: [40, -140], olho: 0.04, cabRot: 14, cabY: 4 + 4 * Math.sin(u * 2.2), sq: 1 + 0.025 * Math.sin(u * 2.2), boca: 'o', zzz: 0.6 + 0.4 * Math.sin(u * 2.2) }),
+  },
+  deitar: {
+    nome: 'Cair e ficar deitado',
+    f: (u) => { const k = ease(clamp(u / 0.35)); return { incl: -88 * k, y: 104 * k, x: 70 * k, olho: u > 0.35 ? 0.05 : 1.3, boca: u > 0.35 ? 'onda' : 'o', maoE: [-110, -200], maoD: [110, -200], peE: [-40, -10], peD: [40, -20] }; },
+  },
+  telefone: {
+    nome: 'Falar ao telefone',
+    f: (u) => ({ maoD: [62, -335], frenteD: false, cabRot: -9, cabX: 4, pupila: [-0.5, -0.2], fala: clamp(0.5 + 0.6 * Math.sin(u * 14) * Math.sin(u * 3.1)), maoE: [-40, -170], boca: 'sorriso', sobr: 0.3 }),
+  },
+  aplaudir: {
+    nome: 'Aplaudir',
+    f: (u) => { const k = Math.abs(Math.sin(u * 13)); return { maoE: [-14 - 34 * k, -235], maoD: [14 + 34 * k, -235], frenteE: true, frenteD: true, olhoFeliz: true, boca: 'riso', fala: 0.4, y: -4 * Math.abs(Math.sin(u * 6.5)) }; },
+  },
+  dirigir: {
+    nome: 'Dirigir (volante)',
+    f: (u) => { const a = 0.45 * Math.sin(u * 2.2); return { sentado: 1, maoE: [-62 * Math.cos(a), -205 - 62 * Math.sin(a)], maoD: [62 * Math.cos(a), -205 + 62 * Math.sin(a)], frenteE: true, frenteD: true, cabRot: 6 * a, pupila: [a, -0.2], boca: 'sorriso' }; },
+  },
+  segurar: {
+    nome: 'Mostrar papel ou placa',
+    f: (u) => ({ maoE: [-56, -228], maoD: [56, -228], frenteE: true, frenteD: true, pupila: [0, 0.2], y: -3 * Math.abs(Math.sin(u * 3)), boca: 'riso', sobr: 0.5 }),
+  },
+  olharLados: {
+    nome: 'Olhar para os lados',
+    f: (u) => { const s = Math.sin(u * 2.6) > 0 ? 1 : -1; return { pupila: [s, 0], cabX: 9 * s, cabRot: -3 * s, boca: 'neutra', sobr: 0.5, maoE: [-58, -150], maoD: [58, -150] }; },
+  },
+  andarNoLugar: {
+    nome: 'Andar no lugar (cenário passa)',
+    f: (u) => { const w = u * 8.5; return { y: -7 * Math.abs(Math.sin(w)), peE: [-26, -26 * Math.max(0, Math.sin(w))], peD: [26, -26 * Math.max(0, -Math.sin(w))], maoE: [-64, -150 + 16 * Math.sin(w)], maoD: [64, -150 - 16 * Math.sin(w)], incl: 2 * Math.sin(w), cabRot: 2 * Math.sin(w), boca: 'sorriso' }; },
+  },
+  correr: {
+    nome: 'Correr',
+    f: (u) => { const w = u * 15; return { x: (u - 1.4) * 230, y: -16 * Math.abs(Math.sin(w)), peE: [-30, -44 * Math.max(0, Math.sin(w))], peD: [30, -44 * Math.max(0, -Math.sin(w))], maoE: [-80, -250 + 50 * Math.sin(w)], maoD: [80, -250 - 50 * Math.sin(w)], incl: 9, boca: 'aberta', fala: 0.4, sobr: 0.6, suor: 1 }; },
+  },
+  aflito: {
+    nome: 'Aflito (mãos no rosto)',
+    f: (u) => ({ maoE: [-62, -318], maoD: [62, -318], frenteE: true, frenteD: true, olho: 1.25, sobrTriste: true, sobr: 1, boca: 'o', suor: 1, x: 1.8 * Math.sin(u * 36) }),
+  },
+  espiar: {
+    nome: 'Espiar (inclinar e olhar)',
+    f: (u) => ({ incl: -16, cabX: -10, cabRot: -10, pupila: [-1, 0.1], maoE: [-30, -170], maoD: [40, -150], boca: 'neutra', sobr: 0.8, y: -2 * Math.sin(u * 4) }),
+  },
+  pular: {
+    nome: 'Pular de alegria',
+    f: (u) => { const ph = u % 0.7, j = pulo(ph - 0.08, 0.55, 95); return { y: j, sq: ph < 0.08 ? 0.86 : j < -8 ? 1.1 : 0.94, maoE: [-175, -385], maoD: [175, -385], peE: [-30, j < -8 ? -20 : 0], peD: [30, j < -8 ? -20 : 0], olhoFeliz: true, boca: 'riso', fala: 0.5 }; },
+  },
   entrar: {
     nome: 'Entrar com "pop"',
     f: (u) => { const k = clamp(u / 0.35); const e = k <= 0 ? 0 : 1 + 2.4 * Math.pow(k - 1, 3) + 1.4 * Math.pow(k - 1, 2); return { esc: e, sq: u < 0.35 ? 1.12 : u < 0.5 ? 0.9 : 1, boca: 'riso', olhoFeliz: u > 0.4 && u < 1.2 }; },
