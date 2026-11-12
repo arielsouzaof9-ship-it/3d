@@ -2,6 +2,7 @@
 # Gera páginas completas (abrem direto no navegador) a partir de src/:
 #   src/bip-corre.html     -> index.html
 #   src/ultima-quadra.html -> zumbi.html
+#   src/cara-ou-coroa.html -> moeda.html
 cd "$(dirname "$0")"
 wrap() {
   {
@@ -14,3 +15,4 @@ wrap() {
 }
 wrap src/bip-corre.html index.html
 wrap src/ultima-quadra.html zumbi.html
+wrap src/cara-ou-coroa.html moeda.html

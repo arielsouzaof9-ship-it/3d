@@ -1,0 +1,654 @@
+<title>Cara ou Coroa</title>
+<meta name="theme-color" content="#2a1d14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: mesa de madeira em 3D ocupando a tela; placar no topo; escolha CARA/COROA embaixo, ao alcance do polegar */
+:root {
+  --wood: #2a1d14;
+  --brass: #d4a640;
+  --brass-hi: #f3d27a;
+  --silver: #c9ccd1;
+  --paper: #f7f1e3;
+  --ink: #1d1a16;
+  --win: #4fbf7f;
+  --lose: #e0604a;
+  --f-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden; background: var(--wood); color: var(--paper);
+  font-family: var(--f-display);
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  touch-action: none; overscroll-behavior: none;
+}
+#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+.top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 5; pointer-events: none;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 10px;
+}
+.row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.score { display: flex; flex-direction: column; gap: 2px; }
+.score small, .streak small { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+.score b { font-size: 44px; line-height: .9; font-weight: 800; font-variant-numeric: tabular-nums; }
+.streak { text-align: right; display: flex; flex-direction: column; gap: 2px; align-items: flex-end; }
+.streak b { font-size: 28px; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
+.streak span { font-family: var(--f-mono); font-size: 12px; color: var(--silver); }
+.lives { display: flex; gap: 6px; }
+.lives i {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f4f5f7 0 30%, var(--silver) 45%, #8d9299 52%, var(--brass) 54%, #8a6420 100%);
+  box-shadow: 0 1px 0 rgba(0,0,0,.5);
+}
+.lives i.off { opacity: .18; filter: grayscale(1); }
+.hist { display: flex; gap: 4px; flex-wrap: wrap; min-height: 22px; }
+.hist i {
+  width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  font: 600 11px var(--f-mono); font-style: normal; color: var(--ink);
+}
+.hist i.c { background: var(--silver); }
+.hist i.k { background: var(--brass); }
+.tally { font-family: var(--f-mono); font-size: 12px; color: var(--silver); }
+
+.bottom {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 12px; align-items: center;
+  pointer-events: none;
+}
+#msg {
+  min-height: 28px; text-align: center; font-size: 20px; font-weight: 800; letter-spacing: -.01em;
+  text-shadow: 0 2px 6px rgba(0,0,0,.6); text-wrap: balance;
+}
+#msg.win { color: var(--win); }
+#msg.lose { color: var(--lose); }
+#sub { font-family: var(--f-mono); font-size: 13px; color: var(--silver); min-height: 18px; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
+.picks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 420px; }
+.pick {
+  pointer-events: auto; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; justify-content: center;
+  padding: 12px 10px; border-radius: 18px;
+  background: rgba(29,26,22,.72); color: var(--paper);
+  border: 2px solid rgba(243,210,122,.35);
+  font: 800 22px var(--f-display); letter-spacing: .02em; text-transform: uppercase;
+  transition: transform .12s, border-color .12s, background .12s;
+}
+.pick img { width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,.5); }
+.pick.sel { border-color: var(--brass-hi); background: rgba(212,166,64,.28); transform: translateY(-3px); }
+.pick:active { transform: scale(.97); }
+.pick:disabled { opacity: .45; cursor: default; }
+.pick:focus-visible, .btn:focus-visible, .icon-btn:focus-visible { outline: 3px solid var(--brass-hi); outline-offset: 3px; }
+.icon-btn {
+  pointer-events: auto; width: 40px; height: 40px; padding: 0; cursor: pointer; border-radius: 12px;
+  background: rgba(29,26,22,.6); color: var(--paper); border: 2px solid rgba(247,241,227,.4);
+  display: grid; place-items: center;
+}
+.icon-btn svg { width: 18px; height: 18px; }
+
+.screen {
+  position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; overflow-y: auto;
+  padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(20,14,10,.6);
+}
+.card {
+  width: 100%; max-width: 360px; box-sizing: border-box; border-radius: 24px;
+  background: var(--paper); color: var(--ink); padding: 24px 22px;
+  display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  animation: rise .35s cubic-bezier(.2,1.3,.4,1);
+}
+@keyframes rise { from { transform: translateY(20px) scale(.96); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+.eyebrow { margin: 0; font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #8a6420; }
+h1, h2 { margin: 0; font-weight: 800; letter-spacing: -.03em; line-height: .95; text-wrap: balance; }
+h1 { font-size: 52px; }
+h2 { font-size: 36px; }
+h1 em, h2 em { font-style: normal; color: #b0821f; }
+.lead { margin: 0; font-size: 16px; line-height: 1.45; }
+.how { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 15px; line-height: 1.35; }
+.how li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; }
+.how b { font-family: var(--f-mono); font-weight: 600; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 12px; }
+.btn {
+  font: 800 22px var(--f-display); letter-spacing: .01em; cursor: pointer; width: 100%;
+  background: var(--ink); color: var(--brass-hi); border: 0; border-radius: 16px; padding: 15px 16px;
+}
+.btn:active { transform: scale(.98); }
+.foot { margin: 0; font-family: var(--f-mono); font-size: 13px; color: #6b5f50; text-align: center; }
+.foot b { color: var(--ink); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { border-radius: 14px; background: rgba(29,26,22,.07); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.stat small { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #6b5f50; }
+.stat strong { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.note { margin: 0; font-size: 14px; line-height: 1.4; color: #4a4036; }
+</style>
+
+<canvas id="c" aria-label="Mesa com a moeda"></canvas>
+
+<div class="top" id="top" hidden>
+  <div class="row">
+    <div class="score"><small>Acertos</small><b id="score">0</b></div>
+    <div class="streak"><small>Sequência</small><b id="streak">0</b><span id="odds">—</span></div>
+  </div>
+  <div class="row">
+    <div class="lives" id="lives" aria-label="Vidas"><i></i><i></i><i></i></div>
+    <div style="display:flex;gap:8px">
+      <button class="icon-btn" id="muteBtn" aria-label="Som ligado">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="wv" d="M17 8.5a5 5 0 0 1 0 7"/><path id="mx" d="M16 9l5 6M21 9l-5 6" style="display:none"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="hist" id="hist" aria-label="Últimos resultados"></div>
+  <div class="tally" id="tally">Cara 0 · Coroa 0</div>
+</div>
+
+<div class="bottom" id="bottom" hidden>
+  <div id="msg">Escolha um lado</div>
+  <div id="sub">depois deslize para cima para jogar a moeda</div>
+  <div class="picks">
+    <button class="pick" id="pickC" type="button"><img id="imgC" alt="">Cara</button>
+    <button class="pick" id="pickK" type="button"><img id="imgK" alt="">Coroa</button>
+  </div>
+</div>
+
+<div class="screen" id="menu">
+  <div class="card">
+    <p class="eyebrow">Um real, dois lados</p>
+    <h1>Cara ou <em>Coroa</em></h1>
+    <p class="lead">Aposte no lado, jogue a moeda e veja até onde vai a sua sorte. Você tem três vidas.</p>
+    <ul class="how">
+      <li><b>1</b><span>Toque em <strong>Cara</strong> (o rosto) ou <strong>Coroa</strong> (o valor).</span></li>
+      <li><b>2</b><span>Deslize o dedo para cima na tela. Quanto mais rápido, mais alto a moeda sobe e mais ela gira.</span></li>
+      <li><b>3</b><span>Errou, perde uma vida. Acertos seguidos aumentam a sequência.</span></li>
+    </ul>
+    <button class="btn" id="playBtn">Pegar a moeda</button>
+    <p class="foot">Maior sequência: <b id="bestMenu">0</b></p>
+  </div>
+</div>
+
+<div class="screen" id="over" hidden>
+  <div class="card">
+    <p class="eyebrow">Fim das vidas</p>
+    <h2 id="overTitle">A sorte <em>virou</em></h2>
+    <div class="stats">
+      <div class="stat"><small>Acertos</small><strong id="oScore">0</strong></div>
+      <div class="stat"><small>Maior sequência</small><strong id="oStreak">0</strong></div>
+    </div>
+    <p class="note" id="oNote"></p>
+    <button class="btn" id="againBtn">Jogar de novo</button>
+    <p class="foot">Recorde de sequência: <b id="bestOver">0</b></p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+  let bestStreak = parseInt(store.get('cc-best') || '0', 10) || 0;
+  let muted = store.get('cc-muted') === '1';
+  $('bestMenu').textContent = bestStreak;
+
+  // sorteio justo: 50% para cada lado
+  function fairCoin() {
+    try { const a = new Uint8Array(1); crypto.getRandomValues(a); return (a[0] & 1) === 0 ? 'cara' : 'coroa'; }
+    catch (e) { return Math.random() < 0.5 ? 'cara' : 'coroa'; }
+  }
+
+  // ================= Texturas da moeda (desenho estilizado) =================
+  function baseFace(g, C) {
+    let gr = g.createRadialGradient(C - 70, C - 90, 30, C, C, C);
+    gr.addColorStop(0, '#f6dc8e'); gr.addColorStop(0.65, '#d4a640'); gr.addColorStop(1, '#7d5a1c');
+    g.fillStyle = gr; g.beginPath(); g.arc(C, C, C, 0, 7); g.fill();
+    g.lineWidth = 12; g.strokeStyle = '#a07628'; g.beginPath(); g.arc(C, C, C - 8, 0, 7); g.stroke();
+    g.lineWidth = 3; g.strokeStyle = 'rgba(255,240,190,.6)'; g.beginPath(); g.arc(C, C, C - 15, 0, 7); g.stroke();
+    const R = C * 0.67;
+    let sg = g.createRadialGradient(C - 55, C - 65, 15, C, C, R);
+    sg.addColorStop(0, '#fbfcfd'); sg.addColorStop(0.6, '#c9ccd1'); sg.addColorStop(1, '#868b93');
+    g.fillStyle = sg; g.beginPath(); g.arc(C, C, R, 0, 7); g.fill();
+    g.lineWidth = 6; g.strokeStyle = '#6e5320'; g.beginPath(); g.arc(C, C, R + 3, 0, 7); g.stroke();
+    return R;
+  }
+  function arcText(g, C, text, radius, center, spacing, font, color) {
+    g.save(); g.font = font; g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const n = text.length, start = center - ((n - 1) * spacing) / 2;
+    for (let i = 0; i < n; i++) {
+      const a = start + i * spacing;
+      g.save(); g.translate(C + Math.cos(a) * radius, C + Math.sin(a) * radius); g.rotate(a + Math.PI / 2);
+      g.fillText(text[i], 0, 0); g.restore();
+    }
+    g.restore();
+  }
+  function emboss(g, draw, base) {
+    g.save(); g.translate(3, 4); g.fillStyle = 'rgba(40,40,48,.55)'; draw(); g.fill(); g.restore();
+    g.save(); g.translate(-2, -2); g.fillStyle = 'rgba(255,255,255,.75)'; draw(); g.fill(); g.restore();
+    g.fillStyle = base; draw(); g.fill();
+  }
+  function makeFace(kind) {
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d'), C = 256;
+    const R = baseFace(g, C);
+    if (kind === 'cara') {
+      arcText(g, C, 'BRASIL', C - 46, -Math.PI / 2, 0.2, '800 40px "Bricolage Grotesque", sans-serif', '#5c4214');
+      for (let i = 0; i < 18; i++) {
+        const a = Math.PI * 0.15 + (i / 17) * Math.PI * 0.7;
+        g.fillStyle = '#7a5a1c'; g.beginPath(); g.arc(C + Math.cos(a) * (C - 46), C + Math.sin(a) * (C - 46), 5, 0, 7); g.fill();
+      }
+      // perfil estilizado olhando para a esquerda, com coroa de louros
+      const head = () => {
+        g.beginPath();
+        g.moveTo(300, 395);
+        g.bezierCurveTo(330, 330, 345, 250, 318, 185);
+        g.bezierCurveTo(298, 140, 245, 128, 215, 160);
+        g.bezierCurveTo(200, 176, 204, 196, 196, 214);
+        g.lineTo(178, 246);
+        g.lineTo(196, 252);
+        g.bezierCurveTo(190, 262, 196, 268, 200, 272);
+        g.bezierCurveTo(194, 280, 200, 290, 206, 292);
+        g.bezierCurveTo(204, 312, 222, 322, 240, 318);
+        g.bezierCurveTo(244, 345, 238, 372, 232, 395);
+        g.closePath();
+      };
+      emboss(g, head, '#b4b8bf');
+      g.save(); g.strokeStyle = 'rgba(70,74,82,.55)'; g.lineWidth = 3;
+      g.beginPath(); g.moveTo(232, 214); g.quadraticCurveTo(222, 206, 212, 212); g.stroke();
+      g.beginPath(); g.arc(300, 200, 26, Math.PI * 0.6, Math.PI * 1.7); g.stroke();
+      g.restore();
+      for (let i = 0; i < 7; i++) {
+        const a = Math.PI * 1.08 + i * 0.2;
+        const x = 270 + Math.cos(a) * 62, y = 200 + Math.sin(a) * 62;
+        g.save(); g.translate(x, y); g.rotate(a + 0.6);
+        const leaf = () => { g.beginPath(); g.ellipse(0, 0, 15, 6, 0, 0, 7); };
+        emboss(g, leaf, '#9fa4ab'); g.restore();
+      }
+    } else {
+      for (let i = 0; i < 64; i++) {
+        const a = (i / 64) * Math.PI * 2;
+        g.strokeStyle = i % 2 ? '#8a6420' : '#b48a34'; g.lineWidth = 5;
+        g.beginPath(); g.moveTo(C + Math.cos(a) * (R + 14), C + Math.sin(a) * (R + 14)); g.lineTo(C + Math.cos(a) * (C - 26), C + Math.sin(a) * (C - 26)); g.stroke();
+      }
+      g.save(); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+      const one = () => { g.font = '800 220px "Bricolage Grotesque", sans-serif'; };
+      one(); g.fillStyle = 'rgba(40,40,48,.5)'; g.fillText('1', C + 4, C + 70);
+      g.fillStyle = 'rgba(255,255,255,.8)'; g.fillText('1', C - 2, C + 62);
+      g.fillStyle = '#a6abb2'; g.fillText('1', C, C + 66);
+      g.font = '800 48px "Bricolage Grotesque", sans-serif';
+      g.fillStyle = 'rgba(40,40,48,.5)'; g.fillText('REAL', C + 2, C + 128);
+      g.fillStyle = '#5d6168'; g.fillText('REAL', C, C + 126);
+      g.font = '600 26px "IBM Plex Mono", monospace'; g.fillStyle = '#5d6168'; g.fillText('2026', C, C - 118);
+      g.restore();
+    }
+    return c;
+  }
+  function edgeTexture() {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 32;
+    const g = c.getContext('2d');
+    for (let x = 0; x < 1024; x += 8) { g.fillStyle = '#c99b3a'; g.fillRect(x, 0, 4, 32); g.fillStyle = '#8a6420'; g.fillRect(x + 4, 0, 4, 32); }
+    return c;
+  }
+  function woodTexture() {
+    const c = document.createElement('canvas'); c.width = c.height = 1024;
+    const g = c.getContext('2d');
+    g.fillStyle = '#5a3a22'; g.fillRect(0, 0, 1024, 1024);
+    const plank = 205;
+    for (let p = 0; p < 5; p++) {
+      const y0 = p * plank, tone = [0, 10, -8, 6, -4][p];
+      g.fillStyle = `rgb(${92 + tone},${60 + tone},${36 + tone})`; g.fillRect(0, y0, 1024, plank);
+      for (let i = 0; i < 70; i++) {
+        const y = y0 + Math.random() * plank;
+        g.strokeStyle = `rgba(${Math.random() < 0.5 ? '40,24,12' : '140,98,60'},${0.12 + Math.random() * 0.2})`;
+        g.lineWidth = 1 + Math.random() * 2.5;
+        g.beginPath(); g.moveTo(0, y);
+        for (let x = 0; x <= 1024; x += 64) g.lineTo(x, y + Math.sin(x / 140 + i) * 4 + (Math.random() - 0.5) * 2);
+        g.stroke();
+      }
+      g.fillStyle = 'rgba(20,12,6,.7)'; g.fillRect(0, y0, 1024, 3);
+    }
+    return c;
+  }
+
+  const faceC = makeFace('cara'), faceK = makeFace('coroa');
+  $('imgC').src = faceC.toDataURL(); $('imgK').src = faceK.toDataURL();
+
+  // ================= Cena =================
+  const canvas = $('c');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a110b);
+  scene.fog = new THREE.Fog(0x1a110b, 9, 22);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+
+  // ambiente para o brilho metálico
+  {
+    const env = new THREE.Scene();
+    const c = document.createElement('canvas'); c.width = 64; c.height = 256;
+    const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#fff3dc'); gr.addColorStop(0.45, '#a8784a'); gr.addColorStop(0.55, '#3a2616'); gr.addColorStop(1, '#120b06');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 256);
+    const tex = new THREE.CanvasTexture(c);
+    env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide })));
+    const lamp = new THREE.Mesh(new THREE.PlaneGeometry(6, 3), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+    lamp.position.set(-3, 8, 2); lamp.lookAt(0, 0, 0); env.add(lamp);
+    const lamp2 = new THREE.Mesh(new THREE.PlaneGeometry(3, 6), new THREE.MeshBasicMaterial({ color: 0xffd9a0, side: THREE.DoubleSide }));
+    lamp2.position.set(7, 3, -4); lamp2.lookAt(0, 0, 0); env.add(lamp2);
+    const pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(env, 0.02).texture;
+  }
+
+  scene.add(new THREE.HemisphereLight(0xffe6c4, 0x2a1a10, 0.35));
+  const key = new THREE.SpotLight(0xffe2b8, 2.2, 30, 0.6, 0.5, 1.2);
+  key.position.set(-2.5, 9, 3.5); key.target.position.set(0, 0, 0);
+  key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0005; key.shadow.radius = 4;
+  scene.add(key, key.target);
+
+  const woodTex = new THREE.CanvasTexture(woodTexture());
+  woodTex.encoding = THREE.sRGBEncoding; woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping; woodTex.repeat.set(2, 2);
+  woodTex.anisotropy = 8;
+  const table = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.6, metalness: 0, envMapIntensity: 0.4 }));
+  table.rotation.x = -Math.PI / 2; table.receiveShadow = true; scene.add(table);
+
+  // ---------- Moeda ----------
+  const THICK = 0.13;
+  function tex(cnv) { const t = new THREE.CanvasTexture(cnv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; }
+  const texC = tex(faceC), texK = tex(faceK);
+  // a tampa de baixo do cilindro é vista espelhada: corrige
+  texK.center.set(0.5, 0.5);
+  const edgeT = tex(edgeTexture()); edgeT.wrapS = THREE.RepeatWrapping;
+  const metal = (map, extra) => new THREE.MeshStandardMaterial(Object.assign({ map, metalness: 0.85, roughness: 0.32, envMapIntensity: 1.2 }, extra || {}));
+  const coinGeo = new THREE.CylinderGeometry(1, 1, THICK, 96, 1);
+  const coinMesh = new THREE.Mesh(coinGeo, [metal(edgeT, { roughness: 0.4 }), metal(texC), metal(texK)]);
+  coinMesh.castShadow = true;
+  const coin = new THREE.Group(); // grupo para posição; malha gira dentro
+  coin.add(coinMesh); scene.add(coin);
+  coinMesh.rotation.y = Math.PI / 2; // face em pé para a câmera
+  const glow = new THREE.PointLight(0xffd27a, 0, 4, 2); coin.add(glow);
+  // redesenha as faces quando as fontes terminarem de carregar
+  if (document.fonts && document.fonts.load) {
+    Promise.all([document.fonts.load('800 40px "Bricolage Grotesque"'), document.fonts.load('600 26px "IBM Plex Mono"')]).then(() => {
+      const c2 = makeFace('cara'), k2 = makeFace('coroa');
+      texC.image = c2; texC.needsUpdate = true; texK.image = k2; texK.needsUpdate = true;
+      $('imgC').src = c2.toDataURL(); $('imgK').src = k2.toDataURL();
+    }).catch(() => {});
+  }
+
+  // ================= Som =================
+  let actx = null, noiseBuf = null;
+  function initAudio() {
+    if (!actx) {
+      try {
+        actx = new (window.AudioContext || window.webkitAudioContext)();
+        noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.4, actx.sampleRate);
+        const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      } catch (e) { actx = null; }
+    }
+    if (actx && actx.state === 'suspended') actx.resume().catch(() => {});
+  }
+  function clink(vol) {
+    if (!actx || muted) return;
+    const t = actx.currentTime;
+    for (const [f, a, d] of [[2210, 1, 0.5], [3480, 0.6, 0.35], [5120, 0.4, 0.25], [6900, 0.2, 0.15]]) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f * (0.98 + Math.random() * 0.04);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06 * a * vol, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + d + 0.02);
+    }
+  }
+  function whoosh() {
+    if (!actx || muted) return;
+    const t = actx.currentTime, s = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    s.buffer = noiseBuf; f.type = 'bandpass'; f.frequency.setValueAtTime(800, t); f.frequency.exponentialRampToValueAtTime(3000, t + 0.25); f.Q.value = 2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+    s.connect(f); f.connect(g); g.connect(actx.destination); s.start(t); s.stop(t + 0.35);
+  }
+  function chime(ok) {
+    if (!actx || muted) return;
+    const t = actx.currentTime, notes = ok ? [660, 880, 1320] : [330, 262];
+    notes.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = ok ? 'triangle' : 'square'; o.frequency.value = f;
+      const s = t + i * 0.09;
+      g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(ok ? 0.08 : 0.04, s + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.25);
+      o.connect(g); g.connect(actx.destination); o.start(s); o.stop(s + 0.3);
+    });
+  }
+  const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+
+  // ================= Estado =================
+  // phase: idle (moeda na mesa) | flying | settling | shown (resultado na tela)
+  let phase = 'idle', guess = null, result = null;
+  let score = 0, streak = 0, runBest = 0, lives = 3, counts = { cara: 0, coroa: 0 }, history = [];
+  let playing = false;
+  const F = { t: 0, T: 1, v0: 0, a0: 0, a1: 0, x0: 0, x1: 0, z0: 0, z1: 0, wob: 0, spinY: 0 };
+  const STL = { t: 0, amp: 0, nextClink: 0, bounceV: 0, y: 0 };
+  let angle = 0; // rotação em x: 0 = cara para cima, PI = coroa para cima
+
+  const ui = { msg: $('msg'), sub: $('sub'), pickC: $('pickC'), pickK: $('pickK') };
+  function setMsg(t, cls, sub) { ui.msg.textContent = t; ui.msg.className = cls || ''; ui.sub.textContent = sub || ''; }
+  function oddsText(n) { return n < 2 ? '—' : `chance: 1 em ${Math.pow(2, n).toLocaleString('pt-BR')}`; }
+  function paintHud() {
+    $('score').textContent = score;
+    $('streak').textContent = streak;
+    $('odds').textContent = oddsText(streak);
+    [...$('lives').children].forEach((el, i) => el.classList.toggle('off', i >= lives));
+    $('hist').innerHTML = history.slice(-12).map((r) => `<i class="${r === 'cara' ? 'c' : 'k'}">${r === 'cara' ? 'Ca' : 'Co'}</i>`).join('');
+    $('tally').textContent = `Cara ${counts.cara} · Coroa ${counts.coroa}`;
+    ui.pickC.classList.toggle('sel', guess === 'cara');
+    ui.pickK.classList.toggle('sel', guess === 'coroa');
+    const lock = phase === 'flying' || phase === 'settling';
+    ui.pickC.disabled = lock; ui.pickK.disabled = lock;
+  }
+
+  function startGame() {
+    initAudio();
+    score = 0; streak = 0; runBest = 0; lives = 3; counts = { cara: 0, coroa: 0 }; history = []; guess = null;
+    phase = 'idle'; playing = true;
+    $('menu').hidden = true; $('over').hidden = true; $('top').hidden = false; $('bottom').hidden = false;
+    setMsg('Escolha um lado', '', 'depois deslize para cima para jogar a moeda');
+    paintHud();
+  }
+  function choose(side) {
+    if (!playing || phase === 'flying' || phase === 'settling') return;
+    initAudio();
+    guess = side; phase = 'idle';
+    setMsg(`Você escolheu ${side === 'cara' ? 'CARA' : 'COROA'}`, '', 'deslize para cima para jogar · ou toque na moeda');
+    paintHud();
+  }
+
+  function toss(strength) {
+    if (!playing || phase === 'flying' || phase === 'settling') return;
+    if (!guess) { setMsg('Primeiro escolha um lado', 'lose', 'cara é o rosto, coroa é o valor'); return; }
+    initAudio();
+    const s = clamp(strength, 0, 1);
+    result = fairCoin();
+    F.t = 0; F.v0 = 7 + s * 7; F.T = (2 * F.v0) / G;
+    // número de meias-voltas proporcional à força, com paridade que leva ao lado sorteado
+    const startUp = upFace(angle);
+    let k = Math.round(6 + s * 12);
+    const flips = (startUp !== result);
+    if ((k % 2 === 1) !== flips) k += 1;
+    F.a0 = Math.round(angle / Math.PI) * Math.PI;
+    F.a1 = F.a0 + k * Math.PI;
+    F.x0 = coin.position.x; F.z0 = coin.position.z;
+    F.x1 = clamp((Math.random() - 0.5) * 1.6, -1.2, 1.2); F.z1 = clamp((Math.random() - 0.5) * 1.2, -0.8, 0.8);
+    F.wob = (Math.random() - 0.5) * 0.5; F.spinY = (Math.random() - 0.5) * 3;
+    phase = 'flying';
+    setMsg('...', '', '');
+    whoosh(); vibrate(15);
+    paintHud();
+  }
+  const G = 24;
+  function upFace(a) { return Math.cos(a) >= 0 ? 'cara' : 'coroa'; }
+
+  function finish() {
+    phase = 'shown';
+    const ok = result === guess;
+    counts[result]++; history.push(result);
+    if (ok) {
+      score++; streak++; runBest = Math.max(runBest, streak);
+      if (streak > bestStreak) { bestStreak = streak; store.set('cc-best', String(bestStreak)); }
+      const extra = streak >= 3 ? `${streak} seguidas · ${oddsText(streak)}` : 'deslize para jogar de novo';
+      setMsg(`Deu ${result === 'cara' ? 'CARA' : 'COROA'}! Acertou`, 'win', extra);
+      chime(true); vibrate(25);
+      if (streak >= 5) glow.intensity = 2.5;
+    } else {
+      lives--; streak = 0; glow.intensity = 0;
+      setMsg(`Deu ${result === 'cara' ? 'CARA' : 'COROA'}. Errou`, 'lose', lives > 0 ? `restam ${lives} ${lives === 1 ? 'vida' : 'vidas'}` : '');
+      chime(false); vibrate([40, 40, 40]);
+      if (lives <= 0) setTimeout(gameOver, 1200);
+    }
+    paintHud();
+  }
+  function gameOver() {
+    playing = false;
+    $('oScore').textContent = score; $('oStreak').textContent = runBest; $('bestOver').textContent = bestStreak;
+    $('overTitle').innerHTML = runBest >= bestStreak && runBest > 0 ? 'Novo <em>recorde</em>!' : 'A sorte <em>virou</em>';
+    const total = counts.cara + counts.coroa;
+    $('oNote').textContent = total
+      ? `Em ${total} jogadas deu cara ${counts.cara} vezes (${Math.round((counts.cara / total) * 100)}%) e coroa ${counts.coroa} vezes. Cada jogada é independente: a moeda não lembra o que saiu antes.`
+      : '';
+    $('over').hidden = false; $('top').hidden = true; $('bottom').hidden = true;
+  }
+
+  // ================= Entrada =================
+  let sx = 0, sy = 0, st = 0, tracking = false, done = false;
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  canvas.addEventListener('pointerdown', (e) => {
+    if (!playing) return;
+    tracking = true; done = false; sx = e.clientX; sy = e.clientY; st = performance.now();
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!tracking || done) return;
+    const dy = sy - e.clientY, dx = Math.abs(e.clientX - sx);
+    if (dy > 40 && dy > dx) {
+      const dt = Math.max(16, performance.now() - st);
+      const speed = dy / dt; // px por ms
+      done = true; toss((speed - 0.4) / 2.2);
+    }
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    if (done) return;
+    if (Math.hypot(e.clientX - sx, e.clientY - sy) < 12) {
+      ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      if (ray.intersectObject(coinMesh).length) toss(0.45);
+    }
+  });
+  canvas.addEventListener('pointercancel', () => { tracking = false; });
+  document.addEventListener('touchmove', (e) => { if (!e.target.closest('.screen')) e.preventDefault(); }, { passive: false });
+  ui.pickC.addEventListener('click', () => choose('cara'));
+  ui.pickK.addEventListener('click', () => choose('coroa'));
+  $('playBtn').addEventListener('click', startGame);
+  $('againBtn').addEventListener('click', startGame);
+  window.addEventListener('keydown', (e) => {
+    const k = e.key.toLowerCase();
+    if (k === '1' || k === 'arrowleft') choose('cara');
+    else if (k === '2' || k === 'arrowright') choose('coroa');
+    else if (k === ' ' || k === 'arrowup') { e.preventDefault(); toss(0.5 + Math.random() * 0.3); }
+    else if (k === 'enter' && !playing) startGame();
+  });
+  function paintMute() { $('wv').style.display = muted ? 'none' : ''; $('mx').style.display = muted ? '' : 'none'; $('muteBtn').setAttribute('aria-label', muted ? 'Som desligado' : 'Som ligado'); }
+  $('muteBtn').addEventListener('click', () => { muted = !muted; store.set('cc-muted', muted ? '1' : '0'); paintMute(); initAudio(); });
+  paintMute();
+
+  // ================= Layout =================
+  let camBase = new THREE.Vector3();
+  function layout() {
+    const w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.fov = w < h ? 52 : 40;
+    camera.updateProjectionMatrix();
+    const k = w < h ? 1.25 : 1;
+    camBase.set(0, 5.2 * k, 5.4 * k);
+  }
+  window.addEventListener('resize', layout);
+  layout();
+
+  // ================= Animação =================
+  const REST_Y = THICK / 2;
+  coin.position.set(0, REST_Y, 0);
+  const look = new THREE.Vector3();
+  let last = performance.now(), idleT = 0;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    idleT += dt;
+    let y = REST_Y, tilt = 0;
+
+    if (phase === 'flying') {
+      F.t += dt;
+      const u = Math.min(1, F.t / F.T);
+      y = REST_Y + F.v0 * F.t - 0.5 * G * F.t * F.t;
+      angle = F.a0 + (F.a1 - F.a0) * u;
+      coin.position.x = F.x0 + (F.x1 - F.x0) * u;
+      coin.position.z = F.z0 + (F.z1 - F.z0) * u;
+      coinMesh.rotation.y += F.spinY * dt;
+      tilt = F.wob * Math.sin(u * Math.PI);
+      if (u >= 1) {
+        y = REST_Y; angle = F.a1;
+        phase = 'settling'; STL.t = 0; STL.amp = 0.5; STL.nextClink = 0; STL.bounceV = 2.2; STL.y = 0;
+        clink(1); vibrate(10);
+      }
+    } else if (phase === 'settling') {
+      STL.t += dt;
+      // pequeno quique e o "rodopio" de moeda girando até deitar
+      STL.bounceV -= G * dt; STL.y = Math.max(0, STL.y + STL.bounceV * dt);
+      if (STL.y === 0 && STL.bounceV < 0) STL.bounceV = Math.abs(STL.bounceV) * 0.3 < 0.6 ? 0 : Math.abs(STL.bounceV) * 0.3;
+      y = REST_Y + STL.y;
+      STL.amp *= Math.pow(0.12, dt);
+      const freq = 14 + (1 - STL.amp / 0.5) * 30;
+      tilt = STL.amp * Math.sin(STL.t * freq);
+      // enquanto assenta, gira até a face ficar em pé para quem olha
+      const ry = coinMesh.rotation.y, target = Math.PI / 2 + Math.round((ry - Math.PI / 2) / (Math.PI * 2)) * Math.PI * 2;
+      coinMesh.rotation.y += (target - ry) * Math.min(1, dt * 5);
+      STL.nextClink -= dt;
+      if (STL.nextClink <= 0 && STL.amp > 0.03) { clink(STL.amp * 1.6); STL.nextClink = 0.9 / freq * 6; }
+      if (STL.t > 1.1) { tilt = 0; finish(); }
+    } else {
+      // moeda deitada: leve respiro de brilho
+      tilt = 0;
+    }
+    glow.intensity *= Math.pow(0.6, dt);
+    coin.position.y = y;
+    coinMesh.rotation.x = angle;
+    coinMesh.rotation.z = tilt;
+    // a malha gira em torno do centro; ao deitar, a face para cima é cos(angle)
+
+    // câmera acompanha a moeda no ar
+    const follow = clamp((y - REST_Y) / 6, 0, 1);
+    camera.position.set(camBase.x + Math.sin(idleT * 0.3) * 0.15, camBase.y + follow * 2.2, camBase.z + follow * 0.8);
+    look.set(coin.position.x * 0.4, 0.2 + (y - REST_Y) * 0.65, coin.position.z * 0.4);
+    camera.lookAt(look);
+    key.target.position.set(coin.position.x, 0, coin.position.z);
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+
+  window.__cc = { get phase() { return phase; }, get score() { return score; }, get lives() { return lives; }, get result() { return result; }, get angle() { return angle; }, choose, toss, startGame, upFace, coinMesh, setAngle: (a) => { angle = a; } };
+})();
+</script>
