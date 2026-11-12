@@ -30,7 +30,7 @@ O Otacílio ficou para trás, segurando a porta. "Não desperdiça a sua vida, g
 Eu saí da mina com fogo nas botas e voei até cair no meio do mato.
 De volta para casa, anunciei: a LimaTech não fabrica mais armas.
 O meu sócio, o Seu Moreira, sorriu para as câmeras. E não falou nada.
-No meu porão, eu e a Clara construímos uma armadura nova, mais leve, vermelha e dourada.
+No meu porão, eu e a Clara construímos uma armadura nova, mais leve, prateada e azul.
 Foi a Clara que achou o recibo: quem vendia armas para o Lobo era o Moreira.
 Ele roubou a minha bobina e construiu uma armadura duas vezes maior.
 A gente lutou no telhado da LimaTech.
