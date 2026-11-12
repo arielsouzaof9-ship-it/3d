@@ -113,7 +113,7 @@ const TracoCtx = createContext(false);
 let toonGrad: THREE.DataTexture | null = null;
 const gradiente = () => {
   if (!toonGrad) {
-    toonGrad = new THREE.DataTexture(new Uint8Array([150, 150, 150, 255, 255, 255, 255, 255]), 2, 1, THREE.RGBAFormat);
+    toonGrad = new THREE.DataTexture(new Uint8Array([200, 200, 200, 255, 255, 255, 255, 255]), 2, 1, THREE.RGBAFormat);
     toonGrad.minFilter = toonGrad.magFilter = THREE.NearestFilter;
     toonGrad.needsUpdate = true;
   }
@@ -126,7 +126,7 @@ const contornoMat = () => {
   if (!inkMat)
     inkMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
-      uniforms: { w: { value: 0.022 }, cor: { value: new THREE.Color(INK) } },
+      uniforms: { w: { value: 0.03 }, cor: { value: new THREE.Color(INK) } },
       vertexShader: `uniform float w;
         void main() {
           vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -193,12 +193,26 @@ const FaceDecal = ({ face, skin, iris, cheeks }: { face: FaceState; skin: string
   );
 };
 
-const Limb = ({ len, r, color, metal }: { len: number; r: number; color: string; metal?: boolean }) => (
-  <mesh position={[0, -len / 2, 0]} castShadow>
-    <capsuleGeometry args={[r, len, 4, 10]} />
-    <Mat color={color} metal={metal} />
-  </mesh>
-);
+// No estilo traço os membros ficam grossos, como tubos, com juntas redondas (boneco articulado).
+const GROSSO = 2.1;
+const Limb = ({ len, r, color, metal }: { len: number; r: number; color: string; metal?: boolean }) => {
+  const traco = useContext(TracoCtx);
+  const rr = traco ? r * GROSSO : r;
+  return (
+    <>
+      <mesh position={[0, -len / 2, 0]} castShadow>
+        <capsuleGeometry args={[rr, traco ? len - rr : len, 4, 12]} />
+        <Mat color={color} metal={metal} />
+      </mesh>
+      {traco && (
+        <mesh castShadow>
+          <sphereGeometry args={[rr * 1.12, 16, 12]} />
+          <Mat color={color} metal={metal} />
+        </mesh>
+      )}
+    </>
+  );
+};
 
 const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; sx: number; el: number; look: Look; sh: number; hand?: ReactNode }) => (
   <group position={[side * sh, 1.0, 0]} rotation={new THREE.Euler(-sx, 0, side * sz, 'ZXY')}>
@@ -206,7 +220,7 @@ const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; s
     <group position={[0, -0.3, 0]} rotation={[-el, 0, 0]}>
       <Limb len={0.27} r={0.028} color={look.coat ?? look.jacket} metal={look.metal} />
       <group position={[0, -0.3, 0]}>
-        <mesh castShadow scale={[1, 1.1, 0.9]}>
+        <mesh castShadow scale={look.traco ? [1.35, 1.35, 1.2] : [1, 1.1, 0.9]}>
           <sphereGeometry args={[0.07, 16, 12]} />
           <Mat color={look.gloves} roughness={0.5} />
         </mesh>
@@ -223,7 +237,7 @@ const Leg = ({ side, swing, tap, look }: { side: 1 | -1; swing: number; tap: num
       <Limb len={0.24} r={0.035} color={look.pants} metal={look.metal} />
       <group position={[0, -0.26, 0]} rotation={[knee, 0, 0]}>
         <Limb len={0.22} r={0.032} color={look.shorts ? look.skin : look.pants} metal={look.metal} />
-        <mesh position={[0, -0.27, 0.07]} scale={[1, 0.7, 1.6]} castShadow>
+        <mesh position={[0, -0.27, 0.07]} scale={look.traco ? [1.3, 0.85, 1.7] : [1, 0.7, 1.6]} castShadow>
           <sphereGeometry args={[0.08, 16, 12]} />
           <Mat color={look.shoes} roughness={0.6} />
         </mesh>
@@ -700,7 +714,7 @@ export const Character = ({
           <Arm side={-1} sz={p.rsz} sx={p.rsx} el={p.rel} look={look} sh={b.sh} hand={right} />
           {/* Cabeça */}
           <group position={[0, 1.18, 0]} rotation={new THREE.Euler(p.hp, p.hy, p.hr, 'YXZ')}>
-            <group position={[0, (HEAD_Y - 1.18) * b.head, 0]} scale={b.head}>
+            <group position={[0, (HEAD_Y - 1.18) * b.head * (look.traco ? 1.1 : 1), 0]} scale={b.head * (look.traco ? 1.12 : 1)}>
               <mesh castShadow>
                 <sphereGeometry args={[HEAD_R, 48, 32]} />
                 <Mat color={look.skin} roughness={0.55} />
