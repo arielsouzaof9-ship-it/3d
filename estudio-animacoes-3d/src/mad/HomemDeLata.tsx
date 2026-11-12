@@ -13,7 +13,7 @@ import { TL_LATA as TL } from './timeline-lata';
 const VICENTE = { tipo: 'adulto', pele: '#e8c09a', roupa: '#2a2a30', calca: '#2a2a30', gravata: '#d1283b', cabelo: 'topete', corCabelo: '#1a120c', sapato: '#1a1a1e' };
 const PRESO = { ...VICENTE, roupa: '#e8e2d0', calca: '#5a5a66', gravata: undefined, bobina: '#5ad8ff', sapato: '#3a2418' };
 const LATA = { tipo: 'adulto', corpo: 'gordo', pele: '#9aa0aa', roupa: '#9aa0aa', calca: '#7a828e', mascara: 'heroi', corMascara: '#a8b0b8', detalheMascara: '#6a727e', bobina: '#5ad8ff', sapato: '#5a626e' };
-const NOVA = { tipo: 'adulto', pele: '#8a929e', roupa: '#c8302c', calca: '#8a929e', manga: '#c8302c', mascara: 'heroi', corMascara: '#c8302c', detalheMascara: '#e8b830', bobina: '#5ad8ff', sapato: '#e8b830', colete: '#e8b830' }; // vermelha, dourada e cinza
+const NOVA = { tipo: 'adulto', pele: '#8a929e', roupa: '#c8302c', calca: '#c8302c', manga: '#c8302c', mascara: 'heroi', corMascara: '#c8302c', detalheMascara: '#e8b830', bobina: '#5ad8ff', sapato: '#e8b830', colete: '#e8b830' }; // vermelha, dourada e cinza
 const OTACILIO = { tipo: 'idoso', pele: '#c98a5a', roupa: '#8a7a5a', calca: '#5a5a66', cabelo: 'careca', corCabelo: '#d6d6d6', oculos: true, barba: true, corBarba: '#d6d6d6', sapato: '#3a2418' };
 const CLARA = { tipo: 'adulto', pele: '#f6e3d3', roupa: '#5a8ac0', saia: '#2c3346', cabelo: 'chanel', corCabelo: '#6b3e1f', brinco: '#f2c94c', sapato: '#2c3346' };
 const MOREIRA = { tipo: 'adulto', corpo: 'gordo', pele: '#f6e3d3', roupa: '#3a3a44', calca: '#3a3a44', gravata: '#c9a14a', cabelo: 'careca', corCabelo: '#d6d6d6', barba: true, corBarba: '#9a9aa6', sapato: '#1a1a1e' };
