@@ -1,7 +1,7 @@
 // "Os Espelhos do Casarão": terror de casa assombrada com os PERSONAGENS MAD ARTICULADOS. Só efeitos sonoros (sem narração).
 import { CSSProperties, ReactNode } from 'react';
 import { Svg } from './cenarios';
-import { CasaraoFora, CHAO_C, clamp, CorredorC, Escada, Espelho, FotoFamilia, Igreja, Quarto, Relogio333, Rosas, Sala } from './cenarios-casarao';
+import { CaminhaoMudanca, CasaraoFora, clamp, CorredorC, Escada, Espelho, FotoFamilia, Igreja, LuzVela, Quarto, Relogio333, Rosas, Sala } from './cenarios-casarao';
 import { Vinheta } from './cenarios-ilha';
 import { Balao, Cam, Placa, Pop } from './FiosBrancos';
 import { Ator, Mov } from './FiosBrancosArticulado';
@@ -47,6 +47,7 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={1200}>
       <CasaraoFora t={t} />
+      <Svg><CaminhaoMudanca x={830} y={1700} /></Svg>
       {[PAI, MAE, DAVI, CLARINHA].map((k, i) => <Pers key={i} k={{ ...k, item: i === 0 ? 'caixa' : undefined }} t={t} x={andando(t, t0, -60 - i * 150, 120)} y={1640 + (i % 2) * 30} h={i < 2 ? 560 : 440} movs={[['andar', t0]]} over={{ x: 0, pupila: [0.4, -0.6] }} seed={i + 1} />)}
       <Pop t={t} at={W(0, 'dois')} x={540} y={360}><Placa texto="OURO PRETO, 1982" bg="#fffaf0" size={56} /></Pop>
     </Cam>
@@ -368,7 +369,9 @@ const sfx = (): Sfx[] => {
   ];
 };
 
-const comVinheta = (cs: Cena[]): Cena[] => cs.map((C) => (p: P) => <>{C(p)}<Vinheta forca={0.55} /></>);
-export const OsEspelhos = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz-espelhos.mp3" sfx={sfx()} ganhoSfx={0.5} />;
+// Luz de vela tremulando nas cenas de noite dentro de casa.
+const VELA = new Set([1, 2, 4, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23]);
+const comVinheta = (cs: Cena[]): Cena[] => cs.map((C, i) => (p: P) => <>{C(p)}{VELA.has(i) && <LuzVela t={p.t} x={i === 12 ? 540 : 860} y={i === 12 ? 300 : 1100} forca={0.22} />}<Vinheta forca={0.55} /></>);
+export const OsEspelhos = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz-espelhos.mp3" sfx={sfx()} ganhoSfx={0.37} />;
 export const DURACAO_ESPELHOS = TL.END;
 
