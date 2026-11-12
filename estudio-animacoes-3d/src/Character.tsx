@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { F } from './timeline';
 import { drawFace, FaceName, OverlayName, patternTex } from './textures';
@@ -83,6 +83,7 @@ export type Look = {
   backpack?: string; // mochila / tanque
   iris?: string; // cor da íris (olhos grandes com brilho); sem isso, olho preto padrão
   cheeks?: boolean; // bochechas rosadas sempre
+  traco?: boolean; // estilo desenho 2D: cor chapada + contorno escuro grosso
 };
 
 export const VOCE: Look = {
@@ -106,9 +107,65 @@ const BODY: Record<Body, { s: number; torso: [number, number, number]; legs: num
 const HEAD_R = 0.5;
 const HEAD_Y = 1.62;
 
-const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THREE.Texture; side?: THREE.Side; roughness?: number; transparent?: boolean; opacity?: number }) => (
-  <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />
-);
+// ---------- Traço desenhado (Look.traco) ----------
+// Cor chapada em 2 tons (sem degradê) + contorno escuro grosso, como num desenho 2D.
+const TracoCtx = createContext(false);
+let toonGrad: THREE.DataTexture | null = null;
+const gradiente = () => {
+  if (!toonGrad) {
+    toonGrad = new THREE.DataTexture(new Uint8Array([150, 150, 150, 255, 255, 255, 255, 255]), 2, 1, THREE.RGBAFormat);
+    toonGrad.minFilter = toonGrad.magFilter = THREE.NearestFilter;
+    toonGrad.needsUpdate = true;
+  }
+  return toonGrad;
+};
+const INK = '#2a2530';
+let inkMat: THREE.ShaderMaterial | null = null;
+// Contorno por "casca invertida": empurra a malha pela normal em espaço de câmera (espessura igual em tudo).
+const contornoMat = () => {
+  if (!inkMat)
+    inkMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      uniforms: { w: { value: 0.022 }, cor: { value: new THREE.Color(INK) } },
+      vertexShader: `uniform float w;
+        void main() {
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          vec3 n = normalize(normalMatrix * normal);
+          mv.xyz += n * w;
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `uniform vec3 cor; void main() { gl_FragColor = vec4(cor, 1.0); }`,
+    });
+  return inkMat;
+};
+// Acrescenta o contorno a cada malha opaca do personagem (roda a cada render; ignora as que já têm).
+const Contorno = ({ children }: { children: ReactNode }) => {
+  const ref = useRef<THREE.Group>(null);
+  useLayoutEffect(() => {
+    const novos: THREE.Mesh[] = [];
+    ref.current?.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh || m.userData.contorno || m.userData.ehContorno) return;
+      const mat = m.material as THREE.Material;
+      if (!mat || mat.transparent || m.renderOrder === 2) return;
+      novos.push(m);
+    });
+    for (const m of novos) {
+      const c = new THREE.Mesh(m.geometry, contornoMat());
+      c.userData.ehContorno = true;
+      c.raycast = () => {};
+      m.add(c);
+      m.userData.contorno = c;
+    }
+  });
+  return <group ref={ref}>{children}</group>;
+};
+
+const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THREE.Texture; side?: THREE.Side; roughness?: number; transparent?: boolean; opacity?: number }) => {
+  const traco = useContext(TracoCtx);
+  if (traco && !p.transparent) return <meshToonMaterial color={color} gradientMap={gradiente()} map={p.map} side={p.side} />;
+  return <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />;
+};
 
 const FaceDecal = ({ face, skin, iris, cheeks }: { face: FaceState; skin: string; iris?: string; cheeks?: boolean }) => {
   const canvas = useMemo(() => {
@@ -569,7 +626,7 @@ export const Character = ({
   const sq = 1 - p.squash * 0.18;
   const dy = 0.55 * (b.legs - 1);
   const torsoMap = look.pattern && look.pattern !== 'liso' ? patternTex(look.pattern, look.jacket, look.pattern2 ?? '#f4f0e8', look.patternH) : undefined;
-  return (
+  const corpo = (
     <group position={[p.x, p.y + bob, p.z]} rotation={[0, p.ry, 0]} scale={b.s}>
       <group scale={[1, b.legs, 1]}>
         <Leg side={1} swing={swing} tap={p.ltap} look={look} />
@@ -658,5 +715,11 @@ export const Character = ({
         </group>
       </group>
     </group>
+  );
+  if (!look.traco) return corpo;
+  return (
+    <TracoCtx.Provider value>
+      <Contorno>{corpo}</Contorno>
+    </TracoCtx.Provider>
   );
 };

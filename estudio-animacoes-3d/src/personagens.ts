@@ -123,23 +123,23 @@ export const OLHAO = {
   // Turma em tons pastel: topete espetado, chapéu de feltro e bigodão
   zeca: {
     nome: 'Zeca', papel: 'o curioso', rosto: 'surprised',
-    look: { skin: PELE.clara, jacket: '#4fa3b0', pants: '#d8c49a', shoes: '#e88a8a', gloves: PELE.clara, hair: '#6b4428', hairStyle: 'topete', iris: OLHO_AZUL, cheeks: true },
+    look: { skin: PELE.clara, jacket: '#4fa3b0', pants: '#d8c49a', shoes: '#e88a8a', gloves: PELE.clara, hair: '#6b4428', hairStyle: 'topete', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
   bia: {
     nome: 'Bia', papel: 'a amiga', rosto: 'smile',
-    look: { skin: PELE.clara, jacket: '#a98ad8', pants: '#a98ad8', shoes: '#e88a8a', gloves: PELE.clara, hair: '#6b4428', hairStyle: 'rabo', body: 'crianca', iris: OLHO_AZUL, cheeks: true },
+    look: { skin: PELE.clara, jacket: '#a98ad8', pants: '#a98ad8', shoes: '#e88a8a', gloves: PELE.clara, hair: '#6b4428', hairStyle: 'rabo', body: 'crianca', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
   bigode: {
     nome: 'Inspetor Bigode', papel: 'o fiscal', rosto: 'suspicious',
-    look: { skin: PELE.clara, jacket: '#8b94a3', pants: '#7a8290', shoes: '#4a4e58', gloves: PELE.clara, hair: '#6b4428', hat: 'feltro', hatColor: '#6f7787', beard: 'bigodao', shirt: '#e9ecf2', tie: '#33363d', iris: OLHO_AZUL, cheeks: true },
+    look: { skin: PELE.clara, jacket: '#8b94a3', pants: '#7a8290', shoes: '#4a4e58', gloves: PELE.clara, hair: '#6b4428', hat: 'feltro', hatColor: '#6f7787', beard: 'bigodao', shirt: '#e9ecf2', tie: '#33363d', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
   juca: {
     nome: 'Vô Juca', papel: 'o piadista', rosto: 'laugh',
-    look: { skin: PELE.clara, jacket: '#f0be3c', pants: '#5a6d8a', shoes: '#4a3a2a', gloves: PELE.clara, hair: '#e6e6e6', hairStyle: 'careca', beard: 'bigode', body: 'idoso', eyewear: 'grau', iris: OLHO_AZUL, cheeks: true },
+    look: { skin: PELE.clara, jacket: '#f0be3c', pants: '#5a6d8a', shoes: '#4a3a2a', gloves: PELE.clara, hair: '#e6e6e6', hairStyle: 'careca', beard: 'bigode', body: 'idoso', eyewear: 'grau', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
   dani: {
     nome: 'Dani', papel: 'a colecionadora', rosto: 'curious',
-    look: { skin: PELE.escura, jacket: '#5f7fc2', pants: '#4a5a8a', pattern: 'liso', shoes: '#e88a8a', gloves: PELE.escura, hair: '#3a2416', hairStyle: 'rabo', iris: OLHO_AZUL, cheeks: true },
+    look: { skin: PELE.escura, jacket: '#5f7fc2', pants: '#4a5a8a', pattern: 'liso', shoes: '#e88a8a', gloves: PELE.escura, hair: '#3a2416', hairStyle: 'rabo', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
 } satisfies Record<string, Membro>;
 
