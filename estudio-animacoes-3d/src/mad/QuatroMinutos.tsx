@@ -30,7 +30,7 @@ const POLICIAL = { tipo: 'adulto', pele: '#e2b48c', roupa: '#1c3d6e', calca: '#1
 type A = { k: object; t: number; x: number; y: number; h?: number; movs: Mov[]; over?: Partial<Pose> | ((p: Pose) => Partial<Pose>); seed?: number; flip?: boolean; op?: number };
 const Pers = ({ op = 1, ...a }: A) => <Ator {...a} style={{ opacity: op }} />;
 const W = TL.W;
-const ini = (i: number) => (i === 0 ? 0 : W(i, 0));
+const ini = (i: number) => (i === 0 ? 0 : i >= TL.LINES.length ? TL.END : W(i, 0));
 // Retrato (foto 3×4 presa no quadro): mostra cabeça e ombros do personagem.
 const Retrato = ({ k, t, x, y, w = 110, h = 130, rot = 0, op = 1, over }: { k: object; t: number; x: number; y: number; w?: number; h?: number; rot?: number; op?: number; over?: Partial<Pose> }) => (
   <div style={{ position: 'absolute', left: x - w / 2, top: y - h / 2, width: w, height: h, background: '#dfe8ee', border: '5px solid #fff', boxShadow: '0 0 0 3px #1a1520', overflow: 'hidden', transform: `rotate(${rot}deg)`, opacity: op }}>
