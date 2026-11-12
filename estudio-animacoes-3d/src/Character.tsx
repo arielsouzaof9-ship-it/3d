@@ -83,6 +83,7 @@ export type Look = {
   backpack?: string; // mochila / tanque
   iris?: string; // cor da íris (olhos grandes com brilho); sem isso, olho preto padrão
   cheeks?: boolean; // bochechas rosadas sempre
+  palito?: boolean; // personagem palito: corpo, braços e pernas de traço fino (use com traco)
   traco?: boolean; // visual 2D: cor chapada sem sombra, contorno grosso, membros de boneco articulado
 };
 
@@ -110,6 +111,9 @@ const HEAD_Y = 1.62;
 // ---------- Traço desenhado (Look.traco) ----------
 // Visual 2D: cor chapada pura (sem luz/sombra) + contorno escuro grosso.
 const TracoCtx = createContext(false);
+// Personagem palito: corpo, braços e pernas viram traços finos.
+const PalitoCtx = createContext(false);
+const PALITO_R = 0.024;
 const INK = '#2a2530';
 let inkMat: THREE.ShaderMaterial | null = null;
 // Contorno por "casca invertida": empurra a malha pela normal em espaço de câmera (espessura igual em tudo).
@@ -193,15 +197,16 @@ const FaceDecal = ({ face, skin, iris, cheeks }: { face: FaceState; skin: string
 // No estilo traço os membros ficam grossos, como tubos, com juntas redondas (boneco articulado).
 const GROSSO = 2.1;
 const Limb = ({ len, r, color, metal }: { len: number; r: number; color: string; metal?: boolean }) => {
-  const traco = useContext(TracoCtx);
-  const rr = traco ? r * GROSSO : r;
+  const palito = useContext(PalitoCtx);
+  const traco = useContext(TracoCtx) && !palito;
+  const rr = palito ? PALITO_R : traco ? r * GROSSO : r;
   return (
     <>
       <mesh position={[0, -len / 2, 0]} castShadow>
         <capsuleGeometry args={[rr, traco ? len - rr : len, 4, 12]} />
         <Mat color={color} metal={metal} />
       </mesh>
-      {traco && (
+      {(traco || palito) && (
         <mesh castShadow>
           <sphereGeometry args={[rr * 1.12, 16, 12]} />
           <Mat color={color} metal={metal} />
@@ -217,7 +222,7 @@ const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; s
     <group position={[0, -0.3, 0]} rotation={[-el, 0, 0]}>
       <Limb len={0.27} r={0.028} color={look.coat ?? look.jacket} metal={look.metal} />
       <group position={[0, -0.3, 0]}>
-        <mesh castShadow scale={look.traco ? [1.35, 1.35, 1.2] : [1, 1.1, 0.9]}>
+        <mesh castShadow scale={look.palito ? [0.7, 0.7, 0.7] : look.traco ? [1.35, 1.35, 1.2] : [1, 1.1, 0.9]}>
           <sphereGeometry args={[0.07, 16, 12]} />
           <Mat color={look.gloves} roughness={0.5} />
         </mesh>
@@ -230,11 +235,11 @@ const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; s
 const Leg = ({ side, swing, tap, look }: { side: 1 | -1; swing: number; tap: number; look: Look }) => {
   const knee = Math.max(0, -swing) * 0.9 + tap * 0.5;
   return (
-    <group position={[side * 0.13, 0.55, 0]} rotation={[-swing - tap * 0.3, 0, 0]}>
+    <group position={[side * (look.palito ? 0.02 : 0.13), 0.55, 0]} rotation={[-swing - tap * 0.3, 0, look.palito ? -side * 0.38 : 0]}>
       <Limb len={0.24} r={0.035} color={look.pants} metal={look.metal} />
       <group position={[0, -0.26, 0]} rotation={[knee, 0, 0]}>
         <Limb len={0.22} r={0.032} color={look.shorts ? look.skin : look.pants} metal={look.metal} />
-        <mesh position={[0, -0.27, 0.07]} scale={look.traco ? [1.3, 0.85, 1.7] : [1, 0.7, 1.6]} castShadow>
+        <mesh position={[0, -0.27, 0.05]} scale={look.palito ? [0.6, 0.45, 1.3] : look.traco ? [1.3, 0.85, 1.7] : [1, 0.7, 1.6]} castShadow>
           <sphereGeometry args={[0.08, 16, 12]} />
           <Mat color={look.shoes} roughness={0.6} />
         </mesh>
@@ -645,11 +650,19 @@ export const Character = ({
       </group>
       <group position={[0, 0.55 + dy, 0]} scale={[2 - sq, sq, 2 - sq]}>
         <group rotation={[p.lean + b.lean, p.twist, p.side]} position={[0, -0.55, 0]}>
-          {/* Tronco arredondado */}
-          <mesh position={[0, 0.84, 0]} scale={b.torso} castShadow>
-            <sphereGeometry args={[0.3, 32, 24]} />
-            <Mat color={torsoMap ? '#ffffff' : look.jacket} map={torsoMap} metal={look.metal} />
-          </mesh>
+          {look.palito ? (
+            /* Palito: um traço do quadril até o pescoço */
+            <mesh position={[0, 0.86, 0]} castShadow>
+              <capsuleGeometry args={[PALITO_R, 0.62, 4, 12]} />
+              <Mat color={look.jacket} />
+            </mesh>
+          ) : (
+            /* Tronco arredondado */
+            <mesh position={[0, 0.84, 0]} scale={b.torso} castShadow>
+              <sphereGeometry args={[0.3, 32, 24]} />
+              <Mat color={torsoMap ? '#ffffff' : look.jacket} map={torsoMap} metal={look.metal} />
+            </mesh>
+          )}
           {look.backpack && (
             <mesh position={[0, 0.88, -0.3 * b.torso[2]]} castShadow>
               <boxGeometry args={[0.42, 0.5, 0.2]} />
@@ -707,8 +720,8 @@ export const Character = ({
                 <Mat color="#efeee8" roughness={0.9} />
               </mesh>
             ))}
-          <Arm side={1} sz={p.lsz} sx={p.lsx} el={p.lel} look={look} sh={b.sh} hand={left} />
-          <Arm side={-1} sz={p.rsz} sx={p.rsx} el={p.rel} look={look} sh={b.sh} hand={right} />
+          <Arm side={1} sz={p.lsz + (look.palito ? 0.35 : 0)} sx={p.lsx} el={p.lel} look={look} sh={look.palito ? 0.02 : b.sh} hand={left} />
+          <Arm side={-1} sz={p.rsz + (look.palito ? 0.35 : 0)} sx={p.rsx} el={p.rel} look={look} sh={look.palito ? 0.02 : b.sh} hand={right} />
           {/* Cabeça */}
           <group position={[0, 1.18, 0]} rotation={new THREE.Euler(p.hp, p.hy, p.hr, 'YXZ')}>
             <group position={[0, (HEAD_Y - 1.18) * b.head * (look.traco ? 1.1 : 1), 0]} scale={b.head * (look.traco ? 1.12 : 1)}>
@@ -727,10 +740,11 @@ export const Character = ({
       </group>
     </group>
   );
-  if (!look.traco) return corpo;
+  const comPalito = look.palito ? <PalitoCtx.Provider value>{corpo}</PalitoCtx.Provider> : corpo;
+  if (!look.traco) return comPalito;
   return (
     <TracoCtx.Provider value>
-      <Contorno>{corpo}</Contorno>
+      <Contorno>{comPalito}</Contorno>
     </TracoCtx.Provider>
   );
 };

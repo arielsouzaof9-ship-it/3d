@@ -16,6 +16,6 @@ export const Root = () => (
       defaultProps={{ legendas: true, voz: VOZ.length > 0, musica: false }}
     />
     {/* Folha com todo o elenco disponível (node tools/elenco.mjs) */}
-    <Composition id="Elenco" component={Elenco} durationInFrames={1} fps={FPS} width={1920} height={2300} />
+    <Composition id="Elenco" component={Elenco} durationInFrames={1} fps={FPS} width={1920} height={2830} />
   </>
 );

@@ -101,9 +101,14 @@ export const Elenco = () => {
       <Cartoes membros={todos.slice(10)} w={W} h={430} />
       <Cartoes membros={roupas} w={W} h={370} />
       <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 30, color: '#1c1c1c' }}>Estilo olhão — olhos azuis com brilho, bochechas rosadas, mãos claras</div>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Cartoes membros={Object.values(OLHAO) as Membro[]} w={(W / 10) * Object.keys(OLHAO).length} h={430} />
-      </div>
+      {[0, 5].map((i) => {
+        const fila = (Object.values(OLHAO) as Membro[]).slice(i, i === 0 ? 5 : undefined);
+        return (
+          <div key={i} style={{ display: 'flex', justifyContent: 'center' }}>
+            <Cartoes membros={fila} w={(W / 10) * fila.length} h={430} />
+          </div>
+        );
+      })}
     </AbsoluteFill>
   );
 };

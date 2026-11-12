@@ -141,6 +141,11 @@ export const OLHAO = {
     nome: 'Dani', papel: 'a colecionadora', rosto: 'curious',
     look: { skin: PELE.escura, jacket: '#6f8cc6', pants: '#56669a', pattern: 'liso', shoes: '#e39a96', gloves: PELE.escura, hair: '#3a2416', hairStyle: 'rabo', iris: OLHO_AZUL, cheeks: true, traco: true },
   },
+  // Personagem palito: cabeça redonda e corpo de traços finos
+  palito: {
+    nome: 'Tico', papel: 'o palito', rosto: 'bigSmile',
+    look: { skin: '#ffffff', jacket: '#2a2530', pants: '#2a2530', shoes: '#2a2530', gloves: '#2a2530', hair: '#2a2530', hairStyle: 'nenhum', palito: true, traco: true },
+  },
 } satisfies Record<string, Membro>;
 
 export const ROUPAS = {
