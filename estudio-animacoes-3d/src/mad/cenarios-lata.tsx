@@ -80,7 +80,15 @@ export const Cidade = ({ t, noite = false, drones = 0 }: { t: number; noite?: bo
     {Array.from({ length: 16 }, (_, i) => <rect key={i} x={380} y={460 + i * 58} width={320} height={40} fill={noite ? '#3a5a8a' : '#9ad0f0'} opacity={0.8} />)}
     <rect x={330} y={330} width={420} height={90} rx={10} fill="#1a1a1e" stroke={L} strokeWidth={5} />
     <text x={540} y={392} textAnchor="middle" fontFamily="Arial Black" fontSize={58} fill="#f2c94c" letterSpacing={3}>LIMATECH</text>
+    <path d="M540 330 V200" stroke={L} strokeWidth={8} /><circle cx={540} cy={196} r={14} fill="#ff3b3b" opacity={Math.sin(t * 4) > 0 ? 1 : 0.25} />
+    <path d="M420 330 L440 290 H640 L660 330 z" fill="#5a6a7a" stroke={L} strokeWidth={4} />
+    <g transform="translate(860 860)"><rect x={-110} y={-80} width={220} height={150} fill="#fffaf0" stroke={L} strokeWidth={5} /><text x={0} y={-24} textAnchor="middle" fontFamily="Arial Black" fontSize={30} fill="#d1283b">LIMATECH</text><text x={0} y={22} textAnchor="middle" fontFamily="Arial Black" fontSize={22} fill={L}>O FUTURO VOA</text><Drone x={0} y={50} s={0.5} t={t} />{[-80, 80].map((d) => <path key={d} d={`M${d} 70 v330`} stroke="#3a3a44" strokeWidth={10} />)}</g>
+    {!noite && Array.from({ length: 5 }, (_, i) => { const x = ((t * (50 + i * 10) + i * 240) % 1300) - 120, y = 140 + i * 60 + 20 * Math.sin(t * 2 + i), a = 12 * Math.sin(t * 12 + i); return <path key={i} d={`M${x - 20} ${y - a} Q${x - 8} ${y - 4} ${x} ${y} Q${x + 8} ${y - 4} ${x + 20} ${y - a}`} stroke={L} strokeWidth={4} fill="none" />; })}
     <rect x={0} y={1400} width={1080} height={520} fill={noite ? '#2a2a34' : '#6a6a76'} />
+    <rect x={0} y={1400} width={1080} height={50} fill={noite ? '#3a3a44' : '#9a9aa6'} stroke={L} strokeWidth={3} />
+    {[90, 990].map((x, i) => <g key={x}><rect x={x - 12} y={1300} width={24} height={110} fill="#6b4224" /><circle cx={x} cy={1270} r={70} fill="#4a8a3a" stroke={L} strokeWidth={4} /><circle cx={x + (i ? -30 : 30)} cy={1230} r={44} fill="#5aa04a" stroke={L} strokeWidth={4} /></g>)}
+    {[260, 820].map((x) => <g key={x}><rect x={x - 6} y={1180} width={12} height={240} fill="#2a2a30" /><path d={`M${x} 1180 h40`} stroke="#2a2a30" strokeWidth={8} /><circle cx={x + 40} cy={1190} r={12} fill={noite ? '#ffcf6a' : '#fff6c8'} /></g>)}
+    {[0, 1].map((i) => { const x = ((t * (260 + i * 120) + i * 600) % 1600) - 300; return <g key={i} transform={`translate(${i ? 1080 - x : x} ${1740 + i * 90}) scale(${i ? -1 : 1} 1)`}><path d="M-110 0 L-100 -50 L-50 -50 L-26 -90 H60 L90 -50 L120 -44 L124 0 z" fill={['#d1495b', '#3a6ad8'][i]} stroke={L} strokeWidth={4} /><path d="M-20 -84 L-40 -54 H10 V-84 z M20 -84 V-54 H76 L56 -84 z" fill="#bfe6ff" />{[-66, 76].map((w) => <circle key={w} cx={w} cy={0} r={22} fill="#1a1a1e" stroke={L} strokeWidth={3} />)}</g>; })}
     {Array.from({ length: 6 }, (_, i) => <rect key={i} x={i * 200 + 40} y={1640} width={110} height={16} fill="#e8e2c8" opacity={0.7} />)}
     {Array.from({ length: drones }, (_, i) => <Drone key={i} x={((t * (90 + i * 20) + i * 280) % 1400) - 160} y={560 + i * 170} s={0.9} t={t} />)}
   </Svg>
@@ -99,6 +107,10 @@ export const EstudioTV = ({ t }: { t: number }) => (
     <rect x={430} y={1240} width={540} height={70} fill="#fff" />
     <text x={700} y={1290} textAnchor="middle" fontFamily="Arial Black" fontSize={36} fill="#d1283b">O GÊNIO DOS DRONES</text>
     <circle cx={950} cy={400} r={14} fill="#ff3b3b" opacity={Math.sin(t * 5) > 0 ? 1 : 0.3} />
+    <rect x={90} y={1330} width={900} height={50} fill="#1a1a2a" />
+    <text x={1000 - ((t * 160) % 1600)} y={1366} fontFamily="Arial Black" fontSize={30} fill="#f2c94c">LIMATECH LANÇA NOVO DRONE • AÇÕES SOBEM 20% • VICENTE LIMA NA CAPA DA REVISTA •</text>
+    {[0, 1].map((i) => <g key={i} transform={`translate(${i ? 1000 : 80} 1560) scale(${i ? -1 : 1} 1)`}><rect x={-40} y={-120} width={140} height={90} rx={10} fill="#2a2a30" stroke={L} strokeWidth={4} /><circle cx={110} cy={-75} r={30} fill="#3a3a44" stroke={L} strokeWidth={4} /><circle cx={110} cy={-75} r={14} fill="#5a8ac0" /><path d="M30 -30 l-50 180 M30 -30 l50 180 M30 -30 v180" stroke="#3a3a44" strokeWidth={8} /><circle cx={-20} cy={-110} r={8} fill="#ff3b3b" opacity={Math.sin(t * 5 + i) > 0 ? 1 : 0.3} /></g>)}
+    {[180, 540, 900].map((x, i) => <g key={x}><path d={`M${x} 0 v60`} stroke="#3a3a44" strokeWidth={6} /><rect x={x - 36} y={60} width={72} height={50} rx={10} fill="#2a2a30" stroke={L} strokeWidth={3} /><path d={`M${x - 30} 110 L${x - 160 + i * 60} 330 H${x + 160 + i * 20} L${x + 30} 110 z`} fill="#fff6c8" opacity={0.06} /></g>)}
   </Svg>
 );
 
@@ -112,6 +124,11 @@ export const Estrada = ({ t }: { t: number }) => (
     {[[140, 1120], [900, 1100], [700, 1160]].map(([x, y], i) => <g key={i}><path d={`M${x} ${y} v-90`} stroke="#3a6a3a" strokeWidth={18} strokeLinecap="round" /><path d={`M${x} ${y - 50} h-30 v-30 M${x} ${y - 30} h30 v-40`} stroke="#3a6a3a" strokeWidth={14} fill="none" strokeLinecap="round" /></g>)}
     <rect x={0} y={1300} width={1080} height={620} fill="#5a5a62" />
     {Array.from({ length: 6 }, (_, i) => <rect key={i} x={((i * 220 + t * 500) % 1320) - 120} y={1560} width={120} height={18} fill="#f2c94c" />)}
+    <path d="M0 880 L160 700 L300 820 L460 640 L640 820 L800 700 L1080 860 V980 H0 z" fill="#d8a878" opacity={0.6} />
+    {Array.from({ length: 5 }, (_, i) => { const x = ((i * 300 + t * 300) % 1500) - 200; return <g key={i}><path d={`M${x} 1300 V1040 M${x - 40} 1070 h80`} stroke="#6b4224" strokeWidth={10} /></g>; })}
+    <path d={Array.from({ length: 6 }, (_, i) => { const x = ((i * 300 + t * 300) % 1500) - 200; return `M${x - 40} 1070 Q${x + 110} 1110 ${x + 260} 1070`; }).join(' ')} stroke={L} strokeWidth={2} fill="none" opacity={0.6} />
+    {[0, 1].map((i) => { const a = (t * 0.4 + i * 3), x = 540 + Math.cos(a) * 250, y = 380 + Math.sin(a) * 60, w = 18 * Math.sin(t * 6 + i); return <path key={i} d={`M${x - 40} ${y - w} Q${x - 16} ${y - 6} ${x} ${y} Q${x + 16} ${y - 6} ${x + 40} ${y - w}`} stroke="#1a1a1e" strokeWidth={6} fill="none" />; })}
+    {Array.from({ length: 4 }, (_, i) => { const k = (t * 0.5 + i / 4) % 1; return <circle key={i} cx={760 - k * 400} cy={1470 - k * 100} r={40 + k * 60} fill="#e8c890" opacity={0.4 * (1 - k)} />; })}
     <Poeira t={t} n={20} cor="#f2e0b0" op={0.4} area={[0, 1100, 1080, 600]} />
   </Svg>
 );
@@ -144,6 +161,12 @@ export const Mina = ({ t, oficina = false, noite = false }: { t: number; oficina
         <g stroke="#2f5fa8" strokeWidth={5} fill="none" transform="rotate(-3 480 870)"><circle cx={480} cy={740} r={46} /><rect x={420} y={790} width={120} height={140} rx={20} /><path d="M420 810 l-50 90 M540 810 l50 90 M450 930 v110 M510 930 v110" /><circle cx={480} cy={850} r={16} /></g>
       </g>
     )}
+    {Array.from({ length: 9 }, (_, i) => <path key={i} d={`M${150 + i * 95} ${360 + (i % 3) * 30} l14 ${50 + (i % 2) * 40} l14 ${-50 - (i % 2) * 40} z`} fill="#4a3a2e" />)}
+    {[0, 1].map((i) => { const k = (t * 0.7 + i * 0.5) % 1; return <ellipse key={i} cx={420 + i * 300} cy={440 + k * 1000} rx={5} ry={9} fill="#9ad0f0" opacity={0.7 * (1 - k)} />; })}
+    <g transform="translate(70 900) rotate(-20)"><path d="M0 0 v200" stroke="#8a5a32" strokeWidth={14} /><path d="M-60 10 Q0 -30 60 10" stroke="#9aa0aa" strokeWidth={18} fill="none" /></g>
+    <g transform="translate(1000 960) rotate(15)"><path d="M0 0 v180" stroke="#8a5a32" strokeWidth={12} /><rect x={-24} y={-10} width={48} height={40} fill="#9aa0aa" stroke={L} strokeWidth={3} /></g>
+    {[[150, 1440], [240, 1450]].map(([x, y], i) => <g key={i}><rect x={x - 40} y={y - 110} width={80} height={110} rx={8} fill={i ? '#5a3a2a' : '#3a5a3a'} stroke={L} strokeWidth={4} />{[0.3, 0.7].map((f) => <path key={f} d={`M${x - 40} ${y - 110 * f} h80`} stroke={L} strokeWidth={3} />)}</g>)}
+    <path d="M60 520 Q300 600 540 540 T1020 520" stroke="#1a1a1e" strokeWidth={5} fill="none" />
     <Poeira t={t} n={26} cor="#e8d6b0" op={0.35} />
   </Svg>
 );
@@ -153,6 +176,9 @@ export const Coletiva = ({ t, logo = 'LIMATECH' }: { t: number; logo?: string })
   <Svg>
     <rect width={1080} height={1920} fill="#1c2a44" />
     {Array.from({ length: 20 }, (_, i) => <text key={i} x={(i % 4) * 280 + 140} y={300 + Math.floor(i / 4) * 200} textAnchor="middle" fontFamily="Arial Black" fontSize={40} fill="#2a3a5a">{logo}</text>)}
+    {[0, 1].map((i) => <path key={i} d={i ? 'M1080 0 V1480 H960 Q1000 740 940 0 z' : 'M0 0 V1480 H120 Q80 740 140 0 z'} fill="#6a1a2a" stroke={L} strokeWidth={4} />)}
+    {[0, 1].map((i) => <g key={i} transform={`translate(${i ? 880 : 200} 980)`}><path d="M0 0 V-420" stroke="#c9a14a" strokeWidth={8} /><path d={`M0 -420 q60 ${-10 + 8 * Math.sin(t * 3 + i)} 120 0 v80 q-60 ${10 + 8 * Math.sin(t * 3 + i + 1)} -120 0 z`} fill={i ? '#3a6ad8' : '#f2c94c'} stroke={L} strokeWidth={3} /></g>)}
+    {[200, 540, 880].map((x, i) => <path key={x} d={`M${x} 0 L${x - 200 + i * 60} 1480 H${x + 200 - i * 60} z`} fill="#fff6c8" opacity={0.05 + 0.02 * Math.sin(t * 2 + i)} />)}
     <rect x={0} y={CHAO_T} width={1080} height={440} fill="#14202f" />
     {Array.from({ length: 8 }, (_, i) => { const k = (t * 1.6 + i * 0.29) % 1; return k < 0.07 ? <circle key={i} cx={80 + rnd(i + Math.floor(t * 1.6)) * 920} cy={1560 + rnd(i * 3) * 300} r={50} fill="#fff" opacity={0.9} /> : null; })}
     {Array.from({ length: 7 }, (_, i) => <g key={i} transform={`translate(${80 + i * 150} 1780)`}><circle r={44} fill="#0e1622" /><rect x={-50} y={36} width={100} height={120} rx={30} fill="#0e1622" /><rect x={10} y={-30} width={60} height={40} rx={6} fill="#2a2a30" /></g>)}
@@ -174,6 +200,11 @@ export const Porao = ({ t }: { t: number }) => (
     <rect x={740} y={1260} width={320} height={30} fill="#6a727e" stroke={L} strokeWidth={4} />
     {[60, 120, 180].map((x, i) => <path key={x} d={`M${x} 1260 v-70`} stroke={['#d1495b', '#9aa0aa', '#f2c94c'][i]} strokeWidth={14} strokeLinecap="round" />)}
     <g transform="translate(900 1220)"><rect x={-60} y={-30} width={120} height={70} rx={8} fill="#3a3f48" stroke={L} strokeWidth={4} /><circle cx={0} cy={4} r={20} fill="#5ad8ff" opacity={0.6 + 0.3 * Math.sin(t * 6)} /></g>
+    <rect x={60} y={720} width={300} height={16} fill="#5a6a7a" stroke={L} strokeWidth={3} />
+    {[0, 1, 2].map((i) => <g key={i} transform={`translate(${110 + i * 100} 680)`}><circle r={36} fill={['#a8b0b8', '#c8d0d8', '#9aa0aa'][i]} stroke={L} strokeWidth={4} />{[-1, 1].map((s2) => <ellipse key={s2} cx={s2 * 13} cy={0} rx={10} ry={12} fill="#fff" stroke={L} strokeWidth={2} />)}</g>)}
+    <g transform={`translate(800 1260) rotate(${-20 + 15 * Math.sin(t * 1.5)})`}><rect x={-20} y={-20} width={40} height={40} fill="#f2c94c" stroke={L} strokeWidth={4} /><path d="M0 0 L0 -160" stroke="#f2c94c" strokeWidth={26} strokeLinecap="round" /><g transform={`translate(0 -160) rotate(${50 + 30 * Math.sin(t * 2)})`}><path d="M0 0 L0 -120" stroke="#f2c94c" strokeWidth={20} strokeLinecap="round" /><path d="M-16 -120 l-10 -30 M16 -120 l10 -30" stroke="#3a3f48" strokeWidth={8} /></g></g>
+    {Array.from({ length: 4 }, (_, i) => <path key={i} d={`M${100 + i * 260} 0 q${60} ${120 + i * 20} ${160} 0`} stroke={['#d1495b', '#3a6ad8', '#f2c94c', '#3a8a3a'][i]} strokeWidth={8} fill="none" />)}
+    {Array.from({ length: 5 }, (_, i) => <rect key={i} x={760 + (i % 3) * 90} y={600 + Math.floor(i / 3) * 70} width={70} height={50} fill="#5ad8ff" opacity={0.1 + 0.15 * Math.abs(Math.sin(t * 3 + i))} stroke="#5ad8ff" strokeWidth={2} />)}
     <rect x={0} y={CHAO_T} width={1080} height={440} fill="#20262e" />
     {Array.from({ length: 8 }, (_, i) => <rect key={i} x={(i % 4) * 270} y={CHAO_T + Math.floor(i / 4) * 220} width={268} height={218} fill="none" stroke="#2a323c" strokeWidth={4} />)}
   </Svg>
@@ -191,6 +222,9 @@ export const TelhadoLT = ({ t, letras = 'LIMATECH', semLetra = -1, gerador = 1 }
     <g transform="translate(860 1300)"><rect x={-150} y={-260} width={300} height={260} rx={14} fill="#3a4a3a" stroke={L} strokeWidth={6} />{[0, 1, 2, 3].map((i) => <rect key={i} x={-120} y={-230 + i * 50} width={240} height={30} fill="#2a3a2a" />)}<path d={`M-40 -260 l20 -40 l-14 0 l24 -50`} stroke="#5ad8ff" strokeWidth={6} fill="none" opacity={gerador * (Math.sin(t * 20) > 0 ? 1 : 0.3)} /><text x={0} y={-20} textAnchor="middle" fontFamily="Arial Black" fontSize={30} fill="#f2c94c">PERIGO</text></g>
     <rect x={0} y={1300} width={1080} height={620} fill="#2a2e3a" />
     <rect x={0} y={1290} width={1080} height={20} fill="#4a4e5a" stroke={L} strokeWidth={4} />
+    <g transform="translate(160 1300)"><rect x={-90} y={-220} width={180} height={160} rx={16} fill="#5a5a68" stroke={L} strokeWidth={5} /><path d="M-70 -60 v60 M70 -60 v60" stroke="#4a4a58" strokeWidth={12} /><text x={0} y={-130} textAnchor="middle" fontFamily="Arial Black" fontSize={28} fill="#c9ccd4">ÁGUA</text></g>
+    {[460, 600].map((x) => <g key={x}><rect x={x - 50} y={1220} width={100} height={70} fill="#9aa0aa" stroke={L} strokeWidth={4} /><circle cx={x} cy={1255} r={24} fill="#6a727e" stroke={L} strokeWidth={3} /><g transform={`translate(${x} 1255) rotate(${t * 500})`}><path d="M-20 0 h40 M0 -20 v40" stroke="#c9ccd4" strokeWidth={6} /></g></g>)}
+    {(() => { const a = Math.sin(t * 0.7) * 0.35; return <g><path d={`M940 120 L${540 + Math.sin(a) * 900} 1300 L${700 + Math.sin(a) * 900} 1300 z`} fill="#fff6c8" opacity={0.1} /><g transform="translate(940 110)"><ellipse rx={70} ry={26} fill="#2a2a30" stroke={L} strokeWidth={3} /><path d="M-90 -30 h180" stroke="#5a5a68" strokeWidth={6} opacity={0.7} /><circle cx={50} cy={10} r={8} fill="#ff3b3b" opacity={Math.sin(t * 6) > 0 ? 1 : 0.2} /></g></g>; })()}
     <circle cx={260} cy={1600} r={160} fill="none" stroke="#f2c94c" strokeWidth={10} opacity={0.5} />
     <text x={260} y={1640} textAnchor="middle" fontFamily="Arial Black" fontSize={110} fill="#f2c94c" opacity={0.5}>H</text>
   </Svg>

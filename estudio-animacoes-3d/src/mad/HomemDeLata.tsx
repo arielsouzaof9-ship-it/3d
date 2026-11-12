@@ -299,7 +299,6 @@ const CENAS: Cena[] = [
         <Podio />
         <Pop t={t} at={W(25, 'eu')} x={540} y={420}><Balao texto="Sou eu." /></Pop>
         {t > ult + 0.5 && <div style={{ position: 'absolute', inset: 0, background: '#0a0e1a', opacity: clamp((t - ult - 0.5) / 0.4) }} />}
-        {t > ult + 0.7 && <div style={{ position: 'absolute', left: 0, right: 0, top: 650, textAlign: 'center', fontFamily: '"Arial Black", Arial', fontSize: 80, color: '#c8d0d8', WebkitTextStroke: '6px #3a6ad8', paintOrder: 'stroke fill', opacity: clamp((t - ult - 0.7) / 0.3) }}>O HOMEM<br />DE LATA</div>}
       </Cam>
     );
   },
