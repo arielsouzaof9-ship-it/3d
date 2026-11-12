@@ -3,7 +3,8 @@ import { useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { back, clamp01, rand, seg, V3 } from './anim';
 import { Look } from './Character';
-import { ELENCO } from './personagens';
+import { DESENHO, ELENCO } from './personagens';
+import { DESENHO as ESTILO_DESENHO } from './estilo';
 import { Box } from './sets';
 import { canvasTex, FONT, plasterTex } from './textures';
 import { F } from './timeline';
@@ -15,11 +16,14 @@ import { F } from './timeline';
 type G = { position?: V3; rotation?: V3; scale?: number | V3 };
 
 // ---------- Elenco ----------
-export const HELENA: Look = { ...ELENCO.paula.look, skirt: { color: '#2a6a4f', long: true } };
-export const LUISA: Look = ELENCO.lia.look;
+// No estilo desenho: contorno, olhos grandes e mãos da cor da pele.
+export const HELENA: Look = {
+  ...ELENCO.paula.look, skirt: { color: '#2a6a4f', long: true }, gloves: ELENCO.paula.look.skin, desenho: true, iris: '#6a4a2a',
+};
+export const LUISA: Look = DESENHO.mila.look;
 export const BIA: Look = {
-  skin: '#f0dccb', jacket: '#e6b8d8', pants: '#e6b8d8', shoes: '#f2f2f2', gloves: '#1e1f24',
-  hair: '#6a3a1e', hairStyle: 'rabo', body: 'crianca', pattern: 'listras', pattern2: '#f7eef4', patternH: true,
+  skin: '#f0d2b8', jacket: '#e6b8d8', pants: '#e6b8d8', shoes: '#f2f2f2', gloves: '#f0d2b8',
+  hair: '#6a3a1e', hairStyle: 'rabo', body: 'crianca', pattern: 'listras', pattern2: '#f7eef4', patternH: true, desenho: true, iris: '#4a7fc0',
 };
 
 // ---------- Luz da noite ----------
@@ -37,10 +41,16 @@ export const NightLights = ({ bg = '#0d1424', fog = [8, 26] as [number, number],
   const k = 1 - dim * 0.85;
   power *= 1.6;
   fill = fill * 2 + 0.25;
+  if (ESTILO_DESENHO) {
+    // estilo desenho: noite em tons pastel, bem mais clara e chapada
+    power *= 1.25;
+    fill = fill * 1.5 + 0.55;
+    bg = '#' + new THREE.Color(bg).lerp(new THREE.Color('#5a6aa0'), 0.45).getHexString();
+  }
   return (
     <>
       <Sky bg={bg} near={fog[0]} far={fog[1]} />
-      <hemisphereLight args={['#6f86c4', '#1a1410', fill * k]} />
+      <hemisphereLight args={[ESTILO_DESENHO ? '#c9d2f0' : '#6f86c4', ESTILO_DESENHO ? '#6a5040' : '#1a1410', fill * k]} />
       <directionalLight
         position={moon}
         intensity={power * k}

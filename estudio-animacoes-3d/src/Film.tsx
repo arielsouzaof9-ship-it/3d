@@ -1,6 +1,7 @@
 import { ThreeCanvas } from '@remotion/three';
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import * as THREE from 'three';
+import { Desenhar, DESENHO, PAPEL } from './estilo';
 import { SFX, SHOTS, Shot } from './shots';
 import { useFacesReady } from './textures';
 import { END, WORDS } from './timeline';
@@ -15,15 +16,16 @@ const ShotCanvas = ({ shot, t0, t1, fade }: { shot: Shot; t0: number; t1: number
   return (
     <AbsoluteFill style={{ opacity: fade ? Math.min(1, frame / DISSOLVE) : 1 }}>
       {ready && (
-        <ThreeCanvas width={width} height={height} shadows gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05, antialias: true }} camera={{ fov: 32, near: 0.05, far: 200, position: [0, 2, 5] }}>
+        <ThreeCanvas width={width} height={height} shadows gl={{ toneMapping: DESENHO ? THREE.AgXToneMapping : THREE.ACESFilmicToneMapping, toneMappingExposure: DESENHO ? 1.25 : 1.05, antialias: true }} camera={{ fov: 32, near: 0.05, far: 200, position: [0, 2, 5] }}>
           <C t={t0 + frame / fps} t0={t0} t1={t1} />
+          <Desenhar />
         </ThreeCanvas>
       )}
     </AbsoluteFill>
   );
 };
 
-// Legenda: blocos de até 4 palavras, a enfatizada em amarelo.
+// Legenda: blocos de até 4 palavras (3 no estilo desenho), a enfatizada em amarelo.
 const Captions = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -31,8 +33,21 @@ const Captions = () => {
   const idx = WORDS.findIndex((w, i) => t >= w.t0 && (i === WORDS.length - 1 || t < WORDS[i + 1].t0));
   if (idx < 0 || t > WORDS[WORDS.length - 1].t1 + 0.4) return null;
   const cur = WORDS[idx];
-  const start = Math.floor(cur.i / 4) * 4;
-  const chunk = WORDS.filter((w) => w.line === cur.line).slice(start, start + 4);
+  const N = DESENHO ? 3 : 4;
+  const start = Math.floor(cur.i / N) * N;
+  const chunk = WORDS.filter((w) => w.line === cur.line).slice(start, start + N);
+  if (DESENHO)
+    return (
+      <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 330 }}>
+        <div style={{ textAlign: 'center', maxWidth: 960, fontFamily: '"Poppins", "Nunito", "Arial Rounded MT Bold", "Arial Black", Arial, sans-serif', fontWeight: 800, fontSize: 70, lineHeight: 1.1 }}>
+          {chunk.map((w) => (
+            <span key={w.i} style={{ color: w.stressed ? '#ffd23a' : '#fffaf0', WebkitTextStroke: '11px #2a2320', paintOrder: 'stroke fill', marginRight: 16, display: 'inline-block', textShadow: '0 5px 0 rgba(0,0,0,0.25)' }}>
+              {w.text}
+            </span>
+          ))}
+        </div>
+      </AbsoluteFill>
+    );
   return (
     <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 520 }}>
       <div style={{ textAlign: 'center', maxWidth: 900, fontFamily: '"Arial Black", Arial, sans-serif', fontSize: 74, lineHeight: 1.1 }}>
@@ -45,6 +60,14 @@ const Captions = () => {
     </AbsoluteFill>
   );
 };
+
+// Papel e vinheta do estilo desenho.
+const Papel = () => (
+  <AbsoluteFill style={{ pointerEvents: 'none' }}>
+    <AbsoluteFill style={{ backgroundImage: PAPEL, backgroundSize: '300px 300px', mixBlendMode: 'multiply', opacity: 0.35 }} />
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(40,25,10,0.28) 100%)' }} />
+  </AbsoluteFill>
+);
 
 export type FilmProps = { legendas: boolean; voz: boolean; musica: boolean };
 
@@ -62,6 +85,7 @@ export const Film = ({ legendas, voz, musica }: FilmProps) => {
           </Sequence>
         );
       })}
+      {DESENHO && <Papel />}
       {legendas && <Captions />}
       {voz && <Audio src={staticFile('voz.mp3')} />}
       {musica && <Audio src={staticFile('ambiente.wav')} volume={(f) => 0.35 * Math.min(1, f / (0.8 * fps), (durationInFrames - f) / (1.2 * fps))} />}

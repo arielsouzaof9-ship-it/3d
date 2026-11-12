@@ -433,6 +433,15 @@ export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: num
     });
     drawMouth(c, m);
   }
+  if (IRIS) {
+    // bochechas rosadas do estilo desenho
+    for (const x of [128, 384]) {
+      c.beginPath();
+      c.ellipse(x, 318, 34, 20, 0, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(240,120,120,0.35)';
+      c.fill();
+    }
+  }
   if (blink > 0) {
     for (const [x, y] of EYES) {
       c.fillStyle = skin;
