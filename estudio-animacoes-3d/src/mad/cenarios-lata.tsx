@@ -237,8 +237,8 @@ export const JornalLT = ({ t, manchete }: { t: number; manchete: string }) => (
       <div style={{ fontSize: 76, fontWeight: 900, textAlign: 'center', borderBottom: '6px double #1a1520', paddingBottom: 10 }}>FOLHA DA CIDADE</div>
       <div style={{ fontSize: 84, fontWeight: 900, lineHeight: 1.05, textAlign: 'center', marginTop: 30 }}>{manchete}</div>
       <div style={{ margin: '30px auto', width: 520, height: 380, background: '#0e1428', border: '4px solid #1a1520', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: 200, top: 60, width: 120, height: 120, borderRadius: '50%', background: '#c8d0d8', border: '6px solid #1a1520' }} />
-        <div style={{ position: 'absolute', left: 190, top: 170, width: 140, height: 180, borderRadius: 30, background: '#c8d0d8', border: '6px solid #1a1520' }} />
+        <div style={{ position: 'absolute', left: 200, top: 60, width: 120, height: 120, borderRadius: '50%', background: '#c8302c', border: '6px solid #1a1520', boxShadow: 'inset 0 0 0 10px #e8b830' }} />
+        <div style={{ position: 'absolute', left: 190, top: 170, width: 140, height: 180, borderRadius: 30, background: '#c8302c', border: '6px solid #1a1520', boxShadow: 'inset 0 -40px 0 #8a929e' }} />
         <div style={{ position: 'absolute', left: 240, top: 220, width: 40, height: 40, borderRadius: '50%', background: '#5ad8ff', boxShadow: '0 0 30px #5ad8ff' }} />
       </div>
     </div>
