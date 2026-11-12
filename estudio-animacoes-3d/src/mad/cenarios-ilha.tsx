@@ -475,12 +475,12 @@ export const Vinheta = ({ forca = 0.6 }: { forca?: number }) => (
   <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,${forca}) 100%)` }} />
 );
 // Parede de tábuas molhada (para o cartaz), com prego, pingos escorrendo e papéis velhos.
-export const ParedeTabuas = ({ t }: { t: number }) => (
+export const ParedeTabuas = ({ t, seca = false }: { t: number; seca?: boolean }) => (
   <Svg>
     <rect width={1080} height={1920} fill="#3a2a20" />
     {Array.from({ length: 9 }, (_, i) => <g key={i}><rect x={i * 124} y={0} width={120} height={1920} fill={i % 2 ? '#43301f' : '#3b2a1c'} /><path d={`M${i * 124 + 60} ${200 + rnd(i) * 900} q10 30 0 60`} stroke="#2a1c12" strokeWidth={4} fill="none" /><circle cx={i * 124 + 20} cy={300 + rnd(i + 3) * 1200} r={6} fill="#2a1c12" /></g>)}
     <g transform="rotate(8 200 500)" opacity={0.55}><rect x={90} y={380} width={240} height={300} fill="#c9bfa6" /><path d="M110 420 h200 M110 460 h170 M110 500 h190" stroke="#6a5a4a" strokeWidth={6} /></g>
     <g transform="rotate(-10 880 1260)" opacity={0.5}><rect x={760} y={1120} width={240} height={280} fill="#b9b096" /><path d="M780 1170 h190 M780 1210 h150" stroke="#6a5a4a" strokeWidth={6} /></g>
-    {Array.from({ length: 10 }, (_, i) => { const x = 60 + i * 110 + rnd(i) * 40, k = (t * (0.15 + rnd(i + 1) * 0.1) + rnd(i + 2)) % 1; return <path key={i} d={`M${x} 0 V${k * 1920}`} stroke="#6a7a9a" strokeWidth={3 + rnd(i + 3) * 3} opacity={0.35} />; })}
+    {!seca && Array.from({ length: 10 }, (_, i) => { const x = 60 + i * 110 + rnd(i) * 40, k = (t * (0.15 + rnd(i + 1) * 0.1) + rnd(i + 2)) % 1; return <path key={i} d={`M${x} 0 V${k * 1920}`} stroke="#6a7a9a" strokeWidth={3 + rnd(i + 3) * 3} opacity={0.35} />; })}
   </Svg>
 );

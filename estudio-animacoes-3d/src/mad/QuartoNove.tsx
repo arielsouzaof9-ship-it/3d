@@ -94,10 +94,9 @@ const P1: Cena[] = [
   // 1 menina sumida
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={800}>
-      <ParedeTabuas t={t} />
-      <div style={{ position: 'absolute', inset: 0, transform: `rotate(${1.5 * Math.sin(t * 2.3) + 0.8 * Math.sin(t * 5.1)}deg)`, transformOrigin: '540px 480px' }}><Cartaz t={t} at={W1(1, 'clara') - 0.2} /></div>
-      <Svg><circle cx={540} cy={480} r={12} fill="#9aa0aa" stroke="#1a1520" strokeWidth={4} /></Svg>
-      <Chuva t={t} op={0.3} />
+      <ParedeTabuas t={t} seca />
+      <div style={{ position: 'absolute', inset: 0, transform: `rotate(${1.5 * Math.sin(t * 2.3) + 0.8 * Math.sin(t * 5.1)}deg)`, transformOrigin: '540px 500px' }}><Cartaz t={t} at={W1(1, 'clara') - 0.2} /></div>
+      <Svg><circle cx={540} cy={500} r={12} fill="#9aa0aa" stroke="#1a1520" strokeWidth={4} /></Svg>
     </Cam>
   ),
   // 2 barco do Tião
@@ -604,11 +603,13 @@ const comVinheta = (cs: Cena[], forca = 0.55): Cena[] => cs.map((C) => (p) => <>
 const sfx1 = (): Sfx[] => {
   const W = TL1.W, ini = (i: number) => (i === 0 ? 0 : W(i, 0)), fim = TL1.END;
   const raios: [number, number, number][] = [[0, -0.4, 0], [2, 0, 2], [4, -1, 4], [5, -1.5, 5]];
-  const trovoes: number[] = ([] as number[]).concat(...raios.map(([c, d, seed]) => raiosDe(ini(c) + d, ini(c + 1), seed).filter((v) => v >= ini(c) && v < ini(c + 1))));
+  // Cada trovão toca até 5 s, mas o da 1ª cena para quando entra o cartaz (cena 1 sem chuva).
+  const trovoes: [number, number][] = ([] as [number, number][]).concat(...raios.map(([c, d, seed]) => raiosDe(ini(c) + d, ini(c + 1), seed).filter((v) => v >= ini(c) && v < ini(c + 1)).map((v): [number, number] => [v, c === 0 ? Math.min(5, ini(1) + 0.2 - v) : 5])));
   return [
-    ['sfx-q9/chuva-mar.mp3', 0, 0.5, ini(6) + 0.3, true],
+    ['sfx-q9/chuva-mar.mp3', 0, 0.5, ini(1) + 0.2, true],
+    ['sfx-q9/chuva-mar.mp3', ini(2), 0.5, ini(6) - ini(2) + 0.3, true],
     ['sfx-eleven/rio.mp3', ini(2), 0.3, ini(5) - ini(2)],
-    ...trovoes.map((v): Sfx => ['sfx-q9/trovao.mp3', v + 0.12, 0.55, 5]),
+    ...trovoes.map(([v, dur]): Sfx => ['sfx-q9/trovao.mp3', v + 0.12, 0.55, dur]),
     ['sfx-q9/trovao.mp3', W(21, 'mar') - 0.35, 0.5, 5],
     ['sfx-q9/chuva-dentro.mp3', ini(6), 0.45, fim - ini(6), true],
     ['sfx-q9/relogio.mp3', ini(6), 0.35, ini(11) - ini(6), true],
