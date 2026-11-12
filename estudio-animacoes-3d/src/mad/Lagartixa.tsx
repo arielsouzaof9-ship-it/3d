@@ -351,5 +351,5 @@ const sfx = (): Sfx[] => {
 };
 
 const comVinheta = (cs: Cena[]): Cena[] => cs.map((C, i) => (p: P) => <>{C(p)}{[12, 13, 21, 22, 24, 25].indexOf(i) >= 0 && <Noite k={0.15} />}<Vinheta forca={0.4} /></>);
-export const GarotoLagartixa = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz-lagartixa.mp3" sfx={sfx()} ganhoSfx={0.5 * 2.24} />; // sem voz: efeitos +7 dB
+export const GarotoLagartixa = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz-lagartixa.mp3" sfx={sfx()} ganhoSfx={TL.COM_VOZ ? 0.42 : 1.12} />; // sem voz os efeitos sobem
 export const DURACAO_LAGARTIXA = TL.END;

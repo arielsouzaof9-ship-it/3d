@@ -241,7 +241,7 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
         {k.mascara !== 'heroi' && [-1, 1].map((s2) => <g key={s2}><circle cx={s2 * r * 0.98} cy={r * 0.08} r={r * 0.2} fill={pele} stroke={L} strokeWidth={4.5} /><path d={`M${s2 * r * 1.02} ${r * 0.0} q${s2 * r * 0.06} ${r * 0.08} 0 ${r * 0.16}`} stroke={L} strokeWidth={3} fill="none" opacity={0.5} /></g>)}
         <circle r={r} fill={pele} stroke={L} strokeWidth={5} />
         <g transform={`translate(${p.cabX * 0.6} ${p.cabY * 0.3})`}>
-          {k.mascara && k.mascara !== 'bigode' && (
+          {k.mascara && k.mascara !== 'bigode' && k.mascara !== 'heroi' && (
             // máscara de pássaro de papel: faixa nos olhos com penas nas pontas (o bico vem depois do rosto)
             <g>
               {[-1, 1].map((s2) => <path key={s2} d={`M${s2 * r * 0.8} ${-r * 0.22} q${s2 * r * 0.34} ${-r * 0.12} ${s2 * r * 0.62} ${-r * 0.3} q${-s2 * r * 0.06} ${r * 0.3} ${-s2 * r * 0.3} ${r * 0.52} z`} fill={k.mascara2 ?? k.mascara} stroke={L} strokeWidth={4} strokeLinejoin="round" />)}
@@ -255,7 +255,7 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
           {k.bigode && <path d={`M0 ${r * 0.24} Q${-r * 0.16} ${r * 0.14} ${-r * 0.34} ${r * 0.24} Q${-r * 0.46} ${r * 0.32} ${-r * 0.4} ${r * 0.38} Q${-r * 0.2} ${r * 0.3} 0 ${r * 0.33} Q${r * 0.2} ${r * 0.3} ${r * 0.4} ${r * 0.38} Q${r * 0.46} ${r * 0.32} ${r * 0.34} ${r * 0.24} Q${r * 0.16} ${r * 0.14} 0 ${r * 0.24} z`} fill={k.corBigode ?? k.corCabelo} stroke={L} strokeWidth={3.5} strokeLinejoin="round" />}
           {k.oculos && <g fill="none" stroke={k.corOculos ?? L} strokeWidth={r * 0.06}>{[-1, 1].map((s2) => <circle key={s2} cx={s2 * r * 0.37} cy={0} r={r * 0.34} fill="#dff1fb" fillOpacity={0.18} />)}<path d={`M${-r * 0.05} ${-r * 0.04} q${r * 0.05} ${-r * 0.06} ${r * 0.1} 0 M${-r * 0.7} ${-r * 0.06} l${-r * 0.24} ${-r * 0.06} M${r * 0.7} ${-r * 0.06} l${r * 0.24} ${-r * 0.06}`} /></g>}
           {k.oculosEscuros && <g>{[-1, 1].map((s2) => <rect key={s2} x={s2 * r * 0.37 - r * 0.32} y={-r * 0.24} width={r * 0.64} height={r * 0.42} rx={r * 0.14} fill="#1a1a1e" stroke={L} strokeWidth={4} />)}<path d={`M${-r * 0.05} ${-r * 0.1} h${r * 0.1} M${-r * 0.69} ${-r * 0.12} l${-r * 0.26} ${-r * 0.04} M${r * 0.69} ${-r * 0.12} l${r * 0.26} ${-r * 0.04}`} stroke={L} strokeWidth={5} /><path d={`M${-r * 0.6} ${-r * 0.12} l${r * 0.14} 0`} stroke="#fff" strokeWidth={4} opacity={0.55} /></g>}
-          {k.mascara && k.mascara !== 'bigode' && <path d={`M${-r * 0.13} ${r * 0.1} L${r * 0.13} ${r * 0.1} L0 ${r * 0.34} z`} fill={k.bico ?? '#f2a93b'} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
+          {k.mascara && k.mascara !== 'bigode' && k.mascara !== 'heroi' && <path d={`M${-r * 0.13} ${r * 0.1} L${r * 0.13} ${r * 0.1} L0 ${r * 0.34} z`} fill={k.bico ?? '#f2a93b'} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
         </g>
         {k.mascara === 'bigode' && <MascaraBigode r={r} p={p} />}
         {k.mascara === 'heroi' && <MascaraHeroi r={r} p={p} cor={k.corMascara ?? '#3ac06a'} detalhe={k.detalheMascara ?? '#1a6a3a'} />}
