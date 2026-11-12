@@ -84,8 +84,36 @@ const heart = (c: CanvasRenderingContext2D, x: number, y: number, s: number) => 
   c.fill();
 };
 
+// Olhos grandes com íris colorida (estilo desenho). Definido por drawFace a cada rosto.
+let IRIS: string | undefined;
 const drawEye = (c: CanvasRenderingContext2D, kind: Eyes, x: number, y: number, side: number, skin: string) => {
   const open = (rx: number, ry: number, pr: number, dx = 0, dy = 0) => {
+    if (IRIS) {
+      const R = 1.45;
+      rx *= R;
+      ry *= R;
+      dx *= R;
+      dy *= R;
+      c.beginPath();
+      c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      c.fillStyle = '#fff';
+      c.fill();
+      line(c, 10);
+      c.stroke();
+      const ir = Math.max(pr * 1.9, 16);
+      c.beginPath();
+      c.arc(x + dx, y + dy + 4, ir, 0, Math.PI * 2);
+      c.fillStyle = IRIS;
+      c.fill();
+      c.beginPath();
+      c.arc(x + dx, y + dy + 4, ir * 0.55, 0, Math.PI * 2);
+      c.fillStyle = INK;
+      c.fill();
+      c.beginPath();
+      c.arc(x + dx - ir * 0.4, y + dy - ir * 0.35, ir * 0.3, 0, Math.PI * 2);
+      c.fillStyle = '#fff';
+      return c.fill();
+    }
     c.beginPath();
     c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
     c.fillStyle = '#fff';
@@ -387,7 +415,8 @@ export const useFacesReady = () => {
 };
 
 // Desenha o rosto no canvas. blink: 0 aberto, 0.5 meio fechado, 1 fechado.
-export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: number, overlays: OverlayName[], skin: string) {
+export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: number, overlays: OverlayName[], skin: string, iris?: string) {
+  IRIS = iris;
   c.clearRect(0, 0, 512, 512);
   if (overlays.includes('shading')) {
     const s = imgs[OVERLAYS.shading];
@@ -408,8 +437,9 @@ export function drawFace(c: CanvasRenderingContext2D, face: FaceName, blink: num
     for (const [x, y] of EYES) {
       c.fillStyle = skin;
       c.beginPath();
-      if (blink >= 1) c.ellipse(x, y, 42, 46, 0, 0, Math.PI * 2);
-      else c.rect(x - 44, y - 50, 88, 52);
+      const K = IRIS ? 1.4 : 1;
+      if (blink >= 1) c.ellipse(x, y, 42 * K, 46 * K, 0, 0, Math.PI * 2);
+      else c.rect(x - 44 * K, y - 50 * K, 88 * K, 52 * K);
       c.fill();
       line(c);
       c.beginPath();

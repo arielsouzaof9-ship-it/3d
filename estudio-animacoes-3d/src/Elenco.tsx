@@ -4,40 +4,40 @@ import { useLayoutEffect } from 'react';
 import { AbsoluteFill } from 'remotion';
 import * as THREE from 'three';
 import { Character, REST } from './Character';
-import { ELENCO, Membro, ROUPAS } from './personagens';
+import { DESENHO, ELENCO, Membro, ROUPAS } from './personagens';
 import { tileTex } from './textures';
 
 // Folha do elenco (1920x1760): mostra todos os personagens e roupas prontos para usar.
 const PAGE = '#ecebe6';
 const ESP = 1.2; // distância entre personagens no mundo 3D
 
-const OrthoCam = ({ n }: { n: number }) => {
+const OrthoCam = ({ n, alvo = 1.38 }: { n: number; alvo?: number }) => {
   const camera = useThree((s) => s.camera) as THREE.OrthographicCamera;
   const size = useThree((s) => s.size);
   useLayoutEffect(() => {
     camera.zoom = size.width / (n * ESP);
     camera.position.set(0, 2.5, 12);
-    camera.lookAt(0, 1.38, 0);
+    camera.lookAt(0, alvo, 0);
     camera.updateProjectionMatrix();
-  }, [camera, size, n]);
+  }, [camera, size, n, alvo]);
   return null;
 };
 
-const Fileira = ({ membros, w, h }: { membros: Membro[]; w: number; h: number }) => {
+const Fileira = ({ membros, w, h, fundo = '#5c6a77', chao = ['#a8653a', '#9a5a33'] }: { membros: Membro[]; w: number; h: number; fundo?: string; chao?: [string, string] }) => {
   const n = membros.length;
   return (
     <ThreeCanvas orthographic width={w} height={h} shadows gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05, antialias: true }} camera={{ near: 0.1, far: 100 }}>
-      <OrthoCam n={n} />
-      <color attach="background" args={['#5c6a77']} />
+      <OrthoCam n={n} alvo={fundo === '#5c6a77' ? 1.38 : 1.2} />
+      <color attach="background" args={[fundo]} />
       <hemisphereLight args={['#fff6ea', '#5a3a22', 1.0]} />
       <directionalLight position={[-3, 6, 6]} intensity={2.2} color="#fff0dc" castShadow shadow-mapSize={[4096, 1024]} shadow-camera-left={-n} shadow-camera-right={n} shadow-camera-top={4} shadow-camera-bottom={-2} />
       <mesh position={[0, 3, -1.2]}>
         <planeGeometry args={[n * ESP + 4, 6]} />
-        <meshStandardMaterial color="#5c6a77" roughness={0.9} />
+        <meshStandardMaterial color={fundo} roughness={0.9} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[n * ESP + 4, 6]} />
-        <meshStandardMaterial map={tileTex('#a8653a', '#9a5a33', 24)} roughness={0.8} />
+        <meshStandardMaterial map={tileTex(chao[0], chao[1], 24)} roughness={0.8} />
       </mesh>
       {membros.map((m, i) => (
         <Character
@@ -51,12 +51,12 @@ const Fileira = ({ membros, w, h }: { membros: Membro[]; w: number; h: number })
   );
 };
 
-const Cartoes = ({ membros, w, h }: { membros: Membro[]; w: number; h: number }) => {
+const Cartoes = ({ membros, w, h, fundo, chao }: { membros: Membro[]; w: number; h: number; fundo?: string; chao?: [string, string] }) => {
   const n = membros.length;
   const cw = w / n;
   return (
     <div style={{ position: 'relative', width: w, height: h + 70 }}>
-      <Fileira membros={membros} w={w} h={h} />
+      <Fileira membros={membros} w={w} h={h} fundo={fundo} chao={chao} />
       {/* Separa a faixa em cartões */}
       {Array.from({ length: n + 1 }, (_, i) => (
         <div key={i} style={{ position: 'absolute', top: 0, left: i * cw - 7, width: 14, height: h, background: PAGE }} />
@@ -100,6 +100,22 @@ export const Elenco = () => {
       <Cartoes membros={todos.slice(0, 10)} w={W} h={430} />
       <Cartoes membros={todos.slice(10)} w={W} h={430} />
       <Cartoes membros={roupas} w={W} h={370} />
+    </AbsoluteFill>
+  );
+};
+
+// Folha do elenco no estilo desenho (1920x900): node tools/elenco.mjs ElencoDesenho
+export const ElencoDesenho = () => {
+  const todos = Object.values(DESENHO) as Membro[];
+  return (
+    <AbsoluteFill style={{ background: PAGE, padding: '44px 40px', display: 'flex', flexDirection: 'column', gap: 26 }}>
+      <div>
+        <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 22, letterSpacing: 4, color: '#6b6b6b', fontWeight: 700 }}>ESTÚDIO DE PRODUÇÃO DE ANIMAÇÕES</div>
+        <div style={{ fontFamily: 'Arial Black, sans-serif', fontWeight: 900, fontSize: 86, color: '#141414', lineHeight: 1 }}>
+          Elenco <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400 }}>desenho.</span>
+        </div>
+      </div>
+      <Cartoes membros={todos} w={1840} h={680} fundo="#f3d9a4" chao={['#e9c98a', '#e2bf7e']} />
     </AbsoluteFill>
   );
 };

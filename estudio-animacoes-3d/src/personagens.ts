@@ -139,3 +139,35 @@ export const ROUPAS = {
     look: { skin: PELE.escura, jacket: '#f4f4f2', pattern: 'listras', pattern2: '#1f3b7a', patternH: true, pants: '#1f3b7a', shoes: '#111', gloves: MAO, hair: '#1a120c', hat: 'marinheiro', hatColor: '#fbfbf8' },
   },
 } satisfies Record<string, Membro>;
+
+// ============================================================================
+// ELENCO "DESENHO" — personagens originais no estilo desenho 2D (contorno, cor chapada, olhos grandes).
+// Use igual aos outros: <Character look={DESENHO.tito.look} ... />
+// ============================================================================
+const D = { desenho: true, gloves: PELE.media } as const;
+export const DESENHO = {
+  tito: {
+    nome: 'Tito', papel: 'o menino curioso', rosto: 'bigSmile',
+    look: { ...D, skin: '#f1c9a5', gloves: '#f1c9a5', jacket: '#f08a3c', pants: '#3b5f9e', shoes: '#e8e4dc', hair: '#2a1d14', hairStyle: 'topete', body: 'crianca', shorts: true, iris: '#3f9a5a' },
+  },
+  mila: {
+    nome: 'Mila', papel: 'a amiga esperta', rosto: 'happy',
+    look: { ...D, skin: '#c98c62', gloves: '#c98c62', jacket: '#f2c84a', pants: '#2f6f73', shoes: '#e8364c', hair: '#3a2416', hairStyle: 'marias', body: 'crianca', skirt: { color: '#2f6f73' }, iris: '#7a4a2a' },
+  },
+  juca: {
+    nome: 'Vô Juca', papel: 'o avô motorista', rosto: 'smile',
+    look: { ...D, skin: '#e7b994', gloves: '#e7b994', jacket: '#8a5a3c', pattern: 'xadrez', pattern2: '#5a3622', pants: '#4a4f5e', shoes: '#3a2a1e', hair: '#e9e9e9', hairStyle: 'careca', beard: 'bigode', eyewear: 'grau', body: 'idoso', iris: '#5a7fb0' },
+  },
+  cida: {
+    nome: 'Vó Cida', papel: 'a avó do bairro', rosto: 'content',
+    look: { ...D, skin: '#8a5a3c', gloves: '#8a5a3c', jacket: '#b58ad6', pants: '#7a5aa0', shoes: '#4a3a5a', hair: '#e6e6e6', hairStyle: 'coque', eyewear: 'grau', body: 'idoso', skirt: { color: '#9a72c0', long: true }, iris: '#6a4a2a' },
+  },
+  boris: {
+    nome: 'Seu Bóris', papel: 'o homem do bigodão', rosto: 'suspicious',
+    look: { ...D, skin: '#d9a57c', gloves: '#d9a57c', jacket: '#6e7480', pants: '#4f5560', shoes: '#26211f', hair: '#4a2a1a', hairStyle: 'curto', beard: 'bigode', hat: 'feltro', hatColor: '#5e6470', tie: '#26232a', shirt: '#f4f4f0', body: 'forte', iris: '#4a3a2a' },
+  },
+  nara: {
+    nome: 'Nara', papel: 'a professora', rosto: 'smile',
+    look: { ...D, skin: '#f0d2b8', gloves: '#f0d2b8', jacket: '#4fa3a5', pants: '#2c3346', shoes: '#26211f', hair: '#7a3a1e', hairStyle: 'chanel', eyewear: 'grau', body: 'magro', skirt: { color: '#2c3346' }, iris: '#3a6a9a' },
+  },
+} satisfies Record<string, Membro>;

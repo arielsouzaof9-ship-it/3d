@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 import * as THREE from 'three';
 import { F } from './timeline';
 import { drawFace, FaceName, OverlayName, patternTex } from './textures';
@@ -46,10 +46,10 @@ export function faceAt(t: number, keys: FaceKey[], seed = 0): FaceState {
 // ---------- Visual ----------
 // Corpo: 6 tipos, todos da mesma base (cabeça grande, membros finos).
 export type Body = 'adulto' | 'magro' | 'forte' | 'crianca' | 'idoso' | 'baixo';
-export type HairStyle = 'curto' | 'liso' | 'longo' | 'coque' | 'crespo' | 'careca' | 'chanel' | 'rabo' | 'nenhum';
+export type HairStyle = 'curto' | 'liso' | 'longo' | 'coque' | 'crespo' | 'careca' | 'chanel' | 'rabo' | 'nenhum' | 'topete' | 'marias';
 export type Hat =
   | 'bone' | 'gorro' | 'policia' | 'chef' | 'capacete' | 'explorador' | 'astronauta' | 'cavaleiro'
-  | 'farao' | 'marinheiro' | 'piloto' | 'capuz' | 'boina' | 'touca';
+  | 'farao' | 'marinheiro' | 'piloto' | 'capuz' | 'boina' | 'touca' | 'feltro';
 export type Pattern = 'liso' | 'listras' | 'xadrez' | 'florido' | 'acolchoado';
 
 export type Look = {
@@ -80,6 +80,29 @@ export type Look = {
   beard?: 'bigode' | 'barba';
   metal?: boolean; // armadura
   backpack?: string; // mochila / tanque
+  desenho?: boolean; // estilo desenho 2D: cores chapadas, contorno escuro e olhos grandes
+  iris?: string; // cor da íris dos olhos grandes (estilo desenho)
+};
+
+// ---------- Estilo desenho (toon) ----------
+const Toon = createContext(false);
+const TOON_GRAD = (() => {
+  const d = new Uint8Array([90, 90, 90, 255, 200, 200, 200, 255, 255, 255, 255, 255]);
+  const t = new THREE.DataTexture(d, 3, 1, THREE.RGBAFormat);
+  t.minFilter = t.magFilter = THREE.NearestFilter;
+  t.needsUpdate = true;
+  return t;
+})();
+const INK_MAT = new THREE.MeshBasicMaterial({ color: '#26232a', side: THREE.BackSide });
+// Contorno "casca invertida": mesma forma, um pouco maior, só o lado de trás, em tinta escura.
+const Ink = ({ children, k = 1.06, ...g }: { children: ReactNode; k?: number | [number, number, number]; position?: [number, number, number]; rotation?: [number, number, number] }) => {
+  const toon = useContext(Toon);
+  if (!toon) return null;
+  return (
+    <mesh {...g} scale={k} material={INK_MAT}>
+      {children}
+    </mesh>
+  );
 };
 
 export const VOCE: Look = {
@@ -103,11 +126,13 @@ const BODY: Record<Body, { s: number; torso: [number, number, number]; legs: num
 const HEAD_R = 0.5;
 const HEAD_Y = 1.62;
 
-const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THREE.Texture; side?: THREE.Side; roughness?: number; transparent?: boolean; opacity?: number }) => (
-  <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />
-);
+const Mat = ({ color, metal, ...p }: { color: string; metal?: boolean; map?: THREE.Texture; side?: THREE.Side; roughness?: number; transparent?: boolean; opacity?: number }) => {
+  const toon = useContext(Toon);
+  if (toon) return <meshToonMaterial color={color} gradientMap={TOON_GRAD} map={p.map} side={p.side} transparent={p.transparent} opacity={p.opacity} />;
+  return <meshStandardMaterial color={color} metalness={metal ? 0.85 : 0} roughness={metal ? 0.25 : p.roughness ?? 0.7} {...p} />;
+};
 
-const FaceDecal = ({ face, skin }: { face: FaceState; skin: string }) => {
+const FaceDecal = ({ face, skin, iris }: { face: FaceState; skin: string; iris?: string }) => {
   const canvas = useMemo(() => {
     const c = document.createElement('canvas');
     c.width = c.height = 512;
@@ -119,16 +144,16 @@ const FaceDecal = ({ face, skin }: { face: FaceState; skin: string }) => {
     t.anisotropy = 8;
     return t;
   }, [canvas]);
-  const key = `${face.f}|${face.blink}|${face.o.join(',')}|${skin}`;
+  const key = `${face.f}|${face.blink}|${face.o.join(',')}|${skin}|${iris}`;
   useMemo(() => {
-    drawFace(canvas.getContext('2d')!, face.f, face.blink, face.o, skin);
+    drawFace(canvas.getContext('2d')!, face.f, face.blink, face.o, skin, iris);
     tex.needsUpdate = true;
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   const L = 1.95;
   return (
     <mesh renderOrder={2}>
       <sphereGeometry args={[HEAD_R * 1.006, 48, 32, Math.PI / 2 - L / 2, L, Math.PI / 2 + 0.1 - L / 2, L]} />
-      <meshStandardMaterial map={tex} transparent depthWrite={false} roughness={0.55} polygonOffset polygonOffsetFactor={-2} />
+      {iris ? <meshBasicMaterial map={tex} transparent depthWrite={false} polygonOffset polygonOffsetFactor={-2} /> : <meshStandardMaterial map={tex} transparent depthWrite={false} roughness={0.55} polygonOffset polygonOffsetFactor={-2} />}
     </mesh>
   );
 };
@@ -137,6 +162,9 @@ const Limb = ({ len, r, color, metal }: { len: number; r: number; color: string;
   <mesh position={[0, -len / 2, 0]} castShadow>
     <capsuleGeometry args={[r, len, 4, 10]} />
     <Mat color={color} metal={metal} />
+    <Ink k={[1.35, 1.04, 1.35]}>
+      <capsuleGeometry args={[r, len, 4, 10]} />
+    </Ink>
   </mesh>
 );
 
@@ -149,6 +177,9 @@ const Arm = ({ side, sz, sx, el, look, sh, hand }: { side: 1 | -1; sz: number; s
         <mesh castShadow scale={[1, 1.1, 0.9]}>
           <sphereGeometry args={[0.07, 16, 12]} />
           <Mat color={look.gloves} roughness={0.5} />
+          <Ink k={1.15}>
+            <sphereGeometry args={[0.07, 16, 12]} />
+          </Ink>
         </mesh>
         {hand}
       </group>
@@ -166,6 +197,9 @@ const Leg = ({ side, swing, tap, look }: { side: 1 | -1; swing: number; tap: num
         <mesh position={[0, -0.27, 0.07]} scale={[1, 0.7, 1.6]} castShadow>
           <sphereGeometry args={[0.08, 16, 12]} />
           <Mat color={look.shoes} roughness={0.6} />
+          <Ink k={1.12}>
+            <sphereGeometry args={[0.08, 16, 12]} />
+          </Ink>
         </mesh>
       </group>
     </group>
@@ -245,6 +279,44 @@ const Hair = ({ look }: { look: Look }) => {
             <sphereGeometry args={[0.16, 16, 12]} />
             {m}
           </mesh>
+        </>
+      );
+    case 'topete':
+      // cabelo liso com um topete espetado na frente
+      return (
+        <>
+          {sides()}
+          {back}
+          {top}
+          {[[-0.07, 0.62, 0.12, -0.35, 0.16], [0.06, 0.66, 0.08, -0.1, 0.2], [0.17, 0.6, 0.02, 0.25, 0.15]].map(([x, y, z, rz, h], i) => (
+            <mesh key={i} position={[x, y, z]} rotation={[-0.35, 0, rz]} castShadow>
+              <coneGeometry args={[0.08, h * 2, 12]} />
+              {m}
+              <Ink k={1.12}>
+                <coneGeometry args={[0.08, h * 2, 12]} />
+              </Ink>
+            </mesh>
+          ))}
+        </>
+      );
+    case 'marias':
+      // duas maria-chiquinhas presas dos lados
+      return (
+        <>
+          {top}
+          {back}
+          {[1, -1].map((s) => (
+            <group key={s}>
+              <mesh position={[s * 0.5, 0.15, -0.12]} rotation={[0, 0, s * -0.6]} scale={[0.75, 1.3, 0.75]} castShadow>
+                <sphereGeometry args={[0.15, 16, 12]} />
+                {m}
+              </mesh>
+              <mesh position={[s * 0.42, 0.24, -0.1]}>
+                <sphereGeometry args={[0.045, 10, 8]} />
+                <Mat color="#e8364c" />
+              </mesh>
+            </group>
+          ))}
         </>
       );
     case 'crespo':
@@ -412,6 +484,21 @@ const HatMesh = ({ look }: { look: Look }) => {
           ))}
         </>
       );
+    case 'feltro':
+      // chapéu de feltro: aba larga + copa com fita
+      return (
+        <>
+          {brim(0.7, c, 0.36)}
+          <mesh position={[0, 0.52, -0.02]} scale={[1, 0.9, 0.95]} castShadow>
+            <cylinderGeometry args={[0.36, 0.42, 0.34, 32]} />
+            <Mat color={c} />
+          </mesh>
+          <mesh position={[0, 0.41, -0.02]}>
+            <cylinderGeometry args={[0.425, 0.425, 0.07, 32]} />
+            <Mat color="#26232a" />
+          </mesh>
+        </>
+      );
     case 'capuz':
       return (
         <mesh position={[0, 0.02, -0.06]} scale={[1.12, 1.1, 1.08]} castShadow>
@@ -461,9 +548,9 @@ const Eyewear = ({ look }: { look: Look }) => {
   return (
     <>
       {[1, -1].map((s) => (
-        <group key={s} position={[s * 0.14, 0.02, 0.49]} rotation={[0, s * 0.3, 0]}>
+        <group key={s} position={look.desenho ? [s * 0.155, 0.06, 0.475] : [s * 0.14, 0.02, 0.49]} rotation={[0, s * 0.33, 0]} scale={look.desenho ? 1.45 : 1}>
           <mesh>
-            <torusGeometry args={[0.1, 0.012, 8, 24]} />
+            <torusGeometry args={[0.1, look.desenho ? 0.014 : 0.012, 8, 24]} />
             <Mat color="#1c1c1c" roughness={0.3} />
           </mesh>
           {dark && (
@@ -481,7 +568,7 @@ const Eyewear = ({ look }: { look: Look }) => {
 const Beard = ({ look }: { look: Look }) => {
   if (!look.beard) return null;
   return look.beard === 'bigode' ? (
-    <mesh position={[0, -0.13, 0.47]} rotation={[0.25, 0, 0]} scale={[1, 0.38, 0.5]}>
+    <mesh position={[0, look.desenho ? -0.1 : -0.13, 0.47]} rotation={[0.25, 0, 0]} scale={look.desenho ? [1.9, 0.42, 0.5] : [1, 0.38, 0.5]}>
       <sphereGeometry args={[0.14, 16, 10]} />
       <Mat color={look.hair} roughness={0.9} />
     </mesh>
@@ -515,6 +602,7 @@ export const Character = ({
   const dy = 0.55 * (b.legs - 1);
   const torsoMap = look.pattern && look.pattern !== 'liso' ? patternTex(look.pattern, look.jacket, look.pattern2 ?? '#f4f0e8', look.patternH) : undefined;
   return (
+    <Toon.Provider value={!!look.desenho}>
     <group position={[p.x, p.y + bob, p.z]} rotation={[0, p.ry, 0]} scale={b.s}>
       <group scale={[1, b.legs, 1]}>
         <Leg side={1} swing={swing} tap={p.ltap} look={look} />
@@ -526,6 +614,9 @@ export const Character = ({
           <mesh position={[0, 0.84, 0]} scale={b.torso} castShadow>
             <sphereGeometry args={[0.3, 32, 24]} />
             <Mat color={torsoMap ? '#ffffff' : look.jacket} map={torsoMap} metal={look.metal} />
+            <Ink k={1.05}>
+              <sphereGeometry args={[0.3, 32, 24]} />
+            </Ink>
           </mesh>
           {look.backpack && (
             <mesh position={[0, 0.88, -0.3 * b.torso[2]]} castShadow>
@@ -592,8 +683,11 @@ export const Character = ({
               <mesh castShadow>
                 <sphereGeometry args={[HEAD_R, 48, 32]} />
                 <Mat color={look.skin} roughness={0.55} />
+                <Ink k={1.045}>
+                  <sphereGeometry args={[HEAD_R, 48, 32]} />
+                </Ink>
               </mesh>
-              <FaceDecal face={face} skin={look.skin} />
+              <FaceDecal face={face} skin={look.skin} iris={look.desenho ? look.iris ?? '#4a7fc0' : undefined} />
               <Hair look={look} />
               <Beard look={look} />
               <Eyewear look={look} />
@@ -603,5 +697,6 @@ export const Character = ({
         </group>
       </group>
     </group>
+    </Toon.Provider>
   );
 };

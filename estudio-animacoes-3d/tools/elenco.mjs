@@ -7,12 +7,13 @@ import path from 'node:path';
 import { abrirNavegador } from './navegador.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
-const out = path.join(root, 'out', 'elenco.png');
+const COMP = process.argv[2] ?? 'Elenco';
+const out = path.join(root, 'out', COMP === 'Elenco' ? 'elenco.png' : `${COMP.toLowerCase()}.png`);
 fs.mkdirSync(path.dirname(out), { recursive: true });
 const serveUrl = await bundle({ entryPoint: path.join(root, 'src', 'index.ts') });
-const probe = await selectComposition({ serveUrl, id: 'Elenco', browserExecutable: process.env.CHROME_PATH || null });
+const probe = await selectComposition({ serveUrl, id: COMP, browserExecutable: process.env.CHROME_PATH || null });
 const { browser, browserExecutable, chromiumOptions } = await abrirNavegador(serveUrl, probe);
-const composition = await selectComposition({ serveUrl, id: 'Elenco', puppeteerInstance: browser, browserExecutable, chromiumOptions });
+const composition = await selectComposition({ serveUrl, id: COMP, puppeteerInstance: browser, browserExecutable, chromiumOptions });
 await renderStill({ composition, serveUrl, frame: 0, output: out, puppeteerInstance: browser, browserExecutable, chromiumOptions });
 await browser.close({ silent: true });
 console.log(path.relative(root, out));
