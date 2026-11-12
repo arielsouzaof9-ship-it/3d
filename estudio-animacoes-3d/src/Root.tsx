@@ -1,6 +1,7 @@
 import { Composition } from 'remotion';
 import { Elenco } from './Elenco';
 import { Film } from './Film';
+import { MAD_DUR, MadMovimentos } from './MadMovimentos';
 import { END, FPS } from './timeline';
 import { VOZ } from './voz';
 
@@ -15,6 +16,8 @@ export const Root = () => (
       height={1920}
       defaultProps={{ legendas: true, voz: VOZ.length > 0, musica: false }}
     />
+    {/* Vitrine dos movimentos do Mad (cientista maluco) */}
+    <Composition id="MadMovimentos" component={MadMovimentos} durationInFrames={MAD_DUR * FPS} fps={FPS} width={1080} height={1920} />
     {/* Folha com todo o elenco disponível (node tools/elenco.mjs) */}
     <Composition id="Elenco" component={Elenco} durationInFrames={1} fps={FPS} width={1920} height={2830} />
   </>
