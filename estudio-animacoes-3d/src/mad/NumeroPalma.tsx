@@ -6,7 +6,7 @@ import { Vinheta } from './cenarios-ilha';
 import { Coletiva } from './cenarios-lata';
 import { Balao, Brilho, Cam, Placa, Pop } from './FiosBrancos';
 import { Ator, Mov } from './FiosBrancosArticulado';
-import { Cena, FilmeMad, P } from './FilmeMad';
+import { Cena, FilmeMad, P, Sfx } from './FilmeMad';
 import { Pose } from './Rig';
 import { TL_PALMA as TL } from './timeline-palma';
 
@@ -342,5 +342,67 @@ const CENAS: Cena[] = [
 ];
 
 const comVinheta = (cs: Cena[]): Cena[] => cs.map((C) => (p: P) => <>{C(p)}<Vinheta forca={0.4} /></>);
-export const NumeroPalma = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz.mp3" sfx={[]} />;
+// ---------- Efeitos sonoros (biblioteca do projeto + sintetizados em public/sfx-palma) ----------
+const ini = (i: number) => (i === 0 ? 0 : i >= TL.LINES.length ? TL.END : W(i, 0));
+const sfx = (): Sfx[] => {
+  const amb = (f: string, de: number, ate: number, vol: number): Sfx => [f, ini(de), vol, ini(ate + 1) - ini(de) + 0.3, true];
+  return [
+    // berçário e a palma
+    ['sfx-farol/caixinha.mp3', 0, 0.35, ini(4)],
+    ['sfx-eleven/brilho.mp3', W(1, 'vidas'), 0.45],
+    ['sfx-eleven/desliga.mp3', W(2, 'defeito') - 0.1, 0.5],
+    ['sfx-eleven/whoosh.mp3', W(3, 'melhor') - 0.1, 0.4],
+    ['sfx-eleven/whoosh.mp3', W(3, 'pior') - 0.1, 0.4],
+    // Rafael: o milhão, a festa, o fotógrafo
+    ['sfx-q4/revelacao.mp3', W(4, 'milhao') - 0.3, 0.5, 3],
+    amb('sfx-flutua/torcida.mp3', 5, 6, 0.3),
+    ['sfx-palma/cameras.mp3', W(5, 'fotografar') - 0.3, 0.55, 3],
+    ['sfx-farol/sino.mp3', W(6, 'mudar'), 0.35, 2.5],
+    // Nina: o um, a visita, a escola
+    ['sfx-farol/caixinha.mp3', ini(7), 0.3, ini(9) - ini(7)],
+    ['sfx-casarao/batida.mp3', ini(9) + 0.1, 0.45, 2],
+    amb('sfx-flutua/murmurio.mp3', 10, 12, 0.25),
+    ['sfx-flutua/risada.mp3', W(10, 'menina'), 0.4, 2.5],
+    ['sfx-flutua/risada.mp3', W(12, 'estudar'), 0.5, 3],
+    // estudando à noite
+    ['sfx-q9/relogio.mp3', ini(13), 0.45, ini(14) - ini(13), true],
+    ['sfx-q9/caneta.mp3', ini(13) + 0.2, 0.5, 2],
+    // bombeira
+    ['sfx-q4/sirenes.mp3', W(14, 'bombeira') - 0.4, 0.4, 2.2],
+    ['sfx-eleven/brilho.mp3', W(14, 'bombeira'), 0.4],
+    // Rafael rico, prédios, um milhão de compradores
+    ['sfx-palma/kaching.mp3', W(15, 'rico') - 0.1, 0.55, 1.2],
+    ['sfx-palma/cameras.mp3', ini(15) + 0.4, 0.4, 3],
+    ['sfx-q4/broca.mp3', ini(16), 0.25, ini(17) - ini(16), true],
+    ['sfx-palma/contador.mp3', W(17, 'milhao') - 0.3, 0.55, 1.6],
+    ['sfx-flutua/torcida.mp3', W(17, 'milhao') + 1, 0.3, 2],
+    // vinte anos depois: chuva, prédios caindo
+    amb('sfx-q9/chuva-mar.mp3', 18, 21, 0.45),
+    ['sfx-q9/trovao.mp3', ini(18) + 0.3, 0.45, 4],
+    ...[[19, 'desabou'], [20, 'segundo'], [21, 'terceiro']].map(([l, w]): Sfx[] => [
+      ['sfx-palma/racha.mp3', W(l as number, w as string) - 0.5, 0.55, 2],
+      ['sfx-eleven/boom.mp3', W(l as number, w as string) + 0.2, 0.55],
+    ]).reduce((a, b) => a.concat(b), [] as Sfx[]),
+    // o concreto e o milhão de vidas
+    ['sfx-eleven/drone.mp3', ini(22), 0.25, ini(25) - ini(22)],
+    ['sfx-q4/sirenes.mp3', ini(23), 0.35, ini(24) - ini(23)],
+    ['sfx-eleven/susto.mp3', W(24, 'errado'), 0.45],
+    // a Nina nos escombros
+    amb('sfx-q9/chuva-mar.mp3', 25, 29, 0.35),
+    ['sfx-q9/passos-molhados.mp3', ini(25) + 0.3, 0.5, 3],
+    ['sfx-eleven/coracao.mp3', ini(25), 0.35, ini(27) - ini(25)],
+    ['sfx-eleven/brilho.mp3', W(26, 'bebe'), 0.45],
+    ['sfx-farol/caixinha.mp3', ini(27), 0.3, ini(29) - ini(27)],
+    ['sfx-palma/racha.mp3', W(29, 'voltou') - 0.6, 0.5, 2],
+    ['sfx-eleven/boom.mp3', W(29, 'voltou') - 0.1, 0.55],
+    // velório e o número final
+    amb('sfx-farol/coro.mp3', 30, 31, 0.25),
+    ['sfx-farol/sino.mp3', ini(30) + 0.2, 0.35, 3],
+    ['sfx-palma/contador.mp3', W(32, 'maior') - 0.6, 0.5, 1.6],
+    ['sfx-q4/revelacao.mp3', W(32, 'rafael') - 0.4, 0.5, 3],
+    ['sfx-eleven/brilho.mp3', ini(33), 0.5],
+    ['sfx-farol/caixinha.mp3', ini(34), 0.35, TL.END - ini(34)],
+  ];
+};
+export const NumeroPalma = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz="voz.mp3" sfx={sfx()} ganhoSfx={0.33} />;
 export const DURACAO_PALMA = TL.END;
