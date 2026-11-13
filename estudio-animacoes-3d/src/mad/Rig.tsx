@@ -34,13 +34,14 @@ export type Pose = {
   pisca?: number; // piscadela: fecha só o olho da direita da tela (0..1)
   sentado?: number; // 0..1: sentado de frente (coxas para a câmera, joelhos no colo)
   zzz?: number; // 0..1: "Zzz" de quem dorme
+  joinha?: number; // polegar para cima: 1 = mão direita da tela, 2 = esquerda, 3 = as duas
 };
 
 export const BASE: Pose = {
   x: 0, y: 0, esc: 1, sq: 1, incl: 0, quadril: 0, ombro: 0, cabRot: 0, cabX: 0, cabY: 0,
   maoE: [-64, -150], maoD: [64, -150], frenteE: false, frenteD: false, peE: [-26, 0], peD: [26, 0],
   olho: 1, olhoFeliz: false, pupila: [0, 0], sobr: 0, sobrTriste: false, boca: 'sorriso', fala: 0,
-  lagrima: 0, suor: 0, vermelho: 0, pergunta: 0, pisca: 0, sentado: 0, zzz: 0,
+  lagrima: 0, suor: 0, vermelho: 0, pergunta: 0, pisca: 0, sentado: 0, zzz: 0, joinha: 0,
 };
 
 // ---------- Cinemática inversa de 2 ossos ----------
@@ -203,11 +204,21 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
   const pele = k.pele, manga = k.manga ?? k.roupa;
   const hair = useMemo(() => cabelo(k.cabelo, k.corCabelo, 0, 0, r) as { atras?: string; frente?: string }, [k.cabelo, k.corCabelo, r]);
   const hat = useMemo(() => (k.chapeu ? (chapeu(k.chapeu, k.corChapeu, 0, 0, r) as string) : ''), [k.chapeu, k.corChapeu, r]);
-  const braco = (sh: V, el: V, m: V) => (
+  const polegar = (m: V) => {
+    const rr = LW / 2 + 5;
+    return (
+      <g>
+        <rect x={m[0] - rr * 0.32} y={m[1] - rr * 2.05} width={rr * 0.72} height={rr * 1.45} rx={rr * 0.36} fill={pele} stroke={L} strokeWidth={4.5} />
+        <path d={`M${m[0] - rr * 0.55} ${m[1] - rr * 0.1} h${rr * 1.1} M${m[0] - rr * 0.6} ${m[1] + rr * 0.35} h${rr * 1.15}`} stroke={L} strokeWidth={3} opacity={0.55} />
+      </g>
+    );
+  };
+  const braco = (sh: V, el: V, m: V, lado: 'E' | 'D') => (
     <g>
       {membro([sh, el, m], manga, LW)}
       <path d={`M${sh[0] + (el[0] - sh[0]) * 0.2} ${sh[1] + (el[1] - sh[1]) * 0.2} L${sh[0] + (el[0] - sh[0]) * 0.7} ${sh[1] + (el[1] - sh[1]) * 0.7}`} stroke="#fff" strokeWidth={6} strokeLinecap="round" opacity={0.35} transform={`translate(${-LW * 0.2} 0)`} />
       <circle cx={m[0]} cy={m[1]} r={LW / 2 + 5} fill={pele} stroke={L} strokeWidth={4.5} />
+      {(p.joinha ?? 0) & (lado === 'D' ? 1 : 2) ? polegar(m) : null}
     </g>
   );
   const a = troncoW, hh = troncoH, b = quadY + 8, o = ombY;
@@ -224,8 +235,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       {sent > 0.3 && [jE, jD].map((j, i) => <circle key={`j${i}`} cx={j[0]} cy={j[1] - 4} r={LW * 0.62} fill={corPerna} stroke={L} strokeWidth={4} opacity={Math.min(1, (sent - 0.3) * 3)} />)}
       {k.saia && <path d={`M${-a * 0.55} ${quadY - 12} L${-a * 0.85} ${quadY + 40} H${a * 0.85} L${a * 0.55} ${quadY - 12} z`} fill={k.saia} stroke={L} strokeWidth={4} strokeLinejoin="round" />}
       {/* braços atrás */}
-      {!p.frenteE && braco(sE, cE, mE)}
-      {!p.frenteD && braco(sD, cD, mD)}
+      {!p.frenteE && braco(sE, cE, mE, 'E')}
+      {!p.frenteD && braco(sD, cD, mD, 'D')}
       {/* tronco */}
       <path d={tronco} fill={k.roupa} stroke={L} strokeWidth={5} />
       <path d={`M${-0.3 * a} ${o + 0.22 * hh} q${-0.06 * a} ${0.2 * hh} ${-0.02 * a} ${0.42 * hh}`} stroke="#fff" strokeWidth={7} strokeLinecap="round" fill="none" opacity={0.35} />
@@ -285,8 +296,8 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
         )}
       </g>
       {/* braços na frente (boca, olhos, queixo) */}
-      {p.frenteE && braco(sE, cE, mE)}
-      {p.frenteD && braco(sD, cD, mD)}
+      {p.frenteE && braco(sE, cE, mE, 'E')}
+      {p.frenteD && braco(sD, cD, mD, 'D')}
       {k.item && <g dangerouslySetInnerHTML={{ __html: item(k.item, mD[0], mD[1], k, 0) as string }} />}
       {k.item2 && <g dangerouslySetInnerHTML={{ __html: item(k.item2, mE[0], mE[1], k, 0) as string }} />}
     </g>

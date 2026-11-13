@@ -172,6 +172,10 @@ export const MOVIMENTOS: Record<string, { nome: string; f: Mov }> = {
     nome: 'Pular de alegria',
     f: (u) => { const ph = u % 0.7, j = pulo(ph - 0.08, 0.55, 95); return { y: j, sq: ph < 0.08 ? 0.86 : j < -8 ? 1.1 : 0.94, maoE: [-175, -385], maoD: [175, -385], peE: [-30, j < -8 ? -20 : 0], peD: [30, j < -8 ? -20 : 0], olhoFeliz: true, boca: 'riso', fala: 0.5 }; },
   },
+  joinha: {
+    nome: 'Joinha (polegar para cima)',
+    f: (u) => ({ maoD: [125, -305], joinha: 1, pisca: u > 0.3 && u < 1.1 ? 1 : 0, boca: 'riso', sobr: 0.4, cabRot: -6, y: -4 * Math.abs(Math.sin(u * 4)) }),
+  },
   entrar: {
     nome: 'Entrar com "pop"',
     f: (u) => { const k = clamp(u / 0.35); const e = k <= 0 ? 0 : 1 + 2.4 * Math.pow(k - 1, 3) + 1.4 * Math.pow(k - 1, 2); return { esc: e, sq: u < 0.35 ? 1.12 : u < 0.5 ? 0.9 : 1, boca: 'riso', olhoFeliz: u > 0.4 && u < 1.2 }; },
