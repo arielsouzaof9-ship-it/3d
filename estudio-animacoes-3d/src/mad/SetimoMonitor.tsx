@@ -432,13 +432,13 @@ const sfx = (): Sfx[] => {
     ['sfx-monitor/pingos.mp3', W(16, 'porta') - 0.1, 0.5, ini(17) - W(16, 'porta')],
     ['sfx-eleven/coracao.mp3', ini(17), 0.4, ini(19) - ini(17)],
     ['sfx-q9/passos-molhados.mp3', ini(18), 0.35, 1.6],
-    ['sfx-monitor/partida.mp3', W(18, 'pegou') - 1.2, 0.6, 2.2],
+    ['sfx-monitor/partida.mp3', W(18, 'pegou') - 1.2, 0.4, 2.2],
     // o lago e o barco
-    amb('sfx-monitor/lago.mp3', 19, 23, 0.4),
+    amb('sfx-monitor/lago.mp3', 19, 21, 0.35), amb('sfx-monitor/lago.mp3', 22, 23, 0.15),
     ['sfx-monitor/remo.mp3', ini(20), 0.4, ini(22) - ini(20), true],
-    ['sfx-monitor/pingos.mp3', ini(21), 0.55, ini(23) - ini(21)],
-    ['sfx-eleven/drone.mp3', ini(21), 0.35, ini(23) - ini(21)],
-    ['sfx-eleven/boom.mp3', W(22, 'monitor') - 0.15, 0.55],
+    ['sfx-monitor/pingos.mp3', ini(21), 0.4, ini(22) - ini(21)], ['sfx-monitor/pingos.mp3', ini(22), 0.15, ini(23) - ini(22)],
+    ['sfx-eleven/drone.mp3', ini(21), 0.2, ini(23) - ini(21)],
+    ['sfx-eleven/boom.mp3', W(22, 'monitor') + 0.5, 0.45],
     ['sfx-monitor/splash.mp3', W(23, 'pulei') + 0.2, 0.6, 2.5],
     ['sfx-monitor/nado.mp3', W(23, 'pulei') + 1, 0.45, ini(24) - W(23, 'pulei') - 0.8],
     // a manhã e a revelação
@@ -447,11 +447,11 @@ const sfx = (): Sfx[] => {
     ['sfx-farol/caixinha.mp3', ini(25), 0.3, ini(27) - ini(25)],
     ['sfx-eleven/susto.mp3', W(26, 'beto') - 0.2, 0.45],
     ['sfx-casarao/batida.mp3', W(27, 'sete') - 0.1, 0.55, 2.5],
-    ['sfx-eleven/drone.mp3', ini(28), 0.3, TL.END - ini(28)],
-    amb('sfx-monitor/grilos.mp3', 28, 29, 0.2),
-    ['sfx-monitor/lago.mp3', ini(29), 0.3, TL.END - ini(29)],
+    ['sfx-eleven/drone.mp3', ini(28), 0.18, TL.END - ini(28)],
+    amb('sfx-monitor/grilos.mp3', 28, 29, 0.12),
+    ['sfx-monitor/lago.mp3', ini(29), 0.18, TL.END - ini(29)],
   ];
 };
 
-export const SetimoMonitor = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz={TL.COM_VOZ ? 'voz-monitor.mp3' : undefined} sfx={sfx()} ganhoSfx={TL.COM_VOZ ? 0.4 : 0.5} />;
+export const SetimoMonitor = () => <FilmeMad tl={TL} cenas={comVinheta(CENAS)} voz={TL.COM_VOZ ? 'voz-monitor.mp3' : undefined} sfx={sfx()} ganhoSfx={TL.COM_VOZ ? 0.62 : 0.5} />;
 export const DURACAO_MONITOR = TL.END;
