@@ -112,7 +112,7 @@ const CENAS: Cena[] = [
         <rect x={-300} y={-360} width={600} height={160} rx={20} fill="#d1495b" /><text x={0} y={-255} textAnchor="middle" fontFamily="Arial Black" fontSize={74} fill="#fff">JUNHO</text>
         <text x={0} y={90} textAnchor="middle" fontFamily="Georgia" fontWeight={900} fontSize={300} fill="#1a1520" opacity={clamp((t - W(0, 'treze') + 0.3) / 0.3)}>13</text>
         <text x={0} y={200} textAnchor="middle" fontFamily="Arial Black" fontSize={50} fill="#d1495b" opacity={clamp((t - W(0, 'sexta')) / 0.3)}>SEXTA-FEIRA</text>
-        <text x={0} y={300} textAnchor="middle" fontFamily="Georgia" fontWeight={900} fontSize={80} fill="#3a3a44" opacity={clamp((t - W(0, 'quatro') + 0.4) / 0.3)}>1984</text>
+        <text x={0} y={300} textAnchor="middle" fontFamily="Georgia" fontWeight={900} fontSize={80} fill="#3a3a44" opacity={clamp((t - W(0, 'mil') + 0.1) / 0.3)}>1984</text>
       </g></Svg>
       <Luz x={540} y={900} r={700} cor="#ffd166" op={0.12} />
     </Cam>
@@ -576,7 +576,6 @@ const sfx = (): Sfx[] => {
     ['sfx-eleven/drone.mp3', ini(27), 0.22, ini(29) - ini(27)],
     ['sfx-eleven/susto.mp3', W(28, 'setimo') - 0.2, 0.3],
     ['sfx-eleven/boom.mp3', W(28, 'completa') + 0.7, 0.45],
-    ['sfx-flutua/risada.mp3', W(28, 'completa') + 0.3, 0.15, 1.5],
     // final
     ['sfx-monitor/lago.mp3', ini(29), 0.2, TL.END - ini(29)],
     ['sfx-eleven/drone.mp3', ini(29), 0.2, TL.END - ini(29)],
