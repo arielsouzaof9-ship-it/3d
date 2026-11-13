@@ -103,6 +103,21 @@ export const chapeu = (tipo, cor, cx, cy, r) => {
 };
 
 let UID = 0;
+// ---------- Dedos ----------
+// Mão com 4 dedos arredondados + polegar, apontando na direção do braço (ux, uy = vetor unitário cotovelo→mão).
+// dentroX: +1 se o corpo está à direita da mão (o polegar vira para o corpo), -1 se está à esquerda.
+export const dedosSvg = (x, y, ux, uy, rr, cor, sw = 4, dentroX = 1) => {
+  const rot = (a) => { const c = Math.cos(a), s = Math.sin(a); return [ux * c - uy * s, ux * s + uy * c]; };
+  const fw = rr * 0.44;
+  const dedo = (a, base, ponta, w) => { const [dx, dy] = rot(a); const x0 = x + dx * rr * base, y0 = y + dy * rr * base, x1 = x + dx * rr * ponta, y1 = y + dy * rr * ponta;
+    return `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} L${x1.toFixed(1)} ${y1.toFixed(1)}" stroke="${LINHA}" stroke-width="${(w + sw * 2).toFixed(1)}" stroke-linecap="round"/><path d="M${x0.toFixed(1)} ${y0.toFixed(1)} L${x1.toFixed(1)} ${y1.toFixed(1)}" stroke="${cor}" stroke-width="${w.toFixed(1)}" stroke-linecap="round"/>`; };
+  const ang = [-0.5, -0.17, 0.17, 0.5];
+  const tA = 1.15, tB = -1.15;
+  const pa = rot(tA), pb = rot(tB);
+  const pol = (pa[0] * dentroX > pb[0] * dentroX) ? tA : tB;
+  return ang.map((a, i) => dedo(a, 0.5, i === 0 || i === 3 ? 1.72 : 1.95, fw)).join('') + dedo(pol, 0.4, 1.55, fw * 1.1);
+};
+
 // ---------- Objetos de mão ----------
 export const item = (tipo, x, y, k, chao) => {
   const L = `stroke="${LINHA}" stroke-width="3.5" stroke-linejoin="round"`;
@@ -217,9 +232,15 @@ export const stick = (k, w = 360, h = 520) => {
       continencia: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 18} ${ombro + 70} L${cx - troncoW / 2 - 22} ${ombro + 112}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 52} ${ombro - 4} L${cx + r * 0.62} ${cy - r * 0.45}`],
       colo: [`M${cx - troncoW / 2 + 6} ${ombro + 14} L${cx - troncoW / 2 - 6} ${ombro + 66} L${cx + 20} ${ombro + 72}`, `M${cx + troncoW / 2 - 6} ${ombro + 14} L${cx + troncoW / 2 + 6} ${ombro + 66} L${cx - 20} ${ombro + 72}`],
     }[k.braco ?? 'baixo'];
-    const mao = (d) => { const p = d.trim().split(/[ ML]+/).filter(Boolean); const x = p[p.length - 2], y = p[p.length - 1]; return k.luvas ? `<circle cx="${x}" cy="${y}" r="${GROSSO / 2 + 16}" fill="${k.luvas}" stroke="${LINHA}" stroke-width="4"/><path d="M${x - 10} ${y - 6} q10 -10 20 0" stroke="#fff" stroke-width="3" fill="none" opacity="0.6"/>` : `<circle cx="${x}" cy="${y}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`; };
+    const mao = (d, i) => {
+      const p = d.trim().split(/[ ML]+/).filter(Boolean).map(Number); const x = p[p.length - 2], y = p[p.length - 1], ex = p[p.length - 4], ey = p[p.length - 3];
+      const l = Math.hypot(x - ex, y - ey) || 1, ux = (x - ex) / l, uy = (y - ey) / l, dentro = x < cx ? 1 : -1;
+      if (k.luvas) { const rr = GROSSO / 2 + 16; return dedosSvg(x, y, ux, uy, rr * 0.82, k.luvas, 4, dentro) + `<circle cx="${x}" cy="${y}" r="${rr}" fill="${k.luvas}" stroke="${LINHA}" stroke-width="4"/><path d="M${x - 10} ${y - 6} q10 -10 20 0" stroke="#fff" stroke-width="3" fill="none" opacity="0.6"/>`; }
+      const rr = GROSSO / 2 + 6;
+      return dedosSvg(x, y, ux, uy, rr, k.pele, 4, dentro) + `<circle cx="${x}" cy="${y}" r="${rr}" fill="${k.pele}" stroke="${LINHA}" stroke-width="4"/>`;
+    };
     const frenteBracos = ['colo', 'cintura'].includes(k.braco);
-    const desenhaBracos = bracos.map((d) => membro(d, k.manga ?? k.roupa)).join('') + bracos.map(mao).join('');
+    const desenhaBracos = bracos.map((d) => membro(d, k.manga ?? k.roupa)).join('') + bracos.map((d, i) => mao(d, i)).join('');
     if (!frenteBracos) out += desenhaBracos;
     // tronco (camiseta)
     { const a = troncoW, hh = troncoH, b = quadril + 8 + (k.jaleco ? 34 : 0);
@@ -291,7 +312,7 @@ export const stick = (k, w = 360, h = 520) => {
   if (k.mergulho) out += `<rect x="${cx - r * 0.72}" y="${cy - r * 0.35}" width="${r * 1.44}" height="${r * 0.55}" rx="${r * 0.2}" fill="#bfe6ff" fill-opacity="0.45" stroke="${LINHA}" stroke-width="5"/><path d="M${cx - r * 0.72} ${cy - r * 0.1} L${cx - r} ${cy - r * 0.2} M${cx + r * 0.72} ${cy - r * 0.1} L${cx + r} ${cy - r * 0.2}" stroke="${k.mergulho}" stroke-width="7"/><path d="M${cx + r * 0.8} ${cy + r * 0.3} V${cy - r * 1.1} q0 -10 10 -10" stroke="${LINHA}" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M${cx + r * 0.8} ${cy + r * 0.3} V${cy - r * 1.1} q0 -10 10 -10" stroke="${k.mergulho}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
   if (k.oculosEscuros) out += `<rect x="${cx - r * 0.62}" y="${cy - r * 0.22}" width="${r * 0.52}" height="${r * 0.32}" rx="${r * 0.1}" fill="${LINHA}"/><rect x="${cx + r * 0.1}" y="${cy - r * 0.22}" width="${r * 0.52}" height="${r * 0.32}" rx="${r * 0.1}" fill="${LINHA}"/><path d="M${cx - r * 0.1} ${cy - r * 0.12} h${r * 0.2} M${cx - r * 0.62} ${cy - r * 0.15} l${-r * 0.32} ${-r * 0.04} M${cx + r * 0.62} ${cy - r * 0.15} l${r * 0.32} ${-r * 0.04}" stroke="${LINHA}" stroke-width="4"/><path d="M${cx - r * 0.52} ${cy - r * 0.14} l${r * 0.12} 0" stroke="#fff" stroke-width="3" opacity="0.6"/>`;
   if (k.bigode) out += `<path d="M${cx - r * 0.3} ${cy + r * 0.22} q${r * 0.3} ${-r * 0.2} ${r * 0.3} 0 q0 ${-r * 0.2} ${r * 0.3} 0 q-${r * 0.05} ${r * 0.2} -${r * 0.3} ${r * 0.12} q-${r * 0.25} ${r * 0.08} -${r * 0.3} -${r * 0.12} z" fill="${k.corCabelo}" stroke="${LINHA}" stroke-width="2"/>`;
-  if (baby && k.braco === 'palma') out += membro(`M${cx + 40} ${chao - 96} L${cx + 82} ${chao - 150}`, k.pele) + `<circle cx="${cx + 84}" cy="${chao - 154}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
+  if (baby && k.braco === 'palma') out += membro(`M${cx + 40} ${chao - 96} L${cx + 82} ${chao - 150}`, k.pele) + dedosSvg(cx + 84, chao - 154, 0.62, -0.78, GROSSO / 2 + 6, k.pele, 3.5, -1) + `<circle cx="${cx + 84}" cy="${chao - 154}" r="${GROSSO / 2 + 6}" fill="${k.pele}" stroke="${LINHA}" stroke-width="3.5"/>`;
   // número da palma
   if (k.numero) {
     const n = k.numero, bw = Math.max(46, n.length * 19 + 22);

@@ -213,9 +213,22 @@ export const Rig = ({ k, p, x, y, s = 1, flip = false }: { k: Record<string, any
       </g>
     );
   };
+  // Dedos: 4 dedos + polegar na direção do antebraço (o polegar vira para o corpo). Mesmo desenho dos personagens fixos.
+  const dedos = (el: V, m: V) => {
+    const rr = LW / 2 + 5, l = Math.hypot(m[0] - el[0], m[1] - el[1]) || 1, ux = (m[0] - el[0]) / l, uy = (m[1] - el[1]) / l;
+    const rot = (a: number): V => [ux * Math.cos(a) - uy * Math.sin(a), ux * Math.sin(a) + uy * Math.cos(a)];
+    const dentro = m[0] < 0 ? 1 : -1, fw = rr * 0.44;
+    const pa = rot(1.15), pb = rot(-1.15), pol = pa[0] * dentro > pb[0] * dentro ? 1.15 : -1.15;
+    const um = (a: number, base: number, ponta: number, w: number, key: string) => {
+      const [dx, dy] = rot(a); const d = `M${m[0] + dx * rr * base} ${m[1] + dy * rr * base} L${m[0] + dx * rr * ponta} ${m[1] + dy * rr * ponta}`;
+      return <g key={key}><path d={d} stroke={L} strokeWidth={w + 9} strokeLinecap="round" /><path d={d} stroke={pele} strokeWidth={w} strokeLinecap="round" /></g>;
+    };
+    return <g>{[-0.5, -0.17, 0.17, 0.5].map((a, i) => um(a, 0.5, i === 0 || i === 3 ? 1.72 : 1.95, fw, `d${i}`))}{um(pol, 0.4, 1.55, fw * 1.1, 'p')}</g>;
+  };
   const braco = (sh: V, el: V, m: V, lado: 'E' | 'D') => (
     <g>
       {membro([sh, el, m], manga, LW)}
+      {(p.joinha ?? 0) & (lado === 'D' ? 1 : 2) ? null : dedos(el, m)}
       <path d={`M${sh[0] + (el[0] - sh[0]) * 0.2} ${sh[1] + (el[1] - sh[1]) * 0.2} L${sh[0] + (el[0] - sh[0]) * 0.7} ${sh[1] + (el[1] - sh[1]) * 0.7}`} stroke="#fff" strokeWidth={6} strokeLinecap="round" opacity={0.35} transform={`translate(${-LW * 0.2} 0)`} />
       <circle cx={m[0]} cy={m[1]} r={LW / 2 + 5} fill={pele} stroke={L} strokeWidth={4.5} />
       {(p.joinha ?? 0) & (lado === 'D' ? 1 : 2) ? polegar(m) : null}

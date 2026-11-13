@@ -23,4 +23,5 @@ Para animar com o padrão de movimentos dos vídeos de referência, use o boneco
   (`ELENCO_ARTICULADO` e `ELENCO_ARTICULADO_2`), folhas em `mad/elenco-articulado.png` e `mad/elenco-articulado-2.png`,
   apresentações nas composições `ElencoArticulado` e `ElencoArticulado2` (`elenco-articulado.mp4`, `elenco-articulado-2.mp4`).
   Rosto aceita também: `oculos`, `oculosEscuros`, `bigode` (`corBigode`), `barba` (`corBarba`), `sardas`, `brinco` (cor).
+- Todos os personagens mad (fixos e articulados) têm **mãos com dedos** (4 dedos + polegar). Gesto `joinha` (pose `joinha: 1|2|3`) fecha a mão com o polegar para cima.
 - Demonstração: composição `MovimentosMad` (vídeo `movimentos-mad.mp4`). Exemplo de cena 2D completa: `src/mad/FiosBrancos.tsx`.
