@@ -122,6 +122,7 @@ export const dedosSvg = (x, y, ux, uy, rr, cor, sw = 4, dentroX = 1) => {
 export const item = (tipo, x, y, k, chao) => {
   const L = `stroke="${LINHA}" stroke-width="3.5" stroke-linejoin="round"`;
   switch (tipo) {
+    case 'lanterna': return `<g transform="translate(${x} ${y}) rotate(-20)"><path d="M26 0 L300 -80 L300 80 z" fill="#fff3b0" opacity="0.22"/><rect x="-24" y="-11" width="46" height="22" rx="6" fill="#3a3a44" ${L}/><rect x="18" y="-15" width="13" height="30" rx="3" fill="#ffe680" ${L}/></g>`;
     case 'livro': return `<g transform="translate(${x} ${y}) rotate(-10)"><rect x="-26" y="-34" width="52" height="40" rx="4" fill="#c8452e" ${L}/><rect x="-22" y="-30" width="44" height="6" fill="#fff" opacity="0.7"/></g>`;
     case 'bola': return `<g transform="translate(${x + 4} ${y - 30})"><circle r="24" fill="#fff" ${L}/><path d="M0 -9 l9 6 -3 10 h-12 l-3 -10 z" fill="${LINHA}"/><path d="M0 -9 V-24 M9 -3 L22 -8 M6 7 L14 20 M-6 7 L-14 20 M-9 -3 L-22 -8" stroke="${LINHA}" stroke-width="2.5"/></g>`;
     case 'microfone': return `<g transform="translate(${x} ${y}) rotate(-20)"><rect x="-6" y="-46" width="12" height="44" rx="5" fill="#2a2a2e" ${L}/><circle cy="-52" r="13" fill="#9aa0aa" ${L}/></g>`;

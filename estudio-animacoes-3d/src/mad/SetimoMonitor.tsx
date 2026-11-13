@@ -126,8 +126,7 @@ const CENAS: Cena[] = [
       <Pers k={LIA} t={t} x={140} y={1680} h={520} movs={[['sentar', t0]]} seed={5} />
       <Pers k={CAIO} t={t} x={330} y={1700} h={480} movs={[['sentar', t0]]} seed={3} />
       <Pers k={DUDA} t={t} x={760} y={1700} h={470} movs={[['sentar', t0]]} seed={4} flip />
-      <Pers k={{ ...BETO }} t={t} x={940} y={1700} h={560} movs={[['sentarFalar', t0]]} over={{ maoD: [20, -360], frenteD: true }} seed={2} flip />
-      <LanternaMao x={920} y={1380} rot={-90} />
+      <Pers k={{ ...BETO, item: 'lanterna' }} t={t} x={940} y={1700} h={560} movs={[['sentarFalar', t0]]} over={{ maoD: [90, -260] }} seed={2} flip />
       <Luz x={540} y={1500} r={600} op={0.3} />
       <Pop t={t} at={W(6, 'lenda')} x={540} y={600}><Placa texto="A LENDA" bg="#ffd166" size={60} /></Pop>
     </Cam>
@@ -160,9 +159,7 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={1300}>
       <Fogueira t={t} />
-      <Pers k={BETO} t={t} x={540} y={1760} h={700} movs={[['falar', t0], ['apontar', W(9, 'some') - 0.4, 1.4]]} over={{ sobr: -0.5, boca: 'dentes' }} seed={2} />
-      <LanternaMao x={420} y={1300} rot={-110} />
-      <Luz x={480} y={1250} r={300} cor="#fff3b0" op={0.35} />
+      <Pers k={{ ...BETO, item2: 'lanterna' }} t={t} x={540} y={1760} h={700} movs={[['falar', t0], ['apontar', W(9, 'some') - 0.4, 1.4]]} over={{ sobr: -0.5, boca: 'dentes' }} seed={2} />
       <Pop t={t} at={W(9, 'treze')} x={540} y={520}><Placa texto="SEXTA-FEIRA 13" bg="#d1495b" fg="#fff" size={62} /></Pop>
     </Cam>
   ),
@@ -204,7 +201,7 @@ const CENAS: Cena[] = [
     return (
       <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.06} cy={1100}>
         <Chales t={t} luzes={[0, 0, 0]} portas={[1, 0, 0]} />
-        <Pers k={CAIO} t={t} x={x} y={1640} h={480} movs={[['andar', t0]]} over={{ x: 0 }} seed={3} op={clamp(1 - (t - W(13, 'voltou') + 1) / 1.2)} />
+        <Pers k={{ ...CAIO, item: 'lanterna' }} t={t} x={x} y={1640} h={480} movs={[['andar', t0]]} over={{ x: 0 }} seed={3} op={clamp(1 - (t - W(13, 'voltou') + 1) / 1.2)} />
         <Lanterna x={x + 40} y={1400} r={300} forca={0.8} />
       </Cam>
     );
@@ -215,7 +212,7 @@ const CENAS: Cena[] = [
     return (
       <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.12} cy={1350}>
         <Chales t={t} luzes={[0, 0, 0]} portas={[1, 1, 0]} />
-        <Pers k={DUDA} t={t} x={andando(t, t0, 300, 200)} y={1600} h={440} movs={[['espiar', t0, 1.2], ['andar', t0 + 1.2]]} over={{ x: 0 }} seed={4} op={clamp(1 - (t - t0 - 1.6) / 0.6)} />
+        <Pers k={{ ...DUDA, item: 'lanterna' }} t={t} x={andando(t, t0, 300, 200)} y={1600} h={440} movs={[['espiar', t0, 1.2], ['andar', t0 + 1.2]]} over={{ x: 0 }} seed={4} op={clamp(1 - (t - t0 - 1.6) / 0.6)} />
         {r > 0 && <LanternaMao x={460 + r * 160} y={1180 + r * 380 + Math.abs(Math.sin(r * 14)) * -30} rot={r * 720} />}
         <Escuro k={0.25} />
       </Cam>
@@ -399,7 +396,7 @@ const sfx = (): Sfx[] => {
     ['sfx-casarao/batida.mp3', W(0, 'treze') - 0.1, 0.5, 2],
     // estrada e portão
     ['sfx-monitor/kombi.mp3', ini(1), 0.45, ini(3) - ini(1)],
-    amb('sfx-monitor/grilos.mp3', 1, 5, 0.3),
+    amb('sfx-monitor/grilos.mp3', 1, 5, 0.1),
     ['sfx-casarao/porta.mp3', ini(2) + 0.3, 0.35, 3],
     ['sfx-monitor/bicicleta.mp3', ini(3), 0.45, 2],
     ['sfx-eleven/susto.mp3', W(3, 'voltem') - 0.1, 0.3],
@@ -410,7 +407,7 @@ const sfx = (): Sfx[] => {
     // fogueira e a lenda
     amb('sfx-monitor/fogueira.mp3', 6, 6, 0.45),
     amb('sfx-monitor/fogueira.mp3', 9, 10, 0.45),
-    amb('sfx-monitor/grilos.mp3', 6, 6, 0.25),
+    amb('sfx-monitor/grilos.mp3', 6, 6, 0.08),
     ['sfx-farol/caixinha.mp3', ini(7), 0.3, ini(9) - ini(7)],
     ['sfx-monitor/splash.mp3', W(7, 'lago') + 0.1, 0.55, 2.5],
     amb('sfx-monitor/lago.mp3', 7, 8, 0.35),
@@ -419,7 +416,7 @@ const sfx = (): Sfx[] => {
     ['sfx-eleven/susto.mp3', W(10, 'susto') - 0.35, 0.5],
     ['sfx-flutua/risada.mp3', ini(11), 0.4, 3],
     // a noite
-    amb('sfx-monitor/grilos.mp3', 11, 14, 0.25),
+    amb('sfx-monitor/grilos.mp3', 11, 14, 0.08),
     ['sfx-monitor/gerador.mp3', ini(12), 0.45, W(12, 'apagou') - ini(12)],
     ['sfx-eleven/desliga.mp3', W(12, 'apagou') - 0.2, 0.55],
     ['sfx-farol/passos.mp3', ini(13), 0.4, 3],
@@ -448,7 +445,7 @@ const sfx = (): Sfx[] => {
     ['sfx-eleven/susto.mp3', W(26, 'beto') - 0.2, 0.45],
     ['sfx-casarao/batida.mp3', W(27, 'sete') - 0.1, 0.55, 2.5],
     ['sfx-eleven/drone.mp3', ini(28), 0.18, TL.END - ini(28)],
-    amb('sfx-monitor/grilos.mp3', 28, 29, 0.12),
+    amb('sfx-monitor/grilos.mp3', 28, 29, 0.05),
     ['sfx-monitor/lago.mp3', ini(29), 0.18, TL.END - ini(29)],
   ];
 };
