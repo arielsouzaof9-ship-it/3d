@@ -27,6 +27,8 @@ const VELHO = { tipo: 'idoso', pele: '#e2b48c', roupa: '#8a7a5a', calca: '#5a4a3
 const DELEGADO = { tipo: 'adulto', pele: '#b9805a', roupa: '#3a4a6a', calca: '#2a3248', cabelo: 'curto', corCabelo: '#1a120c', chapeu: 'quepe', corChapeu: '#2a3248', bigode: true, corBigode: '#1a120c', sapato: '#1a1a1e' };
 const TAVINHO = { tipo: 'crianca', pele: '#e8d0b0', roupa: '#a8805a', calca: '#6a5a4a', cabelo: 'franja', corCabelo: '#5a3a22', sapato: '#3a2a1a' };
 const SETE = [LIA, BETO, CAIO, DUDA, ...OUTROS];
+const FILA = [OUTROS[0], BETO, CAIO, LIA, DUDA, OUTROS[1], OUTROS[2]]; // os 7 lado a lado, Lia no meio
+const fx = (i: number, x0 = 90, dx = 150) => x0 + i * dx;
 
 // ---------- Atalhos ----------
 type A = { k: object; t: number; x: number; y: number; h?: number; movs: Mov[]; over?: Partial<Pose> | ((p: Pose) => Partial<Pose>); seed?: number; flip?: boolean; op?: number; style?: CSSProperties };
@@ -75,8 +77,10 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.08} cy={1100}>
       <Portao t={t} abandonado />
-      <Svg><Kombi x={Math.max(560, 1500 - (t - t0) * 420)} y={1640} s={1.05} t={t} fumaca={1} rostos={7} /></Svg>
-      <Pop t={t} at={W(1, 'sete')} x={540} y={420}><Placa texto="7 MONITORES" bg="#f2c94c" size={64} /></Pop>
+      <Svg><Kombi x={Math.max(560, 1500 - (t - t0) * 420)} y={1560} s={0.95} t={t} fumaca={1} rostos={4} /></Svg>
+      {FILA.map((k, i) => { const at = W(1, 'sete') - 0.3 + i * 0.22; return t > at ? <Pers key={i} k={k} t={t} x={fx(i)} y={1720} h={460} movs={[['entrar', at, 0.5], [i === 3 ? 'parado' : 'acenar', at + 0.5]]} over={i === 3 ? { boca: 'neutra' } : {}} seed={i + 20} flip={i > 3} /> : null; })}
+      {FILA.map((_, i) => <Pop key={i} t={t} at={W(1, 'sete') - 0.1 + i * 0.22} x={fx(i)} y={1180}><div style={{ background: '#f2c94c', color: '#1a1520', fontFamily: 'Arial Black', fontSize: 40, width: 62, height: 62, borderRadius: 31, border: '4px solid #1a1520', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div></Pop>)}
+      <Pop t={t} at={W(1, 'sete') + 1.5} x={540} y={420}><Placa texto="7 MONITORES" bg="#f2c94c" size={64} /></Pop>
     </Cam>
   ),
   // 2 vinte anos fechado
@@ -105,10 +109,9 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.06} cy={1200}>
       <EstradaMata t={t} />
-      <Pers k={BETO} t={t} x={200} y={1760} h={620} movs={[['gargalhar', W(4, 'riu') - 0.3]]} seed={2} />
-      <Pers k={CAIO} t={t} x={420} y={1760} h={640} movs={[['rir', W(4, 'riu') - 0.2]]} seed={3} />
-      <Pers k={DUDA} t={t} x={880} y={1760} h={600} movs={[['rir', W(4, 'riu') - 0.1]]} seed={4} flip />
-      <Pers k={LIA} t={t} x={650} y={1760} h={620} movs={[['parado', t0], ['nervoso', W(4, 'unica') - 0.2]]} over={{ boca: 'neutra', sobr: 0.6, sobrTriste: true, pupila: [-1, 0] }} seed={5} />
+      {FILA.map((k, i) => i === 3
+        ? <Pers key={i} k={LIA} t={t} x={fx(i)} y={1700} h={540} movs={[['parado', t0], ['nervoso', W(4, 'unica') - 0.2]]} over={{ boca: 'neutra', sobr: 0.6, sobrTriste: true, pupila: [-1, 0] }} seed={5} />
+        : <Pers key={i} k={k} t={t} x={fx(i)} y={1700} h={520} movs={[[i === 1 ? 'gargalhar' : 'rir', W(4, 'riu') - 0.3 + (i % 3) * 0.1]]} seed={i + 20} flip={i > 3} />)}
     </Cam>
   ),
   // 5 dormitório arrumado, calendário de junho de 1964
@@ -123,6 +126,7 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.1} cy={1300}>
       <Fogueira t={t} />
+      {[OUTROS[0], OUTROS[1], OUTROS[2]].map((k, i) => <Pers key={i} k={k} t={t} x={[230, 360, 740][i]} y={1490} h={360} movs={[['sentar', t0 + i * 0.2]]} over={{ pupila: [i < 2 ? 1 : -1, 0] }} seed={i + 30} flip={i === 2} />)}
       <Pers k={LIA} t={t} x={140} y={1680} h={520} movs={[['sentar', t0]]} seed={5} />
       <Pers k={CAIO} t={t} x={330} y={1700} h={480} movs={[['sentar', t0]]} seed={3} />
       <Pers k={DUDA} t={t} x={760} y={1700} h={470} movs={[['sentar', t0]]} seed={4} flip />
@@ -169,7 +173,9 @@ const CENAS: Cena[] = [
     return (
       <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.04} cy={1300}>
         <Fogueira t={t} forca={t > ap ? 0.35 : 1} />
-        {[LIA, CAIO, DUDA, OUTROS[0]].map((k, i) => <Pers key={i} k={k} t={t} x={140 + i * 260} y={1760} h={520} movs={[['sentar', t0], ['susto', W(10, 'susto') - 0.35, 1.2], ['sentar', W(10, 'susto') + 0.9]]} seed={i + 3} flip={i > 1} />)}
+        {FILA.map((k, i) => i === 1
+          ? <Pers key={i} k={{ ...BETO, item: 'lanterna' }} t={t} x={fx(i)} y={1690} h={470} movs={[['sentar', t0], ['rir', W(10, 'susto') - 0.2]]} over={{ maoD: [80, -240] }} seed={2} />
+          : <Pers key={i} k={k} t={t} x={fx(i)} y={1690} h={450} movs={[['sentar', t0], ['susto', W(10, 'susto') - 0.35 + (i % 2) * 0.05, 1.2], ['sentar', W(10, 'susto') + 0.9]]} seed={i + 20} flip={i > 3} />)}
         {t > ap && t < W(10, 'susto') - 0.3 && <Escuro k={0.75} />}
         {t > ap && <Escuro k={0.3} />}
       </Cam>
@@ -179,9 +185,7 @@ const CENAS: Cena[] = [
   ({ t, t0, t1 }) => (
     <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.06} cy={1100}>
       <Chales t={t} portas={[0.6, 0.6, 0]} />
-      <Pers k={CAIO} t={t} x={260} y={1600} h={460} movs={[['rir', t0]]} seed={3} />
-      <Pers k={DUDA} t={t} x={600} y={1600} h={440} movs={[['rir', t0 + 0.2]]} seed={4} flip />
-      <Pers k={BETO} t={t} x={880} y={1620} h={480} movs={[['acenar', t0 + 0.3]]} seed={2} flip />
+      {FILA.map((k, i) => <Pers key={i} k={k} t={t} x={fx(i, 100, 147)} y={1660 + (i % 2) * 40} h={420} movs={[[i === 1 ? 'acenar' : 'rir', t0 + (i % 4) * 0.15]]} seed={i + 20} flip={i > 3} />)}
     </Cam>
   ),
   // 12 meia-noite, a luz do gerador apaga
