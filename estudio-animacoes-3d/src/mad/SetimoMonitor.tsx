@@ -351,11 +351,11 @@ const CENAS: Cena[] = [
     const tr = bates.reduce((a, b) => a + (t > b ? Math.exp(-(t - b) * 9) : 0), 0);
     const dy = 8 * Math.sin(t * 1.6) - 18 * tr;
     return (
-      <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.12} cy={1300}>
+      <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.12} cy={1440}>
         <div style={{ position: 'absolute', inset: 0, transform: `translate(${6 * tr * Math.sin(t * 60)}px, 0)` }}>
           <Lago t={t} pier={false} nevoa={0.7} />
           <Svg><BarquinhoFundo x={540} y={1560 - 18 * tr} t={t} /></Svg>
-          <Pers k={LIA} t={t} x={380} y={1600 + dy} h={500} movs={[['sentar', t0], ['susto', bates[0] - 0.2, 1]]} over={{ pupila: [0, 1], sobr: 0.8, olho: 1.25 }} seed={5} />
+          <Pers k={LIA} t={t} x={380} y={1600 + dy} h={500} movs={[['sentar', t0], ['susto', bates[0] - 0.2, 1], ['sentar', bates[0] + 0.8]]} over={t > bates[0] - 0.25 ? { pupila: [0, 1], sobr: 1, sobrTriste: true, olho: 1.35, boca: 'o', suor: 1 } : { pupila: [1, 0] }} seed={5} />
           <Pers k={BETO} t={t} x={700} y={1600 + dy} h={540} movs={[['sentar', t0]]} over={{ maoD: [90, -200], maoE: [-90, -200], boca: 'sorriso' }} seed={2} flip />
           <Svg><Barquinho x={540} y={1560 - 18 * tr} t={t} /></Svg>
           {bates.map((b, i) => <Ondas key={i} t={t} x={540} y={1640} at={b} />)}
@@ -364,47 +364,54 @@ const CENAS: Cena[] = [
       </Cam>
     );
   },
-  // 21 Beto encharcado, sem chuva
+  // 21 Beto encharcado, sem chuva (Lia e Beto no barco)
   ({ t, t0, t1 }) => (
-    <Cam t={t} t0={t0} t1={t1} z0={1.3} z1={1.45} cx={600} cy={1200}>
+    <Cam t={t} t0={t0} t1={t1} z0={1.25} z1={1.4} cx={580} cy={1460}>
       <Lago t={t} pier={false} nevoa={0.6} />
-      <Pers k={BETO_MOLHADO} t={t} x={620} y={1600} h={600} movs={[['sentar', t0]]} over={{ boca: 'neutra', olho: 0.85 }} seed={2} flip />
-      <Gotas t={t} x={620} y={1080} n={7} w={200} />
-      <Gotas t={t + 0.4} x={620} y={1280} n={5} w={260} />
+      <Svg><BarquinhoFundo x={540} y={1560} t={t} /></Svg>
+      <Pers k={LIA} t={t} x={380} y={1600 + 8 * Math.sin(t * 1.6)} h={500} movs={[['sentar', t0]]} over={{ pupila: [1, 0], sobr: 1, sobrTriste: true, olho: 1.3, boca: 'o', suor: 1 }} seed={5} />
+      <Pers k={BETO_MOLHADO} t={t} x={700} y={1600 + 8 * Math.sin(t * 1.6)} h={540} movs={[['sentar', t0]]} over={{ maoD: [90, -200], maoE: [-90, -200], boca: 'neutra', olho: 0.85 }} seed={2} flip />
+      <Gotas t={t} x={700} y={1130} n={7} w={180} />
+      <Gotas t={t + 0.4} x={700} y={1300} n={5} w={240} />
       <Svg><Barquinho x={540} y={1560} t={t} /></Svg>
-      {t > W(21, 'chovendo') - 0.4 && <Pop t={t} at={W(21, 'chovendo') - 0.3} x={620} y={760}><Placa texto="SEM CHUVA" bg="#fff" size={52} /></Pop>}
+      {t > W(21, 'chovendo') - 0.4 && <Pop t={t} at={W(21, 'chovendo') - 0.3} x={600} y={900}><Placa texto="SEM CHUVA" bg="#fff" size={52} /></Pop>}
+      <Svg><Nevoa t={t} y={1500} op={0.45} n={7} /></Svg>
     </Cam>
   ),
-  // 22 "Eu era o monitor dele."
+  // 22 "Eu era o monitor dele." (ainda no barco)
   ({ t, t0, t1 }) => {
     const rev = W(22, 'monitor');
     return (
-      <Cam t={t} t0={t0} t1={t1} z0={1.4} z1={1.7} cx={560} cy={1080}>
+      <Cam t={t} t0={t0} t1={t1} z0={1.3} z1={1.6} cx={600} cy={1440}>
         <Lago t={t} pier={false} nevoa={0.7} />
-        <Pers k={BETO_MOLHADO} t={t} x={560} y={1640} h={700} movs={[['sentarFalar', t0]]} over={{ boca: t > rev ? 'dentes' : 'sorriso', sobr: -0.4, olho: t > rev ? 1.25 : 0.8 }} seed={2} />
-        <Gotas t={t} x={560} y={1050} n={6} w={220} />
+        <Svg><BarquinhoFundo x={540} y={1560} t={t} /></Svg>
+        <Pers k={LIA} t={t} x={380} y={1600 + 8 * Math.sin(t * 1.6)} h={500} movs={[['sentar', t0]]} over={{ pupila: [1, 0], sobr: 1, sobrTriste: true, olho: 1.35, boca: 'o', suor: 1, lagrima: t > rev ? 1 : 0 }} seed={5} />
+        <Pers k={BETO_MOLHADO} t={t} x={700} y={1600 + 8 * Math.sin(t * 1.6)} h={540} movs={[['sentarFalar', t0]]} over={{ boca: t > rev ? 'dentes' : 'sorriso', sobr: -0.4, olho: t > rev ? 1.25 : 0.8, pupila: [-1, 0] }} seed={2} flip />
+        <Gotas t={t} x={700} y={1130} n={6} w={180} />
+        <Svg><Barquinho x={540} y={1560} t={t} /></Svg>
         {t > rev && <Escuro k={0.25 + 0.15 * Math.sin(t * 8)} cor="#0a2440" />}
         <Svg><Nevoa t={t} y={1600} op={0.5} n={7} /></Svg>
       </Cam>
     );
   },
-  // 23 Lia pula e nada; uma mão pequena e gelada segura o tornozelo
+  // 23 Lia pula do barco e nada; uma mão pequena e gelada segura o tornozelo
   ({ t, t0, t1 }) => {
     const pulo = W(23, 'pulei') - 0.2, tz = W(23, 'tornozelo') - 0.4;
     const puxa = t > tz ? Math.min(1, (t - tz) / 0.4) : 0;
-    const nx = Math.max(300, 640 - (t - pulo - 0.5) * 200);
+    const nx = Math.max(110, 240 - (t - pulo - 0.6) * 110);
+    const kp = clamp((t - pulo) / 0.6);
     return (
-      <Cam t={t} t0={t0} t1={t1} z0={1} z1={1.15} cy={1300}>
-        <Lago t={t} pier nevoa={0.5} />
-        <Svg><Barquinho x={760} y={1500} t={t} s={0.7} /></Svg>
-        {t < pulo + 0.5 ? (
-          <Pers k={LIA} t={t} x={760 - clamp((t - pulo) / 0.5) * 120} y={1460 - Math.sin(clamp((t - pulo) / 0.5) * Math.PI) * 200} h={460} movs={[['pular', pulo]]} seed={5} />
-        ) : (
-          <Svg><g transform={`translate(${nx} ${1470 + puxa * 30 + (t > tz ? 10 * Math.sin(t * 30) : 0)})`}><circle r={34} fill="#c98a5a" stroke="#1a1520" strokeWidth={5} /><path d="M-30 -10 q30 -40 60 0" fill="#2a1a12" /><circle cx={-12} cy={-2} r={puxa ? 9 : 5} fill="#fff" stroke="#1a1520" strokeWidth={2} /><circle cx={12} cy={-2} r={puxa ? 9 : 5} fill="#fff" stroke="#1a1520" strokeWidth={2} /><path d={`M-60 20 q30 ${-20 + 20 * Math.sin(t * 8)} 60 0 q30 ${20 - 20 * Math.sin(t * 8)} 60 0`} stroke="#9ab8e8" strokeWidth={8} fill="none" /></g></Svg>
-        )}
-        {t > tz && <Maozinha x={nx + 80} y={1500} k={puxa} t={t} />}
-        <Ondas t={t} x={640} y={1500} at={pulo + 0.45} />
-        {t > tz && <Ondas t={t} x={nx} y={1500} at={tz} />}
+      <Cam t={t} t0={t0} t1={t1} z0={1.05} z1={1.15} cx={480} cy={1460}>
+        <Lago t={t} pier={false} nevoa={0.5} />
+        <Svg><BarquinhoFundo x={600} y={1560} t={t} /></Svg>
+        <Pers k={BETO_MOLHADO} t={t} x={760} y={1600 + 8 * Math.sin(t * 1.6)} h={540} movs={[['sentar', t0]]} over={{ maoD: [90, -200], maoE: [-90, -200], boca: 'sorriso', olho: 1.1, pupila: [-1, 0] }} seed={2} flip />
+        {t < pulo + 0.6 && <Pers k={LIA} t={t} x={440 - kp * 220} y={t < pulo ? 1600 : 1600 - Math.sin(kp * Math.PI) * 220 + kp * 60} h={500} movs={[['sentar', t0], ['pular', pulo]]} over={{ olho: 1.35, boca: 'o', sobr: 1, sobrTriste: true, suor: 1 }} seed={5} style={{ opacity: kp > 0.85 ? 0 : 1 }} />}
+        <Svg><Barquinho x={600} y={1560} t={t} /></Svg>
+        {t > pulo + 0.5 && <Svg><g transform={`translate(${nx} ${1640 + puxa * 30 + (t > tz ? 10 * Math.sin(t * 30) : 0)})`}><circle r={34} fill="#c98a5a" stroke="#1a1520" strokeWidth={5} /><path d="M-30 -10 q30 -40 60 0" fill="#2a1a12" /><circle cx={-12} cy={-2} r={puxa ? 9 : 6} fill="#fff" stroke="#1a1520" strokeWidth={2} /><circle cx={12} cy={-2} r={puxa ? 9 : 6} fill="#fff" stroke="#1a1520" strokeWidth={2} /><ellipse cy={18} rx={8} ry={6} fill="#1a1520" /><path d={`M-60 20 q30 ${-20 + 20 * Math.sin(t * 8)} 60 0 q30 ${20 - 20 * Math.sin(t * 8)} 60 0`} stroke="#9ab8e8" strokeWidth={8} fill="none" /></g></Svg>}
+        {t > tz && <Maozinha x={nx + 70} y={1680} k={puxa} t={t} />}
+        <Ondas t={t} x={230} y={1660} at={pulo + 0.5} />
+        {t > tz && <Ondas t={t} x={nx} y={1660} at={tz} />}
+        <Svg><Nevoa t={t} y={1500} op={0.4} n={6} /></Svg>
       </Cam>
     );
   },
