@@ -397,11 +397,11 @@ const sfx = (): Sfx[] => {
     ['sfx-silencio/multidao.mp3', ini(14), 0.25, ini(17) - ini(14), true],
     ['sfx-silencio/arrasto.mp3', ini(14), 0.35, ini(17) - ini(14), true],
     ['sfx-eleven/coracao.mp3', ini(14), 0.35, ini(17) - ini(14)],
-    ['sfx-silencio/gemidos.mp3', W(15, 'cheirou') - 0.3, 0.35, 2],
+    ['sfx-silencio/gemidos.mp3', W(15, 'cheirou') - 0.3, 0.22, 2],
     // a chuva
-    ['sfx-q9/trovao.mp3', W(17, 'chover') - 0.3, 0.5, 4],
-    ['sfx-q9/chuva-mar.mp3', W(17, 'chover') - 0.2, 0.45, ini(23) - W(17, 'chover'), true],
-    ['sfx-silencio/gemidos.mp3', W(18, 'virar') - 0.2, 0.4, 2.5],
+    ['sfx-q9/trovao.mp3', W(17, 'chover') - 0.3, 0.38, 4],
+    ['sfx-q9/chuva-mar.mp3', W(17, 'chover') - 0.2, 0.3, ini(23) - W(17, 'chover'), true],
+    ['sfx-silencio/gemidos.mp3', W(18, 'virar') - 0.2, 0.25, 2.5],
     ['sfx-eleven/susto.mp3', W(18, 'virar') - 0.2, 0.35],
     ['sfx-silencio/multidao.mp3', ini(18), 0.25, ini(21) - ini(18), true],
     ['sfx-farol/passos.mp3', ini(20), 0.5, 1.6],
@@ -417,8 +417,8 @@ const sfx = (): Sfx[] => {
     ['sfx-flutua/murmurio.mp3', ini(23), 0.2, ini(25) - ini(23)],
     ['sfx-flutua/crac.mp3', W(24, 'panela') - 0.1, 0.4, 1.2],
     ['sfx-eleven/brilho.mp3', W(24, 'colo') - 0.2, 0.35],
-    ['sfx-eleven/drone.mp3', ini(25), 0.3, TL.END - ini(25)],
-    ['sfx-eleven/coracao.mp3', ini(26), 0.25, TL.END - ini(26)],
+    ['sfx-eleven/drone.mp3', ini(25), 0.16, TL.END - ini(25)],
+    ['sfx-eleven/coracao.mp3', ini(26), 0.14, TL.END - ini(26)],
     ['sfx-eleven/boom.mp3', TL.WORDS[TL.WORDS.length - 1].t1 + 0.3, 0.5],
   ];
 };
