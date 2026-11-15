@@ -316,7 +316,7 @@ const sfx = (): Sfx[] => {
     ['sfx-flutua/passarinho.mp3', ini(4), 0.3, ini(9) - ini(4), true],
     ['sfx-silencio/bipe.mp3', ini(4) + 0.3, 0.4],
     ['sfx-silencio/estatica.mp3', ini(4) + 0.6, 0.35, ini(5) - ini(4)],
-    ['sfx-farol/passos.mp3', ini(5), 0.45, 2.2],
+    ['sfx-farol/passos.mp3', ini(5), 0.28, 2.2],
     ['sfx-eleven/susto.mp3', W(6, 'irmao') - 0.2, 0.3],
     ['sfx-eleven/coracao.mp3', ini(8), 0.25, ini(10) - ini(8)],
     ['sfx-q4/algemas.mp3', W(9, 'algemado') - 0.3, 0.4, 1.2],
@@ -331,11 +331,11 @@ const sfx = (): Sfx[] => {
     ['sfx-eleven/brilho.mp3', W(12, 'chave') - 0.1, 0.35],
     ['sfx-q9/passos-molhados.mp3', W(14, 'pegadas') - 0.4, 0.45, 2.5],
     ['sfx-q9/caneta.mp3', W(15, 'carvao') - 0.3, 0.5, 2],
-    ['sfx-eleven/susto.mp3', W(15, 'atras') - 0.2, 0.4],
+    ['sfx-eleven/susto.mp3', W(15, 'atras') + 0.5, 0.3],
     ['sfx-silencio/corvos.mp3', ini(16), 0.3, 3],
     // a rua e o caminhão sumido
     amb('sfx-silencio/vento.mp3', 17, 18, 0.35),
-    ['sfx-eleven/boom.mp3', W(17, 'sumido') - 0.1, 0.4],
+    ['sfx-eleven/boom.mp3', W(17, 'sumido') + 0.4, 0.3],
     ['sfx-silencio/gemidos.mp3', ini(18) + 0.5, 0.25, 2],
     // o mato à noite
     amb('sfx-monitor/grilos.mp3', 19, 19, 0.14),
@@ -347,11 +347,11 @@ const sfx = (): Sfx[] => {
     ['sfx-eleven/coracao.mp3', ini(21), 0.25, ini(22) - ini(21)],
     ['sfx-farol/passos.mp3', ini(22), 0.35, 2.5],
     // a barraca e o rádio
-    ['sfx-silencio/estatica.mp3', ini(23), 0.3, TL.END - ini(23), true],
+    ['sfx-silencio/estatica.mp3', ini(23), 0.18, TL.END - ini(23), true],
     ['sfx-eleven/drone.mp3', ini(23), 0.3, TL.END - ini(23)],
-    ['sfx-silencio/tiro.mp3', W(24, 'blitz') - 0.25, 0.45, 1.5],
+    ['sfx-silencio/tiro.mp3', W(24, 'blitz') - 0.25, 0.32, 1.5],
     ['sfx-silencio/zumbido.mp3', W(24, 'blitz'), 0.25, 1.5],
-    ['sfx-eleven/coracao.mp3', ini(25), 0.4, TL.END - ini(25)],
+    ['sfx-eleven/coracao.mp3', ini(25), 0.25, TL.END - ini(25)],
     ['sfx-silencio/bipe.mp3', ini(26) - 0.2, 0.45],
     ['sfx-eleven/boom.mp3', TL.WORDS[TL.WORDS.length - 1].t1 + 0.3, 0.55],
   ];
